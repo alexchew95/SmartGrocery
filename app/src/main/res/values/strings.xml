@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_name">Smart Grocery</string>
+    <string name="Email">Email</string>
+    <string name="Password">Password</string>
+    <string name="login_button">LOGIN</string>
+    <string name="register">Don\'t have account? Sign Up Here </string>
+    <string name="r_name">Username</string>
+    <string name="r_email">Email</string>
+    <string name="r_password">Password</string>
+    <string name="r_Register">Register</string>
+    <string name="r_Back">Already have an account? Login Here.</string>
+    <string name="welcome">Welcome</string>
+    <string name="btn_logout">LOGOUT</string>
+    <string name="share">Share</string>
+    <string name="remember">Remember Me</string>
+    <string name="facebook_app_id">408120319764457</string>
+    <string name="title_activity_main2">GoGreen</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_home">home</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_home">Inventory</string>
+    <string name="title_shoppingplan">Shopping Plan</string>
+    <string name="title_profile">My Profile</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="auto_focus">Auto focus</string>
+    <string name="use_flash">Use flash</string>
+    <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
+    <string name="ok">OK</string>
+    <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
+    <string name="low_storage_error">Face detector dependencies cannot be downloaded due to low device storage</string>
+    <string name="barcode_success">Barcode read successfully</string>
+    <string name="barcode_failure">No barcode captured</string>
+    <string name="barcode_error">Error reading barcode: %1$s</string>
+    <string name="ocr_header"><![CDATA[Click &quot;Detect Text&quot; to detect text]]></string>
+    <string name="read_text">Detect Text</string>
+</resources>
