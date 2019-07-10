@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -51,7 +52,9 @@ public class InventoryFragmentGrid extends Fragment {
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         // Reference to your entire Firebase database
-        DatabaseReference parentReference = database.getReference().child("user").child("e1yf7z22Vpcq1XHz1c5O1jhVX1C3").child("goods");
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String userId = user.getUid();
+        DatabaseReference parentReference = database.getReference().child("user").child(userId).child("goods");
 
 
         parentReference.addValueEventListener(new ValueEventListener() {

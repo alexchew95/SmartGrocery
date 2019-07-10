@@ -16,6 +16,8 @@ import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.object.SubGoods;
 
 public class GoodsListViewAdapter extends ExpandableRecyclerViewAdapter<GoodsViewHolder, GoodsSubViewHolder> {
+
+
     public GoodsListViewAdapter(List<? extends ExpandableGroup> groups) {
         super(groups);
     }

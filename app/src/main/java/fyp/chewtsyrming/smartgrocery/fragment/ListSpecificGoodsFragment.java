@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,11 +23,11 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import fyp.chewtsyrming.smartgrocery.R;
+import fyp.chewtsyrming.smartgrocery.adapter.GoodsListViewAdapter;
 import fyp.chewtsyrming.smartgrocery.object.Goods;
 import fyp.chewtsyrming.smartgrocery.object.GoodsCategory;
-import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.object.SubGoods;
-import fyp.chewtsyrming.smartgrocery.adapter.GoodsListViewAdapter;
 
 public class ListSpecificGoodsFragment extends Fragment {
 
@@ -40,7 +42,8 @@ public class ListSpecificGoodsFragment extends Fragment {
         //like if the class is HomeFragment it should have R.layout.home_fragment
         //if it is DashboardFragment it should have R.layout.fragment_dashboard
         View fragmentView = inflater.inflate(R.layout.fragment_list_specific_goods, null);
-
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String userId = user.getUid();
         final RecyclerView recyclerView = fragmentView.findViewById(R.id.recycler_view_list_specific_goods);// normal activity not require view.
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());//original is (this), fragment need to use getActivity
         Bundle cate = this.getArguments();
@@ -53,7 +56,7 @@ public class ListSpecificGoodsFragment extends Fragment {
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         // Reference to your entire Firebase database
-        DatabaseReference parentReference = database.getReference().child("user").child("e1yf7z22Vpcq1XHz1c5O1jhVX1C3").child("goods").child(goodsCategory);
+        DatabaseReference parentReference = database.getReference().child("user").child(userId).child("goods").child(goodsCategory);
         parentReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -70,13 +73,13 @@ public class ListSpecificGoodsFragment extends Fragment {
 
 
                     DatabaseReference childReference = database.getReference().
-                            child("user").child("e1yf7z22Vpcq1XHz1c5O1jhVX1C3").child("goods").child(goodsCategory).
+                            child("user").child(userId).child("goods").child(goodsCategory).
                             child(ParentKey).child("masterExpirationQuantity");
 
-                    childReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    childReference.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            subGoods=  new ArrayList<>();
+                            subGoods = new ArrayList<>();
 
                             for (final DataSnapshot snapshot1 : dataSnapshot.getChildren()) {
 
@@ -84,8 +87,8 @@ public class ListSpecificGoodsFragment extends Fragment {
                                         child("user").child("e1yf7z22Vpcq1XHz1c5O1jhVX1C3").child("goods").child(goodsCategory).
                                         child(ParentKey).child("masterExpirationQuantity").child(snapshot1.getKey());
                                 String test = snapshot1.child("expirationDate").getValue().toString();
-                                Toast.makeText(getContext(),test,  Toast.LENGTH_SHORT).show();
-                                SubGoods ss = new SubGoods(snapshot1.child("expirationDate").getValue().toString(),snapshot1.child("expirationDate").getValue().toString());
+                                Toast.makeText(getContext(), test, Toast.LENGTH_SHORT).show();
+                                SubGoods ss = new SubGoods(snapshot1.child("expirationDate").getValue().toString(), snapshot1.child("quantity").getValue().toString());
                                 subGoods.add(ss);
                                 /* subChildReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override

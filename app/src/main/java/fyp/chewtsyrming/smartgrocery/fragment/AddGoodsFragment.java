@@ -36,6 +36,7 @@ import java.util.List;
 import fyp.chewtsyrming.smartgrocery.DatePickerFragment;
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.object.SubGoods;
+import fyp.chewtsyrming.smartgrocery.object.TempGoods;
 import fyp.chewtsyrming.smartgrocery.object.barcodeGoods;
 import fyp.chewtsyrming.smartgrocery.ocr.OcrCaptureActivity;
 
@@ -52,6 +53,7 @@ public class AddGoodsFragment extends Fragment {
     FirebaseAuth.AuthStateListener aSL;
     DatabaseReference reff;
     SubGoods subGoods;
+    TempGoods goods;
     Boolean barcodeExist=false;
     private static final int RC_OCR_CAPTURE = 9003;
     public static final int REQUEST_CODE = 11;
@@ -81,7 +83,7 @@ public class AddGoodsFragment extends Fragment {
         if (barcodeBundle != null) {
             String scanned_barcode = barcodeBundle.getString("barcode");
             DatabaseReference barCodeRef = FirebaseDatabase.getInstance().getReference().child("barcode");
-            Query query = barCodeRef.orderByChild("barcode").equalTo("4260109922081");//4260109922085
+            Query query = barCodeRef.orderByChild("barcode").equalTo(scanned_barcode);//4260109922085
             query.addValueEventListener(new ValueEventListener() {
                 // barCodeRef.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -144,7 +146,8 @@ public class AddGoodsFragment extends Fragment {
             public void onClick(View v) {
                 String scanned_barcode = barcodeBundle.getString("barcode");
 
-                if(scanned_barcode !=null){
+                if(barcodeExist == true){
+
                    String category = spinnerCategory.getSelectedItem().toString();
 
                    reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
@@ -160,7 +163,32 @@ public class AddGoodsFragment extends Fragment {
                    reff.setValue(subGoods);
                }
                else{
+                    String goodsName = quantity.getText().toString();
+                     goods = new TempGoods();
+                     goods.setGoodsName(tv_goodsName.getText().toString());
 
+                    String category = spinnerCategory.getSelectedItem().toString();
+                    reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
+                            .child(category).child(scanned_barcode);
+                    reff.setValue(goods);
+
+                    goods.setBarCode(scanned_barcode);
+                    goods.setGoodsCategory(category);
+                    reff = FirebaseDatabase.getInstance().getReference().child("barcode").child(scanned_barcode);
+                    reff.setValue(goods);
+
+
+                    reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
+                            .child(category).child(scanned_barcode).child("masterExpirationQuantity");
+                    String id = reff.push().getKey();
+                    reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
+                            .child(category).child(scanned_barcode).child("masterExpirationQuantity").child(id);
+                    subGoods = new SubGoods();
+                    String test = quantity.getText().toString();
+                    String expirationdate = expirationDate.getText().toString();
+                    subGoods.setQuantity(test);
+                    subGoods.setExpirationDate(expirationdate);
+                    reff.setValue(subGoods);
                }
 
         //        Toast.makeText(getContext(), , Toast.LENGTH_LONG).show();
