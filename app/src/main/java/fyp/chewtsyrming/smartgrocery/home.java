@@ -12,7 +12,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 
-import fyp.chewtsyrming.smartgrocery.fragment.AddGoodsBarcodeReaderFragment;
 import fyp.chewtsyrming.smartgrocery.fragment.InventoryFragmentGrid;
 import fyp.chewtsyrming.smartgrocery.fragment.MyProfileFragment;
 import fyp.chewtsyrming.smartgrocery.fragment.ShoppingPlanFragment;
@@ -66,7 +65,7 @@ public class home extends AppCompatActivity implements BottomNavigationView.OnNa
         setContentView(R.layout.activity_home);
 
         //loading the default fragment
-        loadFragment(new AddGoodsBarcodeReaderFragment());
+        loadFragment(new InventoryFragmentGrid());
 
         //getting bottom navigation view and attaching the listener
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);

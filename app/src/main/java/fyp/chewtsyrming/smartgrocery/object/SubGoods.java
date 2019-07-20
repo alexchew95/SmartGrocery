@@ -3,21 +3,30 @@ package fyp.chewtsyrming.smartgrocery.object;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class SubGoods  implements Parcelable {
-    String quantity;
-    String expirationDate;
+public class SubGoods implements Parcelable {
+    String quantity, expirationDate, category, masterExpirationQuantityID, barcode;
+
 
     public SubGoods() {
 
-    }public SubGoods(String quantity, String expirationDate) {
-        this.quantity=quantity;
-this.expirationDate=expirationDate;
+    }
 
+    public SubGoods(String barcode, String category, String expirationDate,
+                    String masterExpirationQuantityID, String quantity
+    ) {
+        this.category = category;
+        this.expirationDate = expirationDate;
+        this.masterExpirationQuantityID = masterExpirationQuantityID;
+        this.quantity = quantity;
+        this.barcode = barcode;
     }
 
     protected SubGoods(Parcel in) {
-        quantity = in.readString();
+        barcode = in.readString();
+        category = in.readString();
         expirationDate = in.readString();
+        masterExpirationQuantityID = in.readString();
+        quantity = in.readString();
     }
 
     public static final Creator<SubGoods> CREATOR = new Creator<SubGoods>() {
@@ -40,11 +49,12 @@ this.expirationDate=expirationDate;
         return expirationDate;
     }
 
-    public void setQuantity(String quantity){
-        this.quantity= quantity;
+    public void setQuantity(String quantity) {
+        this.quantity = quantity;
     }
-    public void setExpirationDate(String expirationDate){
-        this.expirationDate=expirationDate;
+
+    public void setExpirationDate(String expirationDate) {
+        this.expirationDate = expirationDate;
     }
 
     @Override
@@ -57,4 +67,31 @@ this.expirationDate=expirationDate;
         dest.writeString(quantity);
         dest.writeString(expirationDate);
     }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getMasterExpirationQuantityID() {
+        return masterExpirationQuantityID;
+    }
+
+    public String getBarcode() {
+        return barcode;
+    }
+
+
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setMasterExpirationQuantityID(String masterExpirationQuantityID) {
+        this.quantity = masterExpirationQuantityID;
+    }
+
+
 }

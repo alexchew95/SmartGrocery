@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -27,7 +28,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -42,10 +42,8 @@ import fyp.chewtsyrming.smartgrocery.ocr.OcrCaptureActivity;
 
 public class AddGoodsFragment extends Fragment {
     String selectedDate;
-    EditText tv_goodsName;
-    EditText expirationDate;
-    EditText quantity;
-    EditText dateOfBirthET;
+    EditText tv_goodsName, expirationDate, quantity, dateOfBirthET;
+    TextView barcodeTV;
     Spinner spinnerCategory;
     Button buttonAddGoods;
     ImageButton imageButtomScanGoodsName;
@@ -54,7 +52,7 @@ public class AddGoodsFragment extends Fragment {
     DatabaseReference reff;
     SubGoods subGoods;
     TempGoods goods;
-    Boolean barcodeExist=false;
+    Boolean barcodeExist = false;
     private static final int RC_OCR_CAPTURE = 9003;
     public static final int REQUEST_CODE = 11;
 
@@ -67,34 +65,40 @@ public class AddGoodsFragment extends Fragment {
 
 
         };
-        //just change the fragment_dashboard
-        //with the fragment you want to inflate
-        //like if the class is HomeFragment it should have R.layout.home_fragment
-        //if it is DashboardFragment it should have R.layout.fragment_dashboard
+
+
         View fragmentView = inflater.inflate(R.layout.fragment_add_goods, null);
         tv_goodsName = fragmentView.findViewById(R.id.editTextGoodsName);
         expirationDate = fragmentView.findViewById(R.id.editTextExpiryDate);
         quantity = fragmentView.findViewById(R.id.editTextQuantity);
         spinnerCategory = (Spinner) fragmentView.findViewById(R.id.spinnerCategory);
+
+        barcodeTV = fragmentView.findViewById(R.id.barcodeTV);
+
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, celebrities);
         spinnerCategory.setAdapter(adapter);
 
         final Bundle barcodeBundle = this.getArguments();
         if (barcodeBundle != null) {
             String scanned_barcode = barcodeBundle.getString("barcode");
-            DatabaseReference barCodeRef = FirebaseDatabase.getInstance().getReference().child("barcode");
-            Query query = barCodeRef.orderByChild("barcode").equalTo(scanned_barcode);//4260109922085
-            query.addValueEventListener(new ValueEventListener() {
+            DatabaseReference barCodeRef = FirebaseDatabase.getInstance().getReference().child("barcode").child(scanned_barcode);
+            //Query query = barCodeRef.orderByChild("barcode").equalTo(scanned_barcode);//4260109922085
+            barCodeRef.addValueEventListener(new ValueEventListener() {
                 // barCodeRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     for (DataSnapshot child : snapshot.getChildren()) {
                         List<barcodeGoods> barcodeGoods = new ArrayList<>();
-                        barcodeGoods barcodeGoods1 = child.getValue(barcodeGoods.class);
-                        //   Toast.makeText(getContext(), barcodeGoods1.getBarcode(), Toast.LENGTH_LONG).show();
-                        tv_goodsName.setText(barcodeGoods1.getGoodsName());
-                        int spinnerPosition = adapter.getPosition(barcodeGoods1.getGoodsCategory());
+                        String goodsName = snapshot.child("goodsName").getValue().toString();
+                        String goodsCat = snapshot.child("goodsCategory").getValue().toString();
+                        String barcode = snapshot.child("barcode").getValue().toString();
+
+                        tv_goodsName.setText(goodsName);
+                        int spinnerPosition = adapter.getPosition(goodsCat);
                         spinnerCategory.setSelection(spinnerPosition);
+                        barcodeTV.setText(barcode);
+
+
                         barcodeExist = true;
                     }
                 }
@@ -146,52 +150,26 @@ public class AddGoodsFragment extends Fragment {
             public void onClick(View v) {
                 String scanned_barcode = barcodeBundle.getString("barcode");
 
-                if(barcodeExist == true){
-
-                   String category = spinnerCategory.getSelectedItem().toString();
-
-                   reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
-                           .child(category).child(scanned_barcode).child("masterExpirationQuantity");
-                   String id = reff.push().getKey();
-                   reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
-                           .child(category).child(scanned_barcode).child("masterExpirationQuantity").child(id);
-                   subGoods = new SubGoods();
-                   String test = quantity.getText().toString();
-                   String expirationdate = expirationDate.getText().toString();
-                   subGoods.setQuantity(test);
-                   subGoods.setExpirationDate(expirationdate);
-                   reff.setValue(subGoods);
-               }
-               else{
-                    String goodsName = quantity.getText().toString();
-                     goods = new TempGoods();
-                     goods.setGoodsName(tv_goodsName.getText().toString());
+                if (barcodeExist == true) {
 
                     String category = spinnerCategory.getSelectedItem().toString();
-                    reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
-                            .child(category).child(scanned_barcode);
-                    reff.setValue(goods);
-
-                    goods.setBarCode(scanned_barcode);
-                    goods.setGoodsCategory(category);
-                    reff = FirebaseDatabase.getInstance().getReference().child("barcode").child(scanned_barcode);
-                    reff.setValue(goods);
-
 
                     reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
                             .child(category).child(scanned_barcode).child("masterExpirationQuantity");
                     String id = reff.push().getKey();
                     reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
                             .child(category).child(scanned_barcode).child("masterExpirationQuantity").child(id);
-                    subGoods = new SubGoods();
-                    String test = quantity.getText().toString();
+                    String quantt = quantity.getText().toString();
                     String expirationdate = expirationDate.getText().toString();
-                    subGoods.setQuantity(test);
-                    subGoods.setExpirationDate(expirationdate);
-                    reff.setValue(subGoods);
-               }
+                    String barcode = barcodeTV.getText().toString();
 
-        //        Toast.makeText(getContext(), , Toast.LENGTH_LONG).show();
+                    subGoods = new SubGoods(barcode,category,expirationdate, id,quantt);
+
+                    reff.setValue(subGoods);
+                }
+
+
+                //        Toast.makeText(getContext(), , Toast.LENGTH_LONG).show();
 
             }
         });

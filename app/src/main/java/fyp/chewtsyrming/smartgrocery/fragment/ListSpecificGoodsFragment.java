@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,13 +25,12 @@ import java.util.List;
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.adapter.GoodsListViewAdapter;
 import fyp.chewtsyrming.smartgrocery.object.Goods;
-import fyp.chewtsyrming.smartgrocery.object.GoodsCategory;
 import fyp.chewtsyrming.smartgrocery.object.SubGoods;
 
 public class ListSpecificGoodsFragment extends Fragment {
 
     GoodsListViewAdapter adapter;
-    List<Goods> goodsCategoryList = new ArrayList<>();
+    List<Goods> goodsCategoryList;
     List<SubGoods> subGoods;
 
 
@@ -56,11 +54,12 @@ public class ListSpecificGoodsFragment extends Fragment {
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         // Reference to your entire Firebase database
-        DatabaseReference parentReference = database.getReference().child("user").child(userId).child("goods").child(goodsCategory);
-        parentReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference parentReference = database.getReference().child("user").child(userId).
+                child("goods").child(goodsCategory);
+        parentReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                final List<GoodsCategory> Parent = new ArrayList<>();
+
                 for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     //  Toast.makeText(getContext(), snapshot.getValue().toString(), Toast.LENGTH_SHORT).show();
                     //Toast.makeText(getContext(), snapshot.getKey(), Toast.LENGTH_SHORT).show();
@@ -80,15 +79,18 @@ public class ListSpecificGoodsFragment extends Fragment {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             subGoods = new ArrayList<>();
-
+                            String barcode, category, expirationDate, masterExpirationQuantityID, quantity;
                             for (final DataSnapshot snapshot1 : dataSnapshot.getChildren()) {
 
-                                DatabaseReference subChildReference = database.getReference().
-                                        child("user").child("e1yf7z22Vpcq1XHz1c5O1jhVX1C3").child("goods").child(goodsCategory).
-                                        child(ParentKey).child("masterExpirationQuantity").child(snapshot1.getKey());
-                                String test = snapshot1.child("expirationDate").getValue().toString();
-                                Toast.makeText(getContext(), test, Toast.LENGTH_SHORT).show();
-                                SubGoods ss = new SubGoods(snapshot1.child("expirationDate").getValue().toString(), snapshot1.child("quantity").getValue().toString());
+
+
+//                                Toast.makeText(getContext(), test, Toast.LENGTH_SHORT).show();
+                                barcode = snapshot1.child("barcode").getValue().toString();
+                                category = snapshot1.child("category").getValue().toString();
+                                expirationDate = snapshot1.child("expirationDate").getValue().toString();
+                                masterExpirationQuantityID = snapshot1.child("masterExpirationQuantityID").getValue().toString();
+                                quantity = snapshot1.child("quantity").getValue().toString();
+                                SubGoods ss = new SubGoods(barcode,category,expirationDate,masterExpirationQuantityID,quantity);
                                 subGoods.add(ss);
                                 /* subChildReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
@@ -122,6 +124,7 @@ public class ListSpecificGoodsFragment extends Fragment {
                                 Toast.makeText(getContext(),snapshot1.getKey(),  Toast.LENGTH_LONG).show();*/
                             }
                             Goods goodsCategory2 = new Goods(test, subGoods, R.drawable.ic_home_garden);
+                            goodsCategoryList = new ArrayList<>();
                             goodsCategoryList.add(goodsCategory2);
                             adapter = new GoodsListViewAdapter(goodsCategoryList);
                             recyclerView.setLayoutManager(layoutManager);
@@ -145,6 +148,13 @@ public class ListSpecificGoodsFragment extends Fragment {
 
             }
         });
+       /* adapter.setChildClickListener(new OnCheckChildClickListener() {
+            @Override
+            public void onCheckChildCLick(View v, boolean checked, CheckedExpandableGroup group,
+                                          int childIndex) {
+            }
+        });*/
+
         return fragmentView;
     }
 

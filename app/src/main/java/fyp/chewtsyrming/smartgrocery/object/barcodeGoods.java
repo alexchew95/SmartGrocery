@@ -2,21 +2,21 @@ package fyp.chewtsyrming.smartgrocery.object;
 
 public class barcodeGoods {
 
-    String barcode;
+    String barCode;
     String goodsCategory;
     String goodsName;
 
     public barcodeGoods() {
     }
 
-    public barcodeGoods(String barcode, String goodsCategory, String goodsName) {
-        this.barcode = barcode;
+    public barcodeGoods(String barCode, String goodsCategory, String goodsName) {
+        this.barCode = barCode;
         this.goodsCategory = goodsCategory;
         this.goodsName = goodsName;
     }
 
     public String getBarcode() {
-        return barcode;
+        return barCode;
     }
 
     public String getGoodsCategory() {
@@ -35,7 +35,7 @@ public class barcodeGoods {
         this.goodsName = goodsName;
     }
 
-    public void setBarcode(String barcode) {
-        this.barcode = barcode;
+    public void setBarcode(String barCode) {
+        this.barCode = barCode;
     }
 }

@@ -1,21 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/list_item_height">
 
-    <TextView
-        android:id="@+id/list_item_subgoods_name"
+    <View
+        android:id="@+id/header_bottomBorder1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="50dp"
-        android:gravity="center_vertical"
-        tools:text="Artist Name" />
-    <TextView
-        android:id="@+id/list_item_subgoods_quantity"
+        android:layout_height="1dp"
+        android:background="@android:color/black" />
+    <LinearLayout
+        android:id="@+id/ll1"
+        android:layout_below="@+id/header_bottomBorder1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="300dp"
-        android:gravity="center_vertical"
-        tools:text="Artist Name" />
-</FrameLayout>
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:id="@+id/list_item_subgoods_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            tools:text="Quantity = 10" />
+
+        <TextView
+            android:id="@+id/list_item_subgoods_expirationDate"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            tools:text="Expiration Date = 10/12/2018" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll2"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/ll1"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="-1"
+            android:textAlignment="center"
+
+            />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="-#"
+            android:textAlignment="center"
+
+            />
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="Delete"
+            android:textAlignment="center"
+
+            />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/header_bottomBorder2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/ll2"
+        android:background="@android:color/black" />
+
+</RelativeLayout>
