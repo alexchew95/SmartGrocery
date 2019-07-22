@@ -66,7 +66,7 @@ public class AddGoodsFragment extends Fragment {
 
 
         };
-
+/*TODO add goods with image capture by user*/
 
         View fragmentView = inflater.inflate(R.layout.fragment_add_goods, null);
         tv_goodsName = fragmentView.findViewById(R.id.editTextGoodsName);

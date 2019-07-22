@@ -46,6 +46,8 @@ public class ListSpecificGoodsFragment extends Fragment {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());//original is (this), fragment need to use getActivity
         Bundle cate = this.getArguments();
         final String goodsCategory = cate.getString("Key");
+        /*TODO convert to gridview. add button then enable select like checkbox*/
+
         /*if(cate != null){
 
             Toast.makeText(getContext(), test, Toast.LENGTH_LONG).show();
