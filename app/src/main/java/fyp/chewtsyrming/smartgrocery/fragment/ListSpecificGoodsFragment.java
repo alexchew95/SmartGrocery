@@ -85,12 +85,13 @@ public class ListSpecificGoodsFragment extends Fragment {
 
 
 //                                Toast.makeText(getContext(), test, Toast.LENGTH_SHORT).show();
+                                String goodsName = snapshot1.child("barcode").getValue().toString();
                                 barcode = snapshot1.child("barcode").getValue().toString();
                                 category = snapshot1.child("category").getValue().toString();
                                 expirationDate = snapshot1.child("expirationDate").getValue().toString();
                                 masterExpirationQuantityID = snapshot1.child("masterExpirationQuantityID").getValue().toString();
                                 quantity = snapshot1.child("quantity").getValue().toString();
-                                SubGoods ss = new SubGoods(barcode,category,expirationDate,masterExpirationQuantityID,quantity);
+                                SubGoods ss = new SubGoods(barcode,category,expirationDate,masterExpirationQuantityID,quantity,goodsName);
                                 subGoods.add(ss);
                                 /* subChildReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
@@ -148,12 +149,7 @@ public class ListSpecificGoodsFragment extends Fragment {
 
             }
         });
-       /* adapter.setChildClickListener(new OnCheckChildClickListener() {
-            @Override
-            public void onCheckChildCLick(View v, boolean checked, CheckedExpandableGroup group,
-                                          int childIndex) {
-            }
-        });*/
+
 
         return fragmentView;
     }

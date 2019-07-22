@@ -1,6 +1,5 @@
 package fyp.chewtsyrming.smartgrocery.adapter;
 
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +10,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import fyp.chewtsyrming.smartgrocery.object.GoodsCategoryGrid;
 import fyp.chewtsyrming.smartgrocery.R;
+import fyp.chewtsyrming.smartgrocery.object.GoodsCategoryGrid;
 
 public class GoodsCategoryGridAdapter extends BaseAdapter {
 
@@ -43,36 +42,12 @@ public class GoodsCategoryGridAdapter extends BaseAdapter {
         return null;
     }
 
-    // 5
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // 1
+
         final GoodsCategoryGrid book = goodsCategories.get(position);
 
-        // 2
-        /*
-        if (convertView == null) {
-            final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-            convertView = layoutInflater.inflate(R.layout.linearlayout_goods_category, null);
-        }
-
-        // 3
-        final ImageView imageView = convertView.findViewById(R.id.imageview_goods_category);
-        final TextView nameTextView = convertView.findViewById(R.id.textview_goods_name);
-
-
-        // 4
-        imageView.setImageResource(book.getImageResource());
-        nameTextView.setText(book.getName());*/
-
-        /*gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                String selectedItem = parent.getItemAtPosition(position).toString();
-                Toast.makeText(getContext(), selectedItem, Toast.LENGTH_LONG).show();
-            }
-        });*/
         if (convertView == null) {
             final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
             convertView = layoutInflater.inflate(R.layout.linearlayout_goods_category, null);
@@ -85,11 +60,10 @@ public class GoodsCategoryGridAdapter extends BaseAdapter {
             convertView.setTag(viewHolder);
         }
 
-        final ViewHolder viewHolder = (ViewHolder)convertView.getTag();
+        final ViewHolder viewHolder = (ViewHolder) convertView.getTag();
 //    viewHolder.imageViewCoverArt.setImageResource(book.getImageResource());
         viewHolder.imageView.setImageResource(book.getImageResource());
         viewHolder.nameTextView.setText(book.getName());
-
 
 
         return convertView;
@@ -100,7 +74,7 @@ public class GoodsCategoryGridAdapter extends BaseAdapter {
         private final ImageView imageView;
 
 
-        public ViewHolder(TextView nameTextView,  ImageView imageView) {
+        public ViewHolder(TextView nameTextView, ImageView imageView) {
             this.nameTextView = nameTextView;
 
             this.imageView = imageView;

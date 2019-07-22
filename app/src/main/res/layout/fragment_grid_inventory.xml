@@ -10,7 +10,18 @@
     android:layout_centerHorizontal="true"
     android:textSize="30sp"
     />
+    <SearchView
+        android:id="@+id/searchView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
 
+
+        android:queryHint="Search Goods"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/InventoryTitle"
+        android:layout_marginTop="10sp"
+
+        ></SearchView>
     <GridView
         android:id="@+id/gridviewInventory"
         android:layout_width="wrap_content"
@@ -21,18 +32,11 @@
         android:verticalSpacing="24dp"
         android:horizontalSpacing="10dp"
         android:stretchMode="spacingWidthUniform"
-        android:layout_below="@+id/InventoryTitle"
+        android:layout_below="@+id/searchView1"
         android:layout_marginTop="30sp"
 
 
         />
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_goods"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/ic_add_goods"
-        android:src="@drawable/ic_add_goods" />
+
 
 </RelativeLayout>

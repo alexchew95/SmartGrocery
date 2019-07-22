@@ -6,13 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.TextView;
+import android.widget.SearchView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -24,37 +24,54 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import fyp.chewtsyrming.smartgrocery.object.Goods;
-import fyp.chewtsyrming.smartgrocery.object.GoodsCategoryGrid;
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.adapter.GoodsCategoryGridAdapter;
+import fyp.chewtsyrming.smartgrocery.adapter.GoodsListGridAdapter;
+import fyp.chewtsyrming.smartgrocery.object.GoodsCategoryGrid;
+import fyp.chewtsyrming.smartgrocery.object.GoodsGrid;
 
 public class InventoryFragmentGrid extends Fragment {
 
     @Nullable
-    FirebaseAuth.AuthStateListener aSL;
-    DatabaseReference reff;
-    List<Goods> events = new ArrayList<>();
-    FirebaseAuth firebaseAuth;
-    List<Goods> goodsList;
     List<GoodsCategoryGrid> goodsCategoryList = new ArrayList<>();
+    GridView gridView;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    String userId = user.getUid();
+    DatabaseReference parentReference;
+    List<GoodsGrid> goodsList = new ArrayList<>();
+    List<GoodsGrid> filterGoodsList = new ArrayList<>();
+
+    SearchView svGoods;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View fragmentView = inflater.inflate(R.layout.fragment_grid_inventory, null);
-        TextView tv = (TextView) fragmentView;
-        inflater.inflate(R.layout.fragment_grid_inventory, null);
+
+
         //final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());//original is (this), fragment need to use getActivity
 
-        final GridView gridView = fragmentView.findViewById(R.id.gridviewInventory);
+        gridView = fragmentView.findViewById(R.id.gridviewInventory);
+        svGoods = fragmentView.findViewById(R.id.searchView1);
+        CharSequence query = svGoods.getQuery();
+        //list all category based on user db
+        listAllCategory();
+        searchGoods();
+        //retrieve all user goods to be use in searchview
+        // listAllGoods();
 
 
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        return fragmentView;
+
+    }
+
+    private void listAllCategory() {
         // Reference to your entire Firebase database
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         final String userId = user.getUid();
-        DatabaseReference parentReference = database.getReference().child("user").child(userId).child("goods");
+        parentReference = database.getReference().child("user").child(userId).child("goods");
 
 
         parentReference.addValueEventListener(new ValueEventListener() {
@@ -87,16 +104,16 @@ public class InventoryFragmentGrid extends Fragment {
                             final GoodsCategoryGrid book = goodsCategoryList.get(position);
                             Bundle cate = new Bundle();
                             cate.putString("Key", book.getName());
-                            ListSpecificGoodsFragment testFrag = new ListSpecificGoodsFragment();
-                            testFrag.setArguments(cate);
+                            ListGoodsFragmentGrid frag = new ListGoodsFragmentGrid();
+                            frag.setArguments(cate);
                             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                            transaction.replace(R.id.fragment_container, testFrag);
+                            transaction.replace(R.id.fragment_container, frag);
                             transaction.addToBackStack(null);
                             transaction.commit();
                         }
                     });
 
-                    //  Toast.makeText(getContext(), ParentKey, Toast.LENGTH_LONG).show();
+                    //  Toast.makeText(getContext(), ParentKey, Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -106,21 +123,93 @@ public class InventoryFragmentGrid extends Fragment {
 
             }
         });
-        FloatingActionButton fab = (FloatingActionButton) fragmentView.findViewById(R.id.fab_add_goods);
-        fab.setOnClickListener(new View.OnClickListener(){
+    }
+
+    private void listAllGoods() {
+        parentReference = database.getReference().child("user").child(userId).child("goods");
+        parentReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View view){
-                Fragment newCase=new AddGoodsBarcodeReaderFragment();
-                FragmentTransaction transaction=getFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container,newCase); // give your fragment container id in first parameter
-                transaction.addToBackStack(null);  // if written, this transaction will be added to backstack
-                transaction.commit();
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                goodsList.clear();
+                for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+
+                    final String category = snapshot.getKey();
+                    long count = dataSnapshot.getChildrenCount();
+                    // Toast.makeText(getContext(), category, Toast.LENGTH_SHORT).show();
+                    final DatabaseReference categoryReference = parentReference.child(category);
+                    categoryReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                long c = dataSnapshot.getChildrenCount();
+                                String barcode = snapshot.getKey();
+                                //Toast.makeText(getContext(), snapshot.getKey(), Toast.LENGTH_SHORT).show();
+                                DatabaseReference goodsReference = categoryReference.child(barcode).child("masterExpirationQuantity");
+                                goodsReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        final int goodsCategoryIcon = R.drawable.ic_add_goods;
+                                        for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                            String goodsName = snapshot.child("goodsName").getValue().toString();
+                                            //Toast.makeText(getContext(), goodsName, Toast.LENGTH_SHORT).show();
+                                            GoodsGrid goodsGrid = new GoodsGrid(goodsName, goodsCategoryIcon);
+                                            goodsList.add(goodsGrid);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
-
-        return fragmentView;
-
     }
 
+    private void searchGoods() {
+        svGoods.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+
+                if(newText.isEmpty()){
+                    listAllCategory();
+                }
+                else {   listAllGoods();
+                    filterGoodsList.clear();
+                    for (int x = 0; x < goodsList.size(); x++) {
+                        if (goodsList.get(x).getName().contains(newText)) {
+                            filterGoodsList.add(goodsList.get(x));
+                        }
+
+                    }
+                    final GoodsListGridAdapter goodsAdapter = new GoodsListGridAdapter(getActivity(), filterGoodsList);
+
+                    gridView.setAdapter(goodsAdapter);}
+
+                return false;
+            }
+        });
+    }
 }

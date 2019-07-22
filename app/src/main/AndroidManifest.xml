@@ -14,19 +14,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning"
-
-        >
-
+        tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".register_user" />
         <activity android:name=".login_user">
 
-
-          <!--  <intent-filter>
+            <!--
+             <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
 
                  <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>-->
+             </intent-filter>
+            -->
 
         </activity>
         <activity
@@ -39,6 +37,10 @@
             android:name=".home"
             android:label="@string/title_activity_home"
             android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable"></meta-data>
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

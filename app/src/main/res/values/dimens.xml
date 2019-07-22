@@ -10,13 +10,13 @@
     <dimen name="list_item_left_margin">72dp</dimen>
 
 
-
-
     <dimen name="list_item_elevation">2dp</dimen>
 
     <dimen name="list_item2_height">96dp</dimen>
     <dimen name="auto_scroll_height">96dp</dimen>
     <dimen name="list_grid_item_height">128dp</dimen>
     <dimen name="list_group_item_height">?android:attr/actionBarSize</dimen>
-
+    <dimen name="standard_55">60dp</dimen>
+    <dimen name="standard_105">120dp</dimen>
+    <dimen name="standard_155">180dp</dimen>
 </resources>

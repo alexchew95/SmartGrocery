@@ -27,8 +27,9 @@ public class AddGoodsBarcodeReaderFragment extends Fragment {
     private TextView barcodeValue;
     Button scan_barcode;
 
-    private static final int RC_BARCODE_CAPTURE = 9001;
-    private static final String TAG = "BarcodeMain";
+    private static int RC_BARCODE_CAPTURE;
+
+    //private static final String TAG = "BarcodeMain";
     String barcode_value;
 
     @Override
@@ -44,8 +45,14 @@ public class AddGoodsBarcodeReaderFragment extends Fragment {
         scan_barcode = v.findViewById(R.id.read_barcode);
         autoFocus = v.findViewById(R.id.auto_focus);
         useFlash = v.findViewById(R.id.use_flash);
-
-
+        String strtext = getArguments().getString("message");
+        String code = getArguments().getString("code");
+        if (code.equals("9001")) {
+            RC_BARCODE_CAPTURE = 9001;//search goods code
+        } else if (code.equals("9002")) {
+            RC_BARCODE_CAPTURE = 9002;//add goods code
+        }
+        statusMessage.setText(strtext);
         scan_barcode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,8 +71,12 @@ public class AddGoodsBarcodeReaderFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == RC_BARCODE_CAPTURE) {
+        if (requestCode == 9001) {//search goods
+            //Toast.makeText(getContext(), String.valueOf(requestCode), Toast.LENGTH_LONG).show();
+        } else if (requestCode == 9002) {//add goods
+
             if (resultCode == CommonStatusCodes.SUCCESS) {
+                //Toast.makeText(getContext(), String.valueOf(requestCode), Toast.LENGTH_LONG).show();
                 if (data != null) {
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
                     statusMessage.setText(R.string.barcode_success);
@@ -83,7 +94,7 @@ public class AddGoodsBarcodeReaderFragment extends Fragment {
                     statusMessage.setText(barcode_value);
                     //  statusMessage.setText(R.string.barcode_failure);
                     //this will go into if, laptop camera not working.
-                    barcode_value = "4260109922085";
+                    barcode_value = "1060109929970";
                     Bundle barcodeBundle = new Bundle();
                     barcodeBundle.putString("barcode", barcode_value);
                     AddGoodsFragment addGoodsFragStart = new AddGoodsFragment();

@@ -4,21 +4,28 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class SubGoods implements Parcelable {
-    String quantity, expirationDate, category, masterExpirationQuantityID, barcode;
+    String quantity, expirationDate, category, masterExpirationQuantityID, barcode, goodsName;
 
 
     public SubGoods() {
 
     }
 
+    public SubGoods(String goodsName
+    ) {
+        this.goodsName = goodsName;
+
+    }
+
     public SubGoods(String barcode, String category, String expirationDate,
-                    String masterExpirationQuantityID, String quantity
+                    String masterExpirationQuantityID, String quantity,String goodsName
     ) {
         this.category = category;
         this.expirationDate = expirationDate;
         this.masterExpirationQuantityID = masterExpirationQuantityID;
         this.quantity = quantity;
         this.barcode = barcode;
+        this.goodsName=goodsName;
     }
 
     protected SubGoods(Parcel in) {
@@ -27,6 +34,7 @@ public class SubGoods implements Parcelable {
         expirationDate = in.readString();
         masterExpirationQuantityID = in.readString();
         quantity = in.readString();
+        goodsName = in.readString();
     }
 
     public static final Creator<SubGoods> CREATOR = new Creator<SubGoods>() {
@@ -47,6 +55,14 @@ public class SubGoods implements Parcelable {
 
     public String getExpirationDate() {
         return expirationDate;
+    }
+
+    public String getGoodsName() {
+        return goodsName;
+    }
+
+    public void setGoodsName(String goodsName) {
+        this.goodsName = goodsName;
     }
 
     public void setQuantity(String quantity) {
