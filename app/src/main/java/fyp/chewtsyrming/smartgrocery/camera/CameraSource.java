@@ -350,7 +350,8 @@ public class CameraSource {
             } else {
                 mDummySurfaceView = new SurfaceView(mContext);
                 mCamera.setPreviewDisplay(mDummySurfaceView.getHolder());
-            }mCamera.setDisplayOrientation(0);
+            }
+            //mCamera.setDisplayOrientation(0);
             mCamera.startPreview();
 
             mProcessingThread = new Thread(mFrameProcessor);
@@ -376,7 +377,7 @@ public class CameraSource {
 
             mCamera = createCamera();
             mCamera.setPreviewDisplay(surfaceHolder);
-            mCamera.setDisplayOrientation(0);
+            //mCamera.setDisplayOrientation(0);
             mCamera.startPreview();
 
             mProcessingThread = new Thread(mFrameProcessor);
@@ -700,7 +701,7 @@ public class CameraSource {
             }
             synchronized (mCameraLock) {
                 if (mCamera != null) {
-                    mCamera.setDisplayOrientation(0);
+                    //mCamera.setDisplayOrientation(0);
                     mCamera.startPreview();
                 }
             }

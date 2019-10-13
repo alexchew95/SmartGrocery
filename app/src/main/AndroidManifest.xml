@@ -15,16 +15,26 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="fyp.chewtsyrming.smartgrocery"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"></meta-data>
+        </provider>
+
         <activity android:name=".register_user" />
         <activity android:name=".login_user">
 
-            <!--
              <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
 
                  <category android:name="android.intent.category.LAUNCHER" />
              </intent-filter>
-            -->
 
         </activity>
         <activity
@@ -41,13 +51,12 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable"></meta-data>
 
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
-        <activity android:name=".login2" />
     </application>
 
 </manifest>

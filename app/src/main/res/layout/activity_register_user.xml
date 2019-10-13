@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:background="@drawable/register"
+    android:background="@color/paleblue"
     android:gravity="center"
     tools:context=".register_user">
 
@@ -19,8 +19,8 @@
 
         <ImageView
             android:id="@+id/img_profile"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
@@ -31,7 +31,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:background="@color/text_bcolor"
             android:hint="@string/r_name"
             android:padding="10dp"
             android:singleLine="true"
@@ -43,7 +42,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:background="@color/text_bcolor"
             android:hint="@string/r_email"
             android:inputType="textEmailAddress"
             android:padding="10dp"
@@ -56,7 +54,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:background="@color/text_bcolor"
             android:hint="@string/r_password"
             android:inputType="textPassword"
             android:padding="10dp"
@@ -64,29 +61,30 @@
             android:textColor="@color/text_color"
             android:textColorHint="@color/hint_color" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/r_register"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
-            android:background="@color/button"
             android:padding="10dp"
             android:text="@string/r_Register"
             android:textColor="@color/text_color"
-            android:textSize="16dp" />
+            android:textSize="16sp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/r_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+
             android:layout_gravity="center"
             android:layout_marginTop="25dp"
-            android:background="@color/back"
             android:padding="10dp"
             android:text="@string/r_Back"
             android:textAllCaps="false"
-            android:textColor="@color/register_color"
+            android:textColor="@color/colorNavText"
+
             android:textSize="12dp" />
     </LinearLayout>
 

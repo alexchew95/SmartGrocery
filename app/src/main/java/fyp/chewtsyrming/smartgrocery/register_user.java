@@ -174,6 +174,7 @@ public class register_user extends AppCompatActivity {
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 10 && resultCode == RESULT_OK) {
 
 
@@ -184,11 +185,4 @@ public class register_user extends AppCompatActivity {
     }
 
 
-    public void pic() {
-        Toast.makeText(getApplicationContext(), "Select your profile picture", Toast.LENGTH_LONG).show();
-        upload();
-    }
-
-    public static class InventoryFragment {
-    }
 }

@@ -5,6 +5,7 @@ public class BarcodeGoods {
     String barcode;
     String goodsCategory;
     String goodsName;
+    String imageURL;
 
     public BarcodeGoods() {
     }
@@ -13,6 +14,11 @@ public class BarcodeGoods {
         this.barcode = barcode;
         this.goodsCategory = goodsCategory;
         this.goodsName = goodsName;
+    } public BarcodeGoods(String barcode, String goodsCategory, String goodsName,String imageURL) {
+        this.barcode = barcode;
+        this.goodsCategory = goodsCategory;
+        this.goodsName = goodsName;
+        this.imageURL = imageURL;
     }
 
     public String getBarcode() {

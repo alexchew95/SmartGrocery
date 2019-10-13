@@ -99,6 +99,7 @@ public class home extends AppCompatActivity implements BottomNavigationView.OnNa
                 fragment=new AddGoodsBarcodeReaderFragment();
                 fragment.setArguments(bundle);
                 loadFragment(fragment);
+                closeFABMenu();
 
             }
         });
@@ -112,6 +113,7 @@ public class home extends AppCompatActivity implements BottomNavigationView.OnNa
                 fragment=new AddGoodsBarcodeReaderFragment();
                 fragment.setArguments(bundle);
                 loadFragment(fragment);
+                closeFABMenu();
 
             }
         });

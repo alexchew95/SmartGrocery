@@ -41,7 +41,7 @@ public class InventoryFragmentGrid extends Fragment {
     DatabaseReference parentReference;
     List<GoodsGrid> goodsList = new ArrayList<>();
     List<GoodsGrid> filterGoodsList = new ArrayList<>();
-
+    ListGoodsFragmentGrid listGoodsFragmentGrid;
     SearchView svGoods;
 
     @Override
@@ -58,9 +58,9 @@ public class InventoryFragmentGrid extends Fragment {
         //list all category based on user db
         listAllCategory();
         searchGoods();
+
         //retrieve all user goods to be use in searchview
         // listAllGoods();
-
 
 
         return fragmentView;
@@ -80,40 +80,41 @@ public class InventoryFragmentGrid extends Fragment {
                 goodsCategoryList.clear();
                 for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
-
                     final String ParentKey = snapshot.getKey();
+                    if (!ParentKey.equals("fav")) {
 
 
-                    int goodsCategoryIcon = R.drawable.ic_add_goods;
-                    if (ParentKey.equals("Fruit & Vegetables")) {
-                        goodsCategoryIcon = R.drawable.ic_vege_fruit;
-                    } else if (ParentKey.equals("Grain Product")) {
-                        goodsCategoryIcon = R.drawable.ic_grains_products;
+                        int goodsCategoryIcon = R.drawable.ic_add_goods;
+                        if (ParentKey.equals("Fruit & Vegetables")) {
+                            goodsCategoryIcon = R.drawable.ic_vege_fruit;
+                        } else if (ParentKey.equals("Grain Product")) {
+                            goodsCategoryIcon = R.drawable.ic_grains_products;
 
-                    }
-                    GoodsCategoryGrid goodsCategory = new GoodsCategoryGrid(ParentKey, goodsCategoryIcon);
-                    goodsCategoryList.add(goodsCategory);
-
-
-                    final GoodsCategoryGridAdapter booksAdapter = new GoodsCategoryGridAdapter(getActivity(), goodsCategoryList);
-
-                    gridView.setAdapter(booksAdapter);
-                    gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            final GoodsCategoryGrid book = goodsCategoryList.get(position);
-                            Bundle cate = new Bundle();
-                            cate.putString("Key", book.getName());
-                            ListGoodsFragmentGrid frag = new ListGoodsFragmentGrid();
-                            frag.setArguments(cate);
-                            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                            transaction.replace(R.id.fragment_container, frag);
-                            transaction.addToBackStack(null);
-                            transaction.commit();
                         }
-                    });
+                        GoodsCategoryGrid goodsCategory = new GoodsCategoryGrid(ParentKey, goodsCategoryIcon);
+                        goodsCategoryList.add(goodsCategory);
 
-                    //  Toast.makeText(getContext(), ParentKey, Toast.LENGTH_SHORT).show();
+
+                        final GoodsCategoryGridAdapter booksAdapter = new GoodsCategoryGridAdapter(getActivity(), goodsCategoryList);
+
+                        gridView.setAdapter(booksAdapter);
+                        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                final GoodsCategoryGrid book = goodsCategoryList.get(position);
+                                Bundle cate = new Bundle();
+                                cate.putString("Key", book.getName());
+                                ListGoodsFragmentGrid frag = new ListGoodsFragmentGrid();
+                                frag.setArguments(cate);
+                                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                                transaction.replace(R.id.fragment_container, frag);
+                                transaction.addToBackStack(null);
+                                transaction.commit();
+                            }
+                        });
+
+                        //  Toast.makeText(getContext(), ParentKey, Toast.LENGTH_SHORT).show();
+                    }
                 }
 
             }
@@ -132,45 +133,41 @@ public class InventoryFragmentGrid extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 goodsList.clear();
                 for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
-
-
                     final String category = snapshot.getKey();
-                    long count = dataSnapshot.getChildrenCount();
-                    // Toast.makeText(getContext(), category, Toast.LENGTH_SHORT).show();
-                    final DatabaseReference categoryReference = parentReference.child(category);
-                    categoryReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                long c = dataSnapshot.getChildrenCount();
-                                String barcode = snapshot.getKey();
-                                //Toast.makeText(getContext(), snapshot.getKey(), Toast.LENGTH_SHORT).show();
-                                DatabaseReference goodsReference = categoryReference.child(barcode).child("masterExpirationQuantity");
-                                goodsReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        final int goodsCategoryIcon = R.drawable.ic_add_goods;
-                                        for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                            String goodsName = snapshot.child("goodsName").getValue().toString();
-                                            //Toast.makeText(getContext(), goodsName, Toast.LENGTH_SHORT).show();
-                                            GoodsGrid goodsGrid = new GoodsGrid(goodsName, goodsCategoryIcon);
-                                            goodsList.add(goodsGrid);
-                                        }
-                                    }
+                   if(!category.equals("fav")){
+                       final DatabaseReference categoryReference = parentReference.child(category);
+                       categoryReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                           @Override
+                           public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                               for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                   long c = dataSnapshot.getChildrenCount();
+                                   String barcode = snapshot.getKey();
+                                   DatabaseReference goodsReference = database.getReference().child("barcode").child(barcode);
+                                   goodsReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                       @Override
+                                       public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                           String goodsName = dataSnapshot.child("goodsName").getValue().toString();
+                                           String imageURL = dataSnapshot.child("imageURL").getValue().toString();
+                                           GoodsGrid goodsGrid = new GoodsGrid(goodsName, imageURL);
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                           goodsList.add(goodsGrid);
+                                       }
 
-                                    }
-                                });
-                            }
-                        }
+                                       @Override
+                                       public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                       }
+                                   });
 
-                        }
-                    });
+                               }
+                           }
+
+                           @Override
+                           public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                           }
+                       });
+                   }
                 }
 
             }
@@ -181,6 +178,11 @@ public class InventoryFragmentGrid extends Fragment {
             }
         });
     }
+    /*private void listFavGoods(){
+        parentReference = database.getReference().child("user").child(userId).child("goods");
+        parentReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        });
+    }*/
 
     private void searchGoods() {
         svGoods.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -193,10 +195,10 @@ public class InventoryFragmentGrid extends Fragment {
             public boolean onQueryTextChange(String newText) {
 
 
-                if(newText.isEmpty()){
+                if (newText.isEmpty()) {
                     listAllCategory();
-                }
-                else {   listAllGoods();
+                } else {        listAllGoods();
+
                     filterGoodsList.clear();
                     for (int x = 0; x < goodsList.size(); x++) {
                         if (goodsList.get(x).getName().contains(newText)) {
@@ -206,7 +208,8 @@ public class InventoryFragmentGrid extends Fragment {
                     }
                     final GoodsListGridAdapter goodsAdapter = new GoodsListGridAdapter(getActivity(), filterGoodsList);
 
-                    gridView.setAdapter(goodsAdapter);}
+                    gridView.setAdapter(goodsAdapter);
+                }
 
                 return false;
             }

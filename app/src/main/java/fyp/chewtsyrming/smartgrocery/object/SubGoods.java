@@ -11,9 +11,10 @@ public class SubGoods implements Parcelable {
 
     }
 
-    public SubGoods(String goodsName
+    public SubGoods(String expirationDate,String quantity
     ) {
-        this.goodsName = goodsName;
+        this.expirationDate = expirationDate;
+        this.quantity = quantity;
 
     }
 

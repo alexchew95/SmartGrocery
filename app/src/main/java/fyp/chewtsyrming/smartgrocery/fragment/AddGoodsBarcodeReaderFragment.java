@@ -45,6 +45,7 @@ public class AddGoodsBarcodeReaderFragment extends Fragment {
         scan_barcode = v.findViewById(R.id.read_barcode);
         autoFocus = v.findViewById(R.id.auto_focus);
         useFlash = v.findViewById(R.id.use_flash);
+
         String strtext = getArguments().getString("message");
         String code = getArguments().getString("code");
         if (code.equals("9001")) {
@@ -80,9 +81,12 @@ public class AddGoodsBarcodeReaderFragment extends Fragment {
                 if (data != null) {
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
                     statusMessage.setText(R.string.barcode_success);
+                    String barcodeString =barcode.displayValue;
+                    //Toast.makeText(getContext(), barcodeString, Toast.LENGTH_LONG).show();
+
                     barcodeValue.setText(barcode.displayValue);
                     Bundle barcodeBundle = new Bundle();
-                    barcodeBundle.putString("barcode", barcode_value);
+                    barcodeBundle.putString("barcode", barcodeString);
                     AddGoodsFragment addGoodsFragStart = new AddGoodsFragment();
                     addGoodsFragStart.setArguments(barcodeBundle);
                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -94,7 +98,7 @@ public class AddGoodsBarcodeReaderFragment extends Fragment {
                     statusMessage.setText(barcode_value);
                     //  statusMessage.setText(R.string.barcode_failure);
                     //this will go into if, laptop camera not working.
-                    barcode_value = "1060109929970";
+                    barcode_value = "1060109929971";
                     Bundle barcodeBundle = new Bundle();
                     barcodeBundle.putString("barcode", barcode_value);
                     AddGoodsFragment addGoodsFragStart = new AddGoodsFragment();
