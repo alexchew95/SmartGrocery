@@ -98,7 +98,7 @@ public class AddGoodsBarcodeReaderFragment extends Fragment {
                     statusMessage.setText(barcode_value);
                     //  statusMessage.setText(R.string.barcode_failure);
                     //this will go into if, laptop camera not working.
-                    barcode_value = "1060109929971";
+                    barcode_value = "1060109929972";
                     Bundle barcodeBundle = new Bundle();
                     barcodeBundle.putString("barcode", barcode_value);
                     AddGoodsFragment addGoodsFragStart = new AddGoodsFragment();

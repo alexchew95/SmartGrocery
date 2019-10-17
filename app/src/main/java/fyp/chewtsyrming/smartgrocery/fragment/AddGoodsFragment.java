@@ -30,6 +30,7 @@ import androidx.fragment.app.FragmentManager;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -89,7 +90,6 @@ public class AddGoodsFragment extends Fragment {
     @SuppressLint("CutPasteId")
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final String[] goodsCategory = {
-                "fav",
                 "Fruit & Vegetables",
                 "Milk & Cheese",
 
@@ -355,7 +355,16 @@ public class AddGoodsFragment extends Fragment {
                                     final String downloadUrl = task.getResult().toString();
                                     bg = new BarcodeGoods(scanned_barcode, category, goodsName, downloadUrl);
                                     reff = FirebaseDatabase.getInstance().getReference().child("barcode").child(scanned_barcode);
-                                    reff.setValue(bg);
+                                    reff.setValue(bg).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                               @Override
+                                                                               public void onSuccess(Void aVoid) {
+                                                                                   add_existingGoods();
+
+                                                                               }
+                                                                           }
+
+                                    );
+
                                 }
                             });
 
@@ -364,7 +373,7 @@ public class AddGoodsFragment extends Fragment {
 
                     }
                 });
-        add_existingGoods();
+
     }
 
     private void add_existingGoods() {
