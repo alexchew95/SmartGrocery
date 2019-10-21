@@ -463,7 +463,7 @@ public class ItemSlidingAnimator {
 
             mInvSize = (1.0f / Math.max(1.0f, mHorizontal ? containerView.getWidth() : containerView.getHeight()));
 
-            // setup animator
+            // setup anim
             mAnimator = ViewCompat.animate(containerView);
             mAnimator.setDuration(mDuration);
             mAnimator.translationX(mToX);

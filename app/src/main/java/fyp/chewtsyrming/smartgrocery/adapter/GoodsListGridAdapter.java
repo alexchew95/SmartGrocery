@@ -8,62 +8,63 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
+import java.util.Locale;
 
 import fyp.chewtsyrming.smartgrocery.R;
-import fyp.chewtsyrming.smartgrocery.object.GoodsCategoryGrid;
+import fyp.chewtsyrming.smartgrocery.object.GoodsGrid;
 
-public class GoodsCategoryGridAdapter extends BaseAdapter {
-
+public class GoodsListGridAdapter extends BaseAdapter {
     private final Context mContext;
-    private final List<GoodsCategoryGrid> goodsCategories;
+    private final List<GoodsGrid> goodsSpecific;
+    private List<GoodsGrid> filteredList;
 
-    // 1
-    public GoodsCategoryGridAdapter(Context context, List<GoodsCategoryGrid> goodsCategories) {
-        this.mContext = context;
-        this.goodsCategories = goodsCategories;
+    public GoodsListGridAdapter(Context mContext, List<GoodsGrid> goodsSpecific) {
+        this.mContext = mContext;
+        this.goodsSpecific = goodsSpecific;
+        this.filteredList = goodsSpecific;
     }
 
-    // 2
     @Override
     public int getCount() {
-        return goodsCategories.size();
+        return goodsSpecific.size();
     }
-
-    // 3
     @Override
     public long getItemId(int position) {
         return 0;
     }
-
-    // 4
     @Override
     public Object getItem(int position) {
-        return null;
+        return goodsSpecific.get(position);
     }
+
 
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        final GoodsCategoryGrid goodsCategoryGrid = goodsCategories.get(position);
+        final GoodsGrid book = goodsSpecific.get(position);
 
         if (convertView == null) {
             final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-            convertView = layoutInflater.inflate(R.layout.linearlayout_goods_category, null);
+            convertView = layoutInflater.inflate(R.layout.linearlayout_goods_list, null);
 
             final ImageView imageView = convertView.findViewById(R.id.imageview_goods_category);
             final TextView nameTextView = convertView.findViewById(R.id.textview_goods_name);
 
 
-            final ViewHolder viewHolder = new ViewHolder(nameTextView, imageView);
+            final ViewHolder viewHolder = new GoodsListGridAdapter.ViewHolder(nameTextView, imageView);
             convertView.setTag(viewHolder);
         }
 
         final ViewHolder viewHolder = (ViewHolder) convertView.getTag();
 //    viewHolder.imageViewCoverArt.setImageResource(book.getImageResource());
-        viewHolder.imageView.setImageResource(goodsCategoryGrid.getImageResource());
-        viewHolder.nameTextView.setText(goodsCategoryGrid.getGoodsCategory());
+        Picasso.get().load(book.getImageUrl()).fit().into( viewHolder.imageView);
+        //viewHolder.imageView.setImageResource(book.getImageResource());
+
+        viewHolder.nameTextView.setText(book.getName());
 
 
         return convertView;
@@ -81,4 +82,19 @@ public class GoodsCategoryGridAdapter extends BaseAdapter {
 
         }
     }
+    public void filter(String charText) {
+        charText = charText.toLowerCase(Locale.getDefault());
+        goodsSpecific.clear();
+        if (charText.length() == 0) {
+            goodsSpecific.addAll(filteredList);
+        } else {
+            for (GoodsGrid wp : filteredList) {
+                if (wp.getName().toLowerCase(Locale.getDefault()).contains(charText)) {
+                    goodsSpecific.add(wp);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+
 }

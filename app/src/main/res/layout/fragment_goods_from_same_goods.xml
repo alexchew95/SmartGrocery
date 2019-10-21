@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+
+        android:id="@+id/tvGoodsName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="Goods Name"
+        android:textSize="30sp" />
+
+    <ImageView
+        android:id="@+id/ivGoods"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_below="@id/tvGoodsName"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/sortQuantityAscBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvGoodsName"
+        android:layout_toRightOf="@id/ivGoods"
+        android:text="QUANTITY Asc" />
+
+    <Button
+        android:id="@+id/sortQuantityDescBtn"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sortQuantityAscBtn"
+        android:layout_toRightOf="@id/ivGoods"
+        android:text="QUANTITY Desc" />
+
+    <SearchView
+        android:id="@+id/searchView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivGoods"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10sp"
+        android:queryHint="Search Here"
+
+        />
+
+    <ListView
+        android:id="@+id/listGoods"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/searchView1" />
+
+
+</RelativeLayout>

@@ -11,6 +11,14 @@
         android:layout_centerHorizontal="true"
         android:text="INVENTORY"
         android:textSize="30sp" />
+<Button
+    android:id="@+id/sortBtn"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_toLeftOf="@+id/searchView1"
+    android:layout_below="@+id/InventoryTitle"
+    android:text="SORT"/>
+
 
     <SearchView
         android:id="@+id/searchView1"

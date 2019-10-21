@@ -1,12 +1,16 @@
 package fyp.chewtsyrming.smartgrocery.object;
 
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class UserModel {
 
     public String uid;
     public String name;
     public String email;
     public String imageurl;
+    FirebaseUser user;
 
     public UserModel() {
 
@@ -42,5 +46,11 @@ public class UserModel {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public String getUserIDFromDataBase() {
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        uid = user.getUid();
+        return uid;
     }
 }

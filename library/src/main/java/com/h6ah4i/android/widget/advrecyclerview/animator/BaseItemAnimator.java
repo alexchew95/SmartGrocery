@@ -41,7 +41,7 @@ public abstract class BaseItemAnimator extends SimpleItemAnimator {
 
     /**
      * Internal only:
-     * Sets the listener that must be called when the animator is finished
+     * Sets the listener that must be called when the anim is finished
      * animating the item (or immediately if no animation happens). This is set
      * internally and is not intended to be set by external code.
      *

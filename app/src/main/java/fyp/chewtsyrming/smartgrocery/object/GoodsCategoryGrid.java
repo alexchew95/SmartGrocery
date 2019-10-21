@@ -1,20 +1,22 @@
 package fyp.chewtsyrming.smartgrocery.object;
 
-public class GoodsCategoryGrid  {
-    private final String name;
+import java.util.Comparator;
+
+public class GoodsCategoryGrid {
+    private final String goodsCategory;
 
     private final int imageResource;
 
 
-    public GoodsCategoryGrid(String name, int imageResource) {
-        this.name = name;
+    public GoodsCategoryGrid(String goodsCategory, int imageResource) {
+        this.goodsCategory = goodsCategory;
 
         this.imageResource = imageResource;
 
     }
 
-    public String getName() {
-        return name;
+    public String getGoodsCategory() {
+        return goodsCategory;
     }
 
 
@@ -22,5 +24,19 @@ public class GoodsCategoryGrid  {
         return imageResource;
     }
 
+    public static Comparator<GoodsCategoryGrid> sortCategoryAlphabetZA = new Comparator<GoodsCategoryGrid>() {
+        @Override
+        public int compare(GoodsCategoryGrid o1, GoodsCategoryGrid o2) {
+            //return o1.getGoodsCategory().compareToIgnoreCase(o2.getGoodsCategory());
+            return o2.getGoodsCategory().compareToIgnoreCase(o1.getGoodsCategory());
+        }
+    };
+    public static Comparator<GoodsCategoryGrid> sortCategoryAlphabetAZ = new Comparator<GoodsCategoryGrid>() {
+        @Override
+        public int compare(GoodsCategoryGrid o1, GoodsCategoryGrid o2) {
+            return o1.getGoodsCategory().compareToIgnoreCase(o2.getGoodsCategory());
+            //return o2.getGoodsCategory().compareToIgnoreCase(o1.getGoodsCategory());
+        }
+    };
 
 }

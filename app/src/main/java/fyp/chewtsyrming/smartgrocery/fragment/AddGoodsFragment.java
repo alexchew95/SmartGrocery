@@ -55,12 +55,12 @@ import java.util.Locale;
 import fyp.chewtsyrming.smartgrocery.DatePickerFragment;
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.object.BarcodeGoods;
+import fyp.chewtsyrming.smartgrocery.object.RecentGoods;
 import fyp.chewtsyrming.smartgrocery.object.SubGoods;
-import fyp.chewtsyrming.smartgrocery.object.TempGoods;
 import fyp.chewtsyrming.smartgrocery.ocr.OcrCaptureActivity;
 
 public class AddGoodsFragment extends Fragment {
-    String selectedDate, dir;
+    String selectedDate;
     EditText tv_goodsName, expirationDate, quantity, dateOfBirthET;
     TextView barcodeTV;
     Spinner spinnerCategory;
@@ -69,10 +69,9 @@ public class AddGoodsFragment extends Fragment {
     ImageView imgGoods;
     Button addGoodsBtn;
     FirebaseAuth.AuthStateListener aSL;
-    DatabaseReference reff;
+    DatabaseReference reff, mainReff;
     SubGoods subGoods;
     BarcodeGoods bg;
-    TempGoods goods;
     Uri imageURI;
     FirebaseStorage storage;
     StorageReference storageRef, imagesRef;
@@ -82,7 +81,7 @@ public class AddGoodsFragment extends Fragment {
     int REQUEST_IMAGE_CAPTURE = 1;
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     String userId = user.getUid();
-
+    ArrayList<RecentGoods> recentGoodsArrayList;
     Bundle barcodeBundle;
     ArrayAdapter<String> adapter;
     View fragmentView;
@@ -92,6 +91,8 @@ public class AddGoodsFragment extends Fragment {
         final String[] goodsCategory = {
                 "Fruit & Vegetables",
                 "Milk & Cheese",
+                "Bread",
+                "Water",
 
 
         };
@@ -109,7 +110,7 @@ public class AddGoodsFragment extends Fragment {
         barcodeTV = fragmentView.findViewById(R.id.barcodeTV);
         ibGallery = fragmentView.findViewById(R.id.ibGallery);
         ibCamera = fragmentView.findViewById(R.id.ibCamera);
-
+        mainReff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods");
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, goodsCategory);
         spinnerCategory.setAdapter(adapter);
         barcodeBundle = this.getArguments();
@@ -343,59 +344,116 @@ public class AddGoodsFragment extends Fragment {
         imageURI = Uri.fromFile(new File(imageFilePath));
         imagesRef = storageRef.child("goods").child(scanned_barcode);
 
-        imagesRef.putFile(imageURI).addOnCompleteListener(
-                new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        if (task.isSuccessful()) {
+        imagesRef.putFile(imageURI).
+                addOnCompleteListener(
+                        new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                if (task.isSuccessful()) {
 
-                            imagesRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Uri> task) {
-                                    final String downloadUrl = task.getResult().toString();
-                                    bg = new BarcodeGoods(scanned_barcode, category, goodsName, downloadUrl);
-                                    reff = FirebaseDatabase.getInstance().getReference().child("barcode").child(scanned_barcode);
-                                    reff.setValue(bg).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                               @Override
-                                                                               public void onSuccess(Void aVoid) {
-                                                                                   add_existingGoods();
+                                    imagesRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Uri> task) {
+                                            final String downloadUrl = task.getResult().toString();
+                                            bg = new BarcodeGoods(scanned_barcode, category, goodsName, downloadUrl);
+                                            reff = FirebaseDatabase.getInstance().getReference().child("barcode").child(scanned_barcode);
+                                            reff.setValue(bg).
+                                                    addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                             @Override
+                                                                             public void onSuccess(Void aVoid) {
+                                                                                 add_existingGoods();
 
-                                                                               }
-                                                                           }
+                                                                             }
+                                                                         }
 
-                                    );
-
+                                                    );
+                                        }
+                                    });
                                 }
-                            });
-
-                        }
-                        ;
-
-                    }
-                });
-
+                            }
+                        });
     }
 
     private void add_existingGoods() {
-        String scanned_barcode = barcodeBundle.getString("barcode");
-
-
+        final String scanned_barcode = barcodeBundle.getString("barcode");
         String category = spinnerCategory.getSelectedItem().toString();
-
-
         reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
                 .child(category).child(scanned_barcode);
-
-        String id = reff.push().getKey();
-        reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
-                .child(category).child(scanned_barcode).child(id);
+        final String goodsId = reff.push().getKey();
+        reff = mainReff.child(category).child(scanned_barcode).child(goodsId);
         String quantt = quantity.getText().toString();
         String expirationdate = expirationDate.getText().toString();
-
-        String barcode = barcodeTV.getText().toString();
-
         subGoods = new SubGoods(expirationdate, quantt);
-        reff.setValue(subGoods);
+        reff.setValue(subGoods).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                mainReff.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                        final DatabaseReference recentReff = mainReff.child("recent");
+
+                        if (dataSnapshot.hasChild("recent")) {
+                            recentReff.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    recentGoodsArrayList = new ArrayList<>();
+                                    int recentFireBaseSize = (int) dataSnapshot.getChildrenCount();
+
+                                    //max recent size is 10
+                                    if (recentFireBaseSize < 10) {
+                                        RecentGoods recentGoods = new RecentGoods(scanned_barcode, goodsId);
+                                        String recentID = String.valueOf(recentFireBaseSize + 1);
+                                        DatabaseReference addRecentReff = recentReff.child(recentID);
+                                        addRecentReff.setValue(recentGoods);
+                                    } else {
+                                        String retrievedRecentID, retrievedBarcode, retrievedGoodsID;
+                                        for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                            retrievedRecentID = snapshot.getKey();
+                                            retrievedBarcode = snapshot.child("barcode").getValue().toString();
+                                            retrievedGoodsID = snapshot.child("goodsID").getValue().toString();
+                                            RecentGoods oldRecentGoods = new RecentGoods(retrievedBarcode, retrievedGoodsID, retrievedRecentID);
+                                            recentGoodsArrayList.add(oldRecentGoods);
+                                        }
+                                        for (int x = 0; x < recentGoodsArrayList.size(); x++) {
+                                            //x=0=recentID=1
+                                            RecentGoods oldRecentGoods = recentGoodsArrayList.get(x);
+                                            retrievedRecentID = oldRecentGoods.getRecentID();
+                                            retrievedBarcode = oldRecentGoods.getBarcode();
+                                            retrievedGoodsID = oldRecentGoods.getGoodsID();
+                                            if (Integer.valueOf(retrievedRecentID) != 1) {
+                                                int newRecentID = Integer.valueOf(retrievedRecentID) - 1;
+                                                RecentGoods newRecentGoods = new RecentGoods(retrievedBarcode, retrievedGoodsID);
+                                                DatabaseReference newAddRecentReff = recentReff.child(String.valueOf(newRecentID));
+                                                newAddRecentReff.setValue(newRecentGoods);
+                                            }
+                                        }
+                                        RecentGoods recentGoods = new RecentGoods(scanned_barcode, goodsId);
+                                        DatabaseReference addRecentReff = recentReff.child("10");
+                                        addRecentReff.setValue(recentGoods);
+
+                                    }
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+                        } else {
+                            RecentGoods recentGoods = new RecentGoods(scanned_barcode, goodsId);
+                            DatabaseReference addRecentReff = recentReff.child("1");
+                            addRecentReff.setValue(recentGoods);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
 
         //Toast.makeText(getContext(), userId, Toast.LENGTH_LONG).show();
     }
