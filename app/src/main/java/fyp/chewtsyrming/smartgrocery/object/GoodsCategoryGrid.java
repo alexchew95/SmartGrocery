@@ -24,13 +24,7 @@ public class GoodsCategoryGrid {
         return imageResource;
     }
 
-    public static Comparator<GoodsCategoryGrid> sortCategoryAlphabetZA = new Comparator<GoodsCategoryGrid>() {
-        @Override
-        public int compare(GoodsCategoryGrid o1, GoodsCategoryGrid o2) {
-            //return o1.getGoodsCategory().compareToIgnoreCase(o2.getGoodsCategory());
-            return o2.getGoodsCategory().compareToIgnoreCase(o1.getGoodsCategory());
-        }
-    };
+
     public static Comparator<GoodsCategoryGrid> sortCategoryAlphabetAZ = new Comparator<GoodsCategoryGrid>() {
         @Override
         public int compare(GoodsCategoryGrid o1, GoodsCategoryGrid o2) {

@@ -11,7 +11,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,25 +38,23 @@ import fyp.chewtsyrming.smartgrocery.object.GoodsGrid;
 public class InventoryFragmentGrid extends Fragment implements View.OnClickListener {
 
     @Nullable
-    List<GoodsCategoryGrid> categoryList = new ArrayList<>();
-    GridView gridView, gridViewFav, gridViewRecent;
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    String userId = user.getUid();
-    DatabaseReference userReference;
-    List<GoodsGrid> goodsList = new ArrayList<>();
-    List<GoodsGrid> filterGoodsList = new ArrayList<>();
-    List<GoodsGrid> goodsFavList = new ArrayList<>();
-    GoodsFromSameCategoryFragment goodsFromSameCategoryFragment;
-    SearchView svGoods;
-    Boolean favFlag, recentFlag, categoryFlag;
-    TextView tvFav, tvInventory, tvRecentAdd;
-    GoodsCategoryGridAdapter categoryAdapter;
-    GoodsListGridAdapter goodsFavAdapter,goodsAdapter;
+    private  List<GoodsCategoryGrid> categoryList = new ArrayList<>();
+    private  GridView gridView, gridViewFav, gridViewRecent;
+    private  FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private  FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private  String userId = user.getUid();
+    private  DatabaseReference userReference;
+    private  List<GoodsGrid> goodsList, goodsFavList, recentGoodsList, filterGoodsList;
+    private  GoodsFromSameCategoryFragment goodsFromSameCategoryFragment;
+    private  SearchView svGoods;
+    private  Boolean favFlag, recentFlag, categoryFlag;
+    private  GoodsCategoryGridAdapter categoryAdapter;
+    private   GoodsListGridAdapter goodsFavAdapter, goodsAdapter, goodsRecentAdapter;
+    private  GoodsFromSameGoodsFragment frag;
+    private  ImageButton arrowRecent, arrowFav, arrowCategory;
+    private  LinearLayout llRecent;
+    private  Button sortRecentAscBtn,sortRecentDescBtn;
 
-    ImageButton arrowRecent, arrowFav, arrowCategory;
-    LinearLayout llRecent;
-Button sortBtn;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
@@ -65,28 +62,36 @@ Button sortBtn;
         favFlag = true;
         recentFlag = true;
         categoryFlag = false;
-        sortBtn=fragmentView.findViewById(R.id.sortBtn);
+        sortRecentAscBtn = fragmentView.findViewById(R.id.sortRecentAscBtn);
+        sortRecentDescBtn = fragmentView.findViewById(R.id.sortRecentDescBtn);
+
         //final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());//original is (this), fragment need to use getActivity
-        userReference=database.getReference().child("user").child(userId);
+        userReference = database.getReference().child("user").child(userId);
         gridView = fragmentView.findViewById(R.id.gridviewInventory);
         gridViewFav = fragmentView.findViewById(R.id.gridViewFav);
+        gridViewRecent = fragmentView.findViewById(R.id.gridViewRecent);
         svGoods = fragmentView.findViewById(R.id.searchView1);
-        tvFav = fragmentView.findViewById(R.id.tvFavorite);
-        tvInventory = fragmentView.findViewById(R.id.tvMyInventory);
-        tvRecentAdd = fragmentView.findViewById(R.id.tvRecentlyAdded);
+        TextView tvFav = fragmentView.findViewById(R.id.tvFavorite);
+        TextView tvInventory = fragmentView.findViewById(R.id.tvMyInventory);
+        TextView tvRecentAdd = fragmentView.findViewById(R.id.tvRecentlyAdded);
         arrowRecent = fragmentView.findViewById(R.id.arrowRecent);
         arrowFav = fragmentView.findViewById(R.id.arrowFav);
         arrowCategory = fragmentView.findViewById(R.id.arrowCategory);
         llRecent = fragmentView.findViewById(R.id.llRecent);
         //list all category based on user db
-
+        goodsList = new ArrayList<>();
+        filterGoodsList = new ArrayList<>();
+        goodsFavList = new ArrayList<>();
+        recentGoodsList = new ArrayList<>();
         searchGoods();
         listFavGoods();
+        listRecentGoods();
         //retrieve all user goods to be use in searchview
         // listAllGoods();
         tvFav.setOnClickListener(this);
         tvInventory.setOnClickListener(this);
-        sortBtn.setOnClickListener(this);
+        sortRecentAscBtn.setOnClickListener(this);
+        sortRecentDescBtn.setOnClickListener(this);
         llRecent.setOnClickListener(this);
         return fragmentView;
 
@@ -95,21 +100,31 @@ Button sortBtn;
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.sortBtn:
-                Collections.sort(categoryList, GoodsCategoryGrid.sortCategoryAlphabetZA);
-               /* Collections.sort(categoryList, new Comparator<GoodsCategoryGrid>() {
-                    @Override
-                    public int compare(GoodsCategoryGrid o1, GoodsCategoryGrid o2) {
-                        return o2.getGoodsCategory().compareTo(o1.getGoodsCategory());
-                    }
-                });*/
-                categoryAdapter.notifyDataSetChanged();
-                    break;
+            case R.id.sortRecentAscBtn:
+                if (!recentGoodsList.isEmpty()){
+                    Collections.sort(recentGoodsList, GoodsGrid.sortNameAZ);
+                    goodsRecentAdapter.notifyDataSetChanged();
+                }
+
+                break;case R.id.sortRecentDescBtn:
+                if (!recentGoodsList.isEmpty()){
+                    Collections.sort(recentGoodsList, Collections.<GoodsGrid>reverseOrder(GoodsGrid.sortNameAZ));
+                    goodsRecentAdapter.notifyDataSetChanged();
+                }
+
+                break;
             case R.id.llRecent:
                 if (recentFlag) {
+                    if (!recentGoodsList.isEmpty()) {
+                        recentGoodsList.clear();
+                        goodsRecentAdapter.notifyDataSetChanged();
+                    }
+
+
                     arrowRecent.animate().rotation(360);
                     recentFlag = false;
                 } else {
+                    listRecentGoods();
                     arrowRecent.animate().rotation(180);
                     recentFlag = true;
                 }
@@ -117,9 +132,14 @@ Button sortBtn;
                 break;
             case R.id.tvFavorite:
                 if (favFlag) {//fav list is loaded. task to do is clear list
-                    goodsFavList.clear();
-                    goodsFavAdapter = new GoodsListGridAdapter(getActivity(), goodsFavList);
-                    gridViewFav.setAdapter(goodsFavAdapter);
+                    if (!goodsFavList.isEmpty()) {
+                        goodsFavList.clear();
+
+                        goodsFavAdapter.notifyDataSetChanged();
+                    }
+
+                  /*  goodsFavAdapter = new GoodsListGridAdapter(getActivity(), goodsFavList);
+                    gridViewFav.setAdapter(goodsFavAdapter);*/
                     arrowFav.animate().rotation(360);
                     favFlag = false;
                 } else {//fav list is empty. task to do: load the fav list
@@ -129,9 +149,10 @@ Button sortBtn;
                 break;
             case R.id.tvMyInventory:
                 if (categoryFlag) {//inv list is loaded. task to do is clear list
-                    categoryList.clear();
-                    categoryAdapter = new GoodsCategoryGridAdapter(getActivity(), categoryList);
-                    gridView.setAdapter(categoryAdapter);
+                    if (!categoryList.isEmpty()) {
+                        categoryList.clear();
+                        categoryAdapter.notifyDataSetChanged();
+                    }
                     arrowCategory.animate().rotation(360);
                     categoryFlag = false;
                 } else {//fav list is empty. task to do: load the fav list
@@ -233,7 +254,7 @@ Button sortBtn;
                                             String goodsName = dataSnapshot.child("goodsName").getValue().toString();
                                             String imageURL = dataSnapshot.child("imageURL").getValue().toString();
                                             String goodsCategory = dataSnapshot.child("goodsCategory").getValue().toString();
-                                            GoodsGrid goodsGrid = new GoodsGrid(goodsName, imageURL,barcode,goodsCategory);
+                                            GoodsGrid goodsGrid = new GoodsGrid(goodsName, imageURL, barcode, goodsCategory);
                                             goodsList.add(goodsGrid);
                                         }
 
@@ -262,7 +283,7 @@ Button sortBtn;
     private void listFavGoods() {
         goodsFavList.clear();
         arrowFav.animate().rotation(180);
-DatabaseReference favReff;
+        DatabaseReference favReff;
         favReff = userReference.child("goods").child("fav");
         favReff.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -274,22 +295,25 @@ DatabaseReference favReff;
                     favReference.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            String goodsName = dataSnapshot.child("goodsName").getValue().toString();
-                            String imageURL = dataSnapshot.child("imageURL").getValue().toString();
-                            Toast.makeText(getContext(), goodsName, Toast.LENGTH_SHORT).show();
+                            final String goodsName = dataSnapshot.child("goodsName").getValue().toString();
+                            final String imageURL = dataSnapshot.child("imageURL").getValue().toString();
+                            //Toast.makeText(getContext(), goodsName, Toast.LENGTH_SHORT).show();
                             String goodsCategory = dataSnapshot.child("goodsCategory").getValue().toString();
-                            GoodsGrid goodsFav = new GoodsGrid(goodsName, imageURL,barcode,goodsCategory);
+                            GoodsGrid goodsFav = new GoodsGrid(goodsName, imageURL, barcode, goodsCategory);
                             goodsFavList.add(goodsFav);
                             goodsFavAdapter = new GoodsListGridAdapter(getActivity(), goodsFavList);
                             gridViewFav.setAdapter(goodsFavAdapter);
                             gridViewFav.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    GoodsGrid goodsGrid1= goodsFavList.get(position);
+                                    GoodsGrid goodsGrid1 = goodsFavList.get(position);
                                     Bundle cate = new Bundle();
                                     cate.putString("barcode", goodsGrid1.getBarcode());
                                     cate.putString("goodsCategory", goodsGrid1.getCategory());
+                                    cate.putString("imageURL", goodsGrid1.getImageUrl());
+                                    cate.putString("goodsName", goodsGrid1.getName());
                                     GoodsFromSameGoodsFragment frag = new GoodsFromSameGoodsFragment();
+                                    frag = new GoodsFromSameGoodsFragment();
                                     frag.setArguments(cate);
                                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                                     transaction.replace(R.id.fragment_container, frag);
@@ -315,13 +339,56 @@ DatabaseReference favReff;
     }
 
 
-    private void listRecentGoods(){
-        DatabaseReference recentReff= userReference.child("goods").child("recent");
+    private void listRecentGoods() {
+        recentGoodsList.clear();
+        DatabaseReference recentReff = userReference.child("goods").child("recent");
         recentReff.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot :dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    final String barcode = String.valueOf(snapshot.child("barcode").getValue());
+                    String goodsID = String.valueOf(snapshot.child("goodsID").getValue());
+                    //  Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
 
+                    DatabaseReference barcodeReff = database.getReference().child("barcode").child(barcode);
+                    barcodeReff.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            final String goodsCategory, goodsName, imageURL;
+
+                            goodsCategory = String.valueOf(dataSnapshot.child("goodsCategory").getValue());
+                            goodsName = String.valueOf(dataSnapshot.child("goodsName").getValue());
+                            imageURL = String.valueOf(dataSnapshot.child("imageURL").getValue());
+                            GoodsGrid goodsGrid = new GoodsGrid(goodsName, imageURL, barcode, goodsCategory);
+                            recentGoodsList.add(goodsGrid);
+                            goodsRecentAdapter = new GoodsListGridAdapter(getActivity(), recentGoodsList);
+                            gridViewRecent.setAdapter(goodsRecentAdapter);
+                            gridViewRecent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                    GoodsGrid goodsGrid1 = recentGoodsList.get(position);
+                                    Bundle cate = new Bundle();
+                                    cate.putString("barcode", goodsGrid1.getBarcode());
+                                    cate.putString("goodsCategory", goodsGrid1.getCategory());
+                                    cate.putString("imageURL", goodsGrid1.getImageUrl());
+                                    cate.putString("goodsName", goodsGrid1.getName());
+                                    GoodsFromSameGoodsFragment frag = new GoodsFromSameGoodsFragment();
+                                    frag.setArguments(cate);
+                                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                                    transaction.replace(R.id.fragment_container, frag);
+                                    transaction.addToBackStack(null);
+                                    transaction.commit();
+                                     //Toast.makeText(getContext(), goodsGrid1.getBarcode(), Toast.LENGTH_SHORT).show();
+
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                 }
             }
 
@@ -331,6 +398,7 @@ DatabaseReference favReff;
             }
         });
     }
+
     private void searchGoods() {
         svGoods.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override

@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
@@ -199,7 +198,7 @@ public class AddGoodsFragment extends Fragment {
     }
 
     private void datePicker() {
-        final FragmentManager fm = ((AppCompatActivity) getActivity()).getSupportFragmentManager();
+        final FragmentManager fm = ( getActivity()).getSupportFragmentManager();
         // expirationDate = fragmentView.findViewById(R.id.editTextExpiryDate);
         expirationDate.setOnClickListener(new View.OnClickListener() {
             @Override

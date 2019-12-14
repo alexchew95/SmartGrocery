@@ -49,10 +49,5 @@ public class GoodsGrid {
             return o1.getName().compareToIgnoreCase(o2.getName());
         }
     };
-    public static Comparator<GoodsGrid> sortNameZA = new Comparator<GoodsGrid>() {
-        @Override
-        public int compare(GoodsGrid o1, GoodsGrid o2) {
-            return o2.getName().compareToIgnoreCase(o1.getName());
-        }
-    };
+
 }

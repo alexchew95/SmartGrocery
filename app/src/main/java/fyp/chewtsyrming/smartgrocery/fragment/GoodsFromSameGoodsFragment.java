@@ -6,10 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,6 +39,9 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
     UserModel um;
     ImageView ivGoods;
     Button sortQuantityAscBtn, sortQuantityDescBtn;
+    ImageButton favBtn;
+    Boolean goodsFav;
+    FirebaseDatabase database;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -46,24 +49,31 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
         listView = fragmentView.findViewById(R.id.listGoods);
         ivGoods = fragmentView.findViewById(R.id.ivGoods);
         tvGoodsName = fragmentView.findViewById(R.id.tvGoodsName);
+        database = FirebaseDatabase.getInstance();
+
         Bundle cate = this.getArguments();
         barcode = cate.getString("barcode");
         goodsCategory = cate.getString("goodsCategory");
         imageURL = cate.getString("imageURL");
         goodsName = cate.getString("goodsName");
         goodsListArrayList = new ArrayList<>();
+        tvGoodsName.setText(goodsName);
         listAllGoods();
+        checkFavStatus();
         Picasso.get().load(imageURL).fit().into(ivGoods);
         sortQuantityAscBtn = fragmentView.findViewById(R.id.sortQuantityAscBtn);
         sortQuantityDescBtn = fragmentView.findViewById(R.id.sortQuantityDescBtn);
+        favBtn = fragmentView.findViewById(R.id.favBtn);
         sortQuantityAscBtn.setOnClickListener(this);
         sortQuantityDescBtn.setOnClickListener(this);
+        favBtn.setOnClickListener(this);
+        goodsFav = false;
+
         return fragmentView;
     }
 
     private void listAllGoods() {
         um = new UserModel();
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
         String userID = um.getUserIDFromDataBase();
         DatabaseReference goodsReference = database.getReference().child("user").child(um.getUserIDFromDataBase()).
                 child("goods").child(goodsCategory).child(barcode);
@@ -87,7 +97,7 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             GoodsList goodsList1 = goodsListArrayList.get(position);
-                            Toast.makeText(getContext(), goodsList1.getGoodsId(), Toast.LENGTH_LONG).show();
+                            //Toast.makeText(getContext(), goodsList1.getGoodsId(), Toast.LENGTH_LONG).show();
 
                         }
                     });
@@ -105,18 +115,57 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
 
     }
 
+    private void checkFavStatus() {
+        DatabaseReference favCheckReff = database.getReference().child("user").child(um.getUserIDFromDataBase()).child("goods").child("fav");
+        favCheckReff.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChild(barcode)) {
+                    favBtn.setImageResource(R.drawable.ic_enabled_star);
+                    goodsFav=true;
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void changeFavStatus() {
+        DatabaseReference goodsFavReff = database.getReference().child("user").child(um.getUserIDFromDataBase()).
+                child("goods").child("fav");
+        if (goodsFav) {//task to do:remove from fav list
+            goodsFavReff.child(barcode).removeValue();
+            favBtn.setImageResource(R.drawable.ic_disabled_star);
+            goodsFav = false;
+        } else {
+            //add to fav list
+            goodsFavReff.child(barcode).setValue(goodsCategory);
+            favBtn.setImageResource(R.drawable.ic_enabled_star);
+            goodsFav = true;
+        }
+    }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sortQuantityAscBtn:
-                Collections.sort(goodsListArrayList, GoodsList.sortQuantityAsc);
+                Collections.sort(goodsListArrayList, GoodsList.sortExpDateAsc);
                 adapter.notifyDataSetChanged();
                 break;
             case R.id.sortQuantityDescBtn:
-                Collections.sort(goodsListArrayList, GoodsList.sortQuantityDesc);
+                Collections.sort(goodsListArrayList, Collections.reverseOrder(GoodsList.sortExpDateAsc));
                 adapter.notifyDataSetChanged();
+                break;
+            case R.id.favBtn:
+                changeFavStatus();
+
                 break;
         }
     }
+
 }

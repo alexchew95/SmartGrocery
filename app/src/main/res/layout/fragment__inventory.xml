@@ -11,13 +11,19 @@
         android:layout_centerHorizontal="true"
         android:text="INVENTORY"
         android:textSize="30sp" />
-<Button
-    android:id="@+id/sortBtn"
+    <Button
+        android:id="@+id/sortRecentAscBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/sortRecentDescBtn"
+        android:layout_below="@+id/InventoryTitle"
+        android:text="Rec asc"/><Button
+    android:id="@+id/sortRecentDescBtn"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_toLeftOf="@+id/searchView1"
     android:layout_below="@+id/InventoryTitle"
-    android:text="SORT"/>
+    android:text="Rec desc"/>
 
 
     <SearchView
@@ -59,7 +65,7 @@
     </LinearLayout>
 
     <GridView
-        android:id="@+id/gridViewRecentAdd"
+        android:id="@+id/gridViewRecent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/llRecent"
@@ -76,7 +82,7 @@
         android:id="@+id/llFav"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/gridViewRecentAdd"
+        android:layout_below="@id/gridViewRecent"
         android:layout_centerHorizontal="true"
         android:orientation="horizontal">
         <TextView

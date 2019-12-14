@@ -18,23 +18,26 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-<FrameLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
-    <ImageView
-        android:id="@+id/imageview_goods_category"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        app:srcCompat="@drawable/ic_drawing"
-        android:scaleType="centerCrop"/>
-    <ImageView
-        android:id="@+id/imageview_favorite"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        app:srcCompat="@drawable/ic_disabled_star"
-        android:layout_gravity="bottom|right"/>
 
-</FrameLayout>
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/imageview_goods_category"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/ic_drawing" />
+
+                <ImageView
+                    android:id="@+id/imageview_favorite"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="bottom|right"
+                    app:srcCompat="@drawable/ic_disabled_star" />
+
+            </FrameLayout>
 
 
             <TextView

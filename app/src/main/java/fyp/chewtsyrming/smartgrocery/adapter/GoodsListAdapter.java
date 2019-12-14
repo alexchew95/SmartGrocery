@@ -83,14 +83,13 @@ public class GoodsListAdapter extends ArrayAdapter<GoodsList> implements View.On
 
         switch (v.getId()) {
             case R.id.editBtn:
-                Toast.makeText(getContext(), goodsList.getGoodsId(), Toast.LENGTH_SHORT).show();
-
+               // editDialog();
                 break;
             case R.id.deleteBtn:
                 Toast.makeText(getContext(), goodsList.getBuyDate(), Toast.LENGTH_SHORT).show();
                 final FirebaseDatabase database = FirebaseDatabase.getInstance();
                 UserModel um = new UserModel();
-                String userID=um.getUserIDFromDataBase();
+                String userID = um.getUserIDFromDataBase();
 
                 DatabaseReference goodsReference = database.getReference().child("user").child(userID).
                         child("goods").child(goodsList.getCategory()).child(goodsList.getBarcode())
@@ -99,4 +98,5 @@ public class GoodsListAdapter extends ArrayAdapter<GoodsList> implements View.On
                 break;
         }
     }
+
 }

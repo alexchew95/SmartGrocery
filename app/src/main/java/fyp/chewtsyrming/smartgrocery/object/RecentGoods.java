@@ -22,4 +22,5 @@ public class RecentGoods {
     } public String getRecentID(){
         return recentID;
     }
+
 }

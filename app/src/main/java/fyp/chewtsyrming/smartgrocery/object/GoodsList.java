@@ -1,6 +1,9 @@
 package fyp.chewtsyrming.smartgrocery.object;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
+import java.util.Date;
 
 public class GoodsList {
     String goodsId, expiryDate, buyDate, quantity, category, barcode;
@@ -41,25 +44,49 @@ public class GoodsList {
 
     //sort quantity
 
-    public static Comparator<GoodsList> sortQuantityAsc=new Comparator<GoodsList>() {
+    public static Comparator<GoodsList> sortQuantityAsc = new Comparator<GoodsList>() {
         @Override
         public int compare(GoodsList o1, GoodsList o2) {
             int q1 = Integer.parseInt(o1.getQuantity());
             int q2 = Integer.parseInt(o2.getQuantity());
 
-            return q1-q2;
-        }
-    };
-    public static Comparator<GoodsList> sortQuantityDesc=new Comparator<GoodsList>() {
-        @Override
-        public int compare(GoodsList o1, GoodsList o2) {
-            int q1 = Integer.parseInt(o1.getQuantity());
-            int q2 = Integer.parseInt(o2.getQuantity());
-
-            return q2-q1;
+            return q1 - q2;
         }
     };
 
     //sort buy date
+
+    public static Comparator<GoodsList> sortBuyDateAsc = new Comparator<GoodsList>() {
+        @Override
+        public int compare(GoodsList o1, GoodsList o2) {
+           SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            Date d1 = null;
+            Date d2 = null;
+            try {
+                d1 = sdf.parse(o1.getBuyDate());
+                d2 = sdf.parse(o2.getBuyDate());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return (d1.compareTo(d2));
+        }
+    };
     //sort expired date
+    public static Comparator<GoodsList> sortExpDateAsc = new Comparator<GoodsList>() {
+        @Override
+        public int compare(GoodsList o1, GoodsList o2) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            Date d1 = null;
+            Date d2 = null;
+            try {
+                d1 = sdf.parse(o1.getExpiryDate());
+                d2 = sdf.parse(o2.getExpiryDate());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return (d1.compareTo(d2));
+        }
+    };
 }

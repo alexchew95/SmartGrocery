@@ -8,19 +8,25 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import androidx.annotation.NonNull;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 import java.util.List;
 import java.util.Locale;
-
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.object.GoodsGrid;
+import fyp.chewtsyrming.smartgrocery.object.UserModel;
 
 public class GoodsListGridAdapter extends BaseAdapter {
     private final Context mContext;
     private final List<GoodsGrid> goodsSpecific;
     private List<GoodsGrid> filteredList;
-
+UserModel um;
     public GoodsListGridAdapter(Context mContext, List<GoodsGrid> goodsSpecific) {
         this.mContext = mContext;
         this.goodsSpecific = goodsSpecific;
@@ -44,7 +50,8 @@ public class GoodsListGridAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
+um = new UserModel();
+String userId= um.getUserIDFromDataBase();
         final GoodsGrid book = goodsSpecific.get(position);
 
         if (convertView == null) {
@@ -52,10 +59,12 @@ public class GoodsListGridAdapter extends BaseAdapter {
             convertView = layoutInflater.inflate(R.layout.linearlayout_goods_list, null);
 
             final ImageView imageView = convertView.findViewById(R.id.imageview_goods_category);
+            final ImageView imageview_favorite = convertView.findViewById(R.id.imageview_favorite);
+
             final TextView nameTextView = convertView.findViewById(R.id.textview_goods_name);
 
 
-            final ViewHolder viewHolder = new GoodsListGridAdapter.ViewHolder(nameTextView, imageView);
+            final ViewHolder viewHolder = new GoodsListGridAdapter.ViewHolder(nameTextView, imageView,imageview_favorite);
             convertView.setTag(viewHolder);
         }
 
@@ -63,9 +72,22 @@ public class GoodsListGridAdapter extends BaseAdapter {
 //    viewHolder.imageViewCoverArt.setImageResource(book.getImageResource());
         Picasso.get().load(book.getImageUrl()).fit().into( viewHolder.imageView);
         //viewHolder.imageView.setImageResource(book.getImageResource());
-
         viewHolder.nameTextView.setText(book.getName());
+        DatabaseReference favReff= FirebaseDatabase.getInstance().getReference().
+                child("user").child(userId).child("goods").child("fav");
+        favReff.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChild(book.getBarcode())){
+viewHolder.imageview_favorite.setImageResource(R.drawable.ic_enabled_star);
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         return convertView;
     }
@@ -73,12 +95,14 @@ public class GoodsListGridAdapter extends BaseAdapter {
     private class ViewHolder {
         private final TextView nameTextView;
         private final ImageView imageView;
+        private final ImageView imageview_favorite;
 
 
-        public ViewHolder(TextView nameTextView, ImageView imageView) {
+        public ViewHolder(TextView nameTextView, ImageView imageView, ImageView imageview_favorite) {
             this.nameTextView = nameTextView;
 
             this.imageView = imageView;
+            this.imageview_favorite = imageview_favorite;
 
         }
     }
