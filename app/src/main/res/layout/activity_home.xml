@@ -7,10 +7,10 @@
     android:layout_height="match_parent"
     tools:context=".home">
 
-    <FrameLayout
+    <ScrollView
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="56dp"
         android:text="@string/title_home"
         app:layout_constraintLeft_toLeftOf="parent"
