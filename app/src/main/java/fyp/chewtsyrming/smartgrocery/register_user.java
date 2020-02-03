@@ -46,7 +46,7 @@ public class register_user extends AppCompatActivity {
         setContentView(R.layout.activity_register_user);
         reg_email = (EditText) findViewById(R.id.r_uemail);
         reg_pass = (EditText) findViewById(R.id.r_upassword);
-        btnLog = (Button) findViewById(R.id.r_back);
+        btnLog = (Button) findViewById(R.id.goto_login);
         btnReg = (Button) findViewById(R.id.r_register);
         profile = (ImageView) findViewById(R.id.img_profile);
         dialog = new ProgressDialog(this);

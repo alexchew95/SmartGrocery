@@ -38,4 +38,13 @@
     <string name="barcode_error">Error reading barcode: %1$s</string>
     <string name="ocr_header"><![CDATA[Click &quot;Detect Text&quot; to detect text]]></string>
     <string name="read_text">Detect Text</string>
+    <string name="home">Home</string>
+    <string name="password">Password</string>
+    <string name="example_email_com">example@email.com</string>
+    <string name="email">Email</string>
+    <string name="sign_up">SIGN UP</string>
+    <string name="name">Name</string>
+    <string name="registerTV">Register</string>
+    <string name="loginTV">Login</string>
+
 </resources>

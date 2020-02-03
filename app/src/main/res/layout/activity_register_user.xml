@@ -85,7 +85,7 @@
             android:textAllCaps="false"
             android:textColor="@color/colorNavText"
 
-            android:textSize="12dp" />
+            android:textSize="12sp" />
     </LinearLayout>
 
 

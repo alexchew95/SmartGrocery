@@ -10,7 +10,6 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,7 +25,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import fyp.chewtsyrming.smartgrocery.R;
@@ -38,61 +36,69 @@ import fyp.chewtsyrming.smartgrocery.object.GoodsGrid;
 public class InventoryFragmentGrid extends Fragment implements View.OnClickListener {
 
     @Nullable
-    private  List<GoodsCategoryGrid> categoryList = new ArrayList<>();
-    private  GridView gridView, gridViewFav, gridViewRecent;
-    private  FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private  FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private  String userId = user.getUid();
-    private  DatabaseReference userReference;
-    private  List<GoodsGrid> goodsList, goodsFavList, recentGoodsList, filterGoodsList;
-    private  GoodsFromSameCategoryFragment goodsFromSameCategoryFragment;
-    private  SearchView svGoods;
-    private  Boolean favFlag, recentFlag, categoryFlag;
-    private  GoodsCategoryGridAdapter categoryAdapter;
-    private   GoodsListGridAdapter goodsFavAdapter, goodsAdapter, goodsRecentAdapter;
-    private  GoodsFromSameGoodsFragment frag;
-    private  ImageButton arrowRecent, arrowFav, arrowCategory;
-    private  LinearLayout llRecent;
-    private  Button sortRecentAscBtn,sortRecentDescBtn;
+    private List<GoodsCategoryGrid> categoryList = new ArrayList<>();
+    private GridView gridView;
+    private LinearLayout favInventory, myInventory, recentInventory;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private String userId = user.getUid();
+    private DatabaseReference userReference;
+    private List<GoodsGrid> goodsList, goodsFavList, recentGoodsList, filterGoodsList;
+    private GoodsFromSameCategoryFragment goodsFromSameCategoryFragment;
+    private SearchView svGoods;
+    private Boolean favFlag, recentFlag, categoryFlag;
+    private GoodsCategoryGridAdapter categoryAdapter;
+    private GoodsListGridAdapter goodsFavAdapter, goodsAdapter, goodsRecentAdapter;
+    private GoodsFromSameGoodsFragment frag;
+    private ImageButton arrowRecent, arrowFav, arrowCategory;
+    private LinearLayout llRecent;
+    private Button sortRecentAscBtn, sortRecentDescBtn;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        userReference = database.getReference().child("user").child(userId);
 
         View fragmentView = inflater.inflate(R.layout.fragment__inventory, null);
         favFlag = true;
         recentFlag = true;
         categoryFlag = false;
-        sortRecentAscBtn = fragmentView.findViewById(R.id.sortRecentAscBtn);
+        svGoods = fragmentView.findViewById(R.id.searchView1);
+        gridView = fragmentView.findViewById(R.id.gridView);
+        favInventory = fragmentView.findViewById(R.id.favInventory);
+        myInventory = fragmentView.findViewById(R.id.myInventory);
+        recentInventory = fragmentView.findViewById(R.id.recentInventory);
+        favInventory.setOnClickListener(this);
+        myInventory.setOnClickListener(this);
+        recentInventory.setOnClickListener(this);
+
+    /*    sortRecentAscBtn = fragmentView.findViewById(R.id.sortRecentAscBtn);
         sortRecentDescBtn = fragmentView.findViewById(R.id.sortRecentDescBtn);
 
         //final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());//original is (this), fragment need to use getActivity
-        userReference = database.getReference().child("user").child(userId);
-        gridView = fragmentView.findViewById(R.id.gridviewInventory);
+        gridView = fragmentView.findViewById(R.id.gridView);
         gridViewFav = fragmentView.findViewById(R.id.gridViewFav);
         gridViewRecent = fragmentView.findViewById(R.id.gridViewRecent);
-        svGoods = fragmentView.findViewById(R.id.searchView1);
         TextView tvFav = fragmentView.findViewById(R.id.tvFavorite);
         TextView tvInventory = fragmentView.findViewById(R.id.tvMyInventory);
         TextView tvRecentAdd = fragmentView.findViewById(R.id.tvRecentlyAdded);
         arrowRecent = fragmentView.findViewById(R.id.arrowRecent);
         arrowFav = fragmentView.findViewById(R.id.arrowFav);
         arrowCategory = fragmentView.findViewById(R.id.arrowCategory);
-        llRecent = fragmentView.findViewById(R.id.llRecent);
+        llRecent = fragmentView.findViewById(R.id.llRecent);*/
         //list all category based on user db
         goodsList = new ArrayList<>();
         filterGoodsList = new ArrayList<>();
         goodsFavList = new ArrayList<>();
         recentGoodsList = new ArrayList<>();
-        searchGoods();
-        listFavGoods();
-        listRecentGoods();
+        // searchGoods();
+
         //retrieve all user goods to be use in searchview
         // listAllGoods();
-        tvFav.setOnClickListener(this);
+       /* tvFav.setOnClickListener(this);
         tvInventory.setOnClickListener(this);
         sortRecentAscBtn.setOnClickListener(this);
         sortRecentDescBtn.setOnClickListener(this);
-        llRecent.setOnClickListener(this);
+        llRecent.setOnClickListener(this);*/
         return fragmentView;
 
     }
@@ -100,6 +106,20 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+
+            case R.id.favInventory:
+                listFavGoods();
+
+                break;
+            case R.id.myInventory:
+
+                listAllCategory();
+                break;
+            case R.id.recentInventory:
+
+                listRecentGoods();
+                break;
+            /*
             case R.id.sortRecentAscBtn:
                 if (!recentGoodsList.isEmpty()){
                     Collections.sort(recentGoodsList, GoodsGrid.sortNameAZ);
@@ -138,8 +158,8 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
                         goodsFavAdapter.notifyDataSetChanged();
                     }
 
-                  /*  goodsFavAdapter = new GoodsListGridAdapter(getActivity(), goodsFavList);
-                    gridViewFav.setAdapter(goodsFavAdapter);*/
+                  *//*  goodsFavAdapter = new GoodsListGridAdapter(getActivity(), goodsFavList);
+                    gridViewFav.setAdapter(goodsFavAdapter);*//*
                     arrowFav.animate().rotation(360);
                     favFlag = false;
                 } else {//fav list is empty. task to do: load the fav list
@@ -161,7 +181,7 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
 
                 }
 
-                break;
+                break;*/
             default:
                 break;
         }
@@ -173,7 +193,6 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
         final String userId = user.getUid();
         DatabaseReference categoryReff;
         categoryReff = userReference.child("goods");
-        arrowCategory.animate().rotation(180);
 
 
         categoryReff.addValueEventListener(new ValueEventListener() {
@@ -281,8 +300,9 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
     }
 
     private void listFavGoods() {
+        recentGoodsList.clear();
+        goodsList.clear();
         goodsFavList.clear();
-        arrowFav.animate().rotation(180);
         DatabaseReference favReff;
         favReff = userReference.child("goods").child("fav");
         favReff.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -302,8 +322,8 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
                             GoodsGrid goodsFav = new GoodsGrid(goodsName, imageURL, barcode, goodsCategory);
                             goodsFavList.add(goodsFav);
                             goodsFavAdapter = new GoodsListGridAdapter(getActivity(), goodsFavList);
-                            gridViewFav.setAdapter(goodsFavAdapter);
-                            gridViewFav.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            gridView.setAdapter(goodsFavAdapter);
+                            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                     GoodsGrid goodsGrid1 = goodsFavList.get(position);
@@ -341,6 +361,9 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
 
     private void listRecentGoods() {
         recentGoodsList.clear();
+        goodsList.clear();
+        goodsFavList.clear();
+
         DatabaseReference recentReff = userReference.child("goods").child("recent");
         recentReff.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -362,8 +385,8 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
                             GoodsGrid goodsGrid = new GoodsGrid(goodsName, imageURL, barcode, goodsCategory);
                             recentGoodsList.add(goodsGrid);
                             goodsRecentAdapter = new GoodsListGridAdapter(getActivity(), recentGoodsList);
-                            gridViewRecent.setAdapter(goodsRecentAdapter);
-                            gridViewRecent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            gridView.setAdapter(goodsRecentAdapter);
+                            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                     GoodsGrid goodsGrid1 = recentGoodsList.get(position);
@@ -378,7 +401,7 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
                                     transaction.replace(R.id.fragment_container, frag);
                                     transaction.addToBackStack(null);
                                     transaction.commit();
-                                     //Toast.makeText(getContext(), goodsGrid1.getBarcode(), Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(getContext(), goodsGrid1.getBarcode(), Toast.LENGTH_SHORT).show();
 
                                 }
                             });
