@@ -31,12 +31,10 @@ public class register_user extends AppCompatActivity {
     Uri imageuri;
     String url = "https://firebasestorage.googleapis.com/v0/b/gogreen-3de65.appspot.com/o/users%2FARAL0T5yu2evBzMzj9yReB4bkfJ3?alt=media&token=02ef3058-11f1-4e25-bf33-bb4e90df51dc";
     DatabaseReference reff;
-    private Button btnReg;
-    private Button btnLog;
+    private Button goto_loginBtn,registerBtn;
     private EditText reg_name;
     private EditText reg_email;
     private EditText reg_pass;
-    private ImageView profile;
 
     // Uri defaultURL =Uri.parse("https://firebasestorage.googleapis.com/v0/b/new-loginregister.appspot.com/o/users%2Fprofile.jpg?alt=media&token=6923468f-092d-4536-a7fc-fbccb8b66bda");
     private ProgressDialog dialog;
@@ -46,13 +44,12 @@ public class register_user extends AppCompatActivity {
         setContentView(R.layout.activity_register_user);
         reg_email = (EditText) findViewById(R.id.r_uemail);
         reg_pass = (EditText) findViewById(R.id.r_upassword);
-        btnLog = (Button) findViewById(R.id.goto_login);
-        btnReg = (Button) findViewById(R.id.r_register);
-        profile = (ImageView) findViewById(R.id.img_profile);
+        goto_loginBtn = (Button) findViewById(R.id.goto_loginBtn);
+        registerBtn = (Button) findViewById(R.id.registerBtn);
         dialog = new ProgressDialog(this);
         reff = FirebaseDatabase.getInstance().getReference().child("users");
         reg_name = (EditText) findViewById(R.id.r_uname);
-        btnReg.setOnClickListener(new View.OnClickListener() {
+        registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -69,14 +66,9 @@ public class register_user extends AppCompatActivity {
                 signup();
             }
         });
-        profile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                upload();
-            }
-        });
 
-        btnLog.setOnClickListener(new View.OnClickListener() {
+
+        goto_loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(register_user.this, login_user.class);
@@ -103,7 +95,7 @@ public class register_user extends AppCompatActivity {
                     final String c_uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
                     final StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("users").child(c_uid);
-
+                    imageuri=null;
 
                     if (imageuri == null) {
                         String defaultImageUrl = "https://firebasestorage.googleapis.com/v0/b/gogreen-3de65.appspot.com/o/profile.jpeg?alt=media&token=04b39c44-d9db-4e2b-900a-33f339e1f5b7";
@@ -172,17 +164,7 @@ public class register_user extends AppCompatActivity {
 
 
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 10 && resultCode == RESULT_OK) {
 
-
-            profile.setImageURI(data.getData());
-            imageuri = data.getData();
-
-        }
-    }
 
 
 }

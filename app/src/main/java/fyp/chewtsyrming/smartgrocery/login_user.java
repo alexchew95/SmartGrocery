@@ -11,7 +11,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,26 +20,31 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.onesignal.OSPermissionSubscriptionState;
+import com.onesignal.OneSignal;
 
 import fyp.chewtsyrming.smartgrocery.object.PasswordHash;
 
-public class login_user extends AppCompatActivity implements View.OnClickListener {
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
+public class login_user extends AppCompatActivity implements View.OnClickListener {
+    private DatabaseReference mDatabase;
+
+    ProgressBar progressBar;
     public static final String PREFS_NAME = "MyPrefsFile";
     private static final String PREF_EMAIL = "username";
     private static final String PREF_PASSWORD = "password";
     private static final String PREF_REMEMBER = "remember_me";
-    RelativeLayout rellay,rellay2;
-    ProgressBar progressBar;
+    RelativeLayout rellay, rellay2;
     ImageView imgView_logo;
-    TextView loginTV,registerTV;
     Handler handler = new Handler();
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            loginTV.setVisibility(View.VISIBLE);
-            rellay.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
+            check_rememberMePref();
 
 
         }
@@ -48,64 +52,70 @@ public class login_user extends AppCompatActivity implements View.OnClickListene
     Runnable loginToRegister = new Runnable() {
         @Override
         public void run() {
-            registerTV.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
 
             rellay2.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
 
 
         }
-    }; Runnable registerToLogin = new Runnable() {
+    };
+    Runnable registerToLogin = new Runnable() {
         @Override
         public void run() {
-            loginTV.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
 
             rellay.setVisibility(View.VISIBLE);
+
+        }
+    };Runnable registerProcess = new Runnable() {
+        @Override
+        public void run() {
             progressBar.setVisibility(View.GONE);
+
+            rellay2.setVisibility(View.GONE);
+
+        }
+    };Runnable loginProcess = new Runnable() {
+        @Override
+        public void run() {
+            loginEvent();
+
 
         }
     };
     String SaltPassword = null;
     EditText l_email, l_password;
-    Button login,register, goto_register, goto_login;
+    Button loginBtn, registerBtn, goto_registerBtn, goto_loginBtn;
     FirebaseAuth fAuth;
-    private String uid;
     private FirebaseAuth.AuthStateListener fAuthListen;
     PasswordHash passwordHash;
-
     private CheckBox rememberMeCB1;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_user);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        imgView_logo = findViewById(R.id.imgView_logo);
         rellay = findViewById(R.id.rellay1);
         rellay2 = findViewById(R.id.rellay2);
-        progressBar = findViewById(R.id.progressBar);
-        loginTV = findViewById(R.id.loginTV);
-        registerTV = findViewById(R.id.registerTV);
-        handler.postDelayed(runnable, 3000);
+        handler.postDelayed(runnable, 0);
         fAuth = FirebaseAuth.getInstance();
-        l_email = (EditText) findViewById(R.id.emailField);
-        l_password = (EditText) findViewById(R.id.passwordField);
-        login = (Button) findViewById(R.id.login);
-        register = (Button) findViewById(R.id.r_register);
-        goto_register = (Button) findViewById(R.id.goto_register);
-        goto_login = (Button) findViewById(R.id.goto_login);
-
+        l_email = findViewById(R.id.emailField);
+        l_password = findViewById(R.id.passwordField);
+        loginBtn = findViewById(R.id.loginBtn);
+        registerBtn = findViewById(R.id.registerBtn);
+        goto_registerBtn = findViewById(R.id.goto_registerBtn);
+        goto_loginBtn = findViewById(R.id.goto_loginBtn);
+        progressBar = findViewById(R.id.progressBar);
         //switch1.findViewById(R.id.switch1);
-        rememberMeCB1 = (CheckBox) findViewById(R.id.rememberMeCheckBox);
+        rememberMeCB1 = findViewById(R.id.rememberMeCheckBox);
         //Shared Preference (Remember Me)
         SharedPreferences pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         l_email.setText(pref.getString(PREF_EMAIL, null));
         l_password.setText(pref.getString(PREF_PASSWORD, null));
-        check_rememberMePref();
-        login.setOnClickListener(this);
-        register.setOnClickListener(this);
-        goto_register.setOnClickListener(this);
-        goto_login.setOnClickListener(this);
+        loginBtn.setOnClickListener(this);
+        goto_registerBtn.setOnClickListener(this);
 
 //register button
       /*  goto_register.setOnClickListener(new View.OnClickListener() {
@@ -135,6 +145,9 @@ public class login_user extends AppCompatActivity implements View.OnClickListene
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
+                    FirebaseUser user = task.getResult().getUser();
+                     String userId =user.getUid();
+
                     if (rememberMeCB1.isChecked()) {
                         String email = l_email.getText().toString();
 
@@ -152,19 +165,33 @@ public class login_user extends AppCompatActivity implements View.OnClickListene
                         prefEditor.clear().apply();
 
                     }
+                    OSPermissionSubscriptionState status = OneSignal.getPermissionSubscriptionState();
+                    String playerId= status.getSubscriptionStatus().getUserId();
 
+                    //Toast.makeText(login_user.this, playerId, Toast.LENGTH_LONG).show();
+                    //goMain();
+
+                    mDatabase.child("user").child(userId).child("profile").child("playerId").setValue(playerId);
                     goMain();
+
+
                 } else {
+                    progressBar.setVisibility(View.GONE);
+                    rellay.setVisibility(View.VISIBLE);
                     Toast.makeText(login_user.this, "Invalid account, try again.", Toast.LENGTH_LONG).show();
                 }
 
             }
         });
     }
+private void updatePlayerId(String playerId){
 
+}
     private void goMain() {
-        Intent i = new Intent(login_user.this, home.class);
+        Intent i = new Intent(getApplicationContext(), home.class);
+        i.setFlags(FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
+        finish();
     }
 
     private void check_rememberMePref() {
@@ -175,7 +202,7 @@ public class login_user extends AppCompatActivity implements View.OnClickListene
             l_email.setText(rememberMePref.getString(PREF_EMAIL, null));
             String tempPass = rememberMePref.getString(PREF_PASSWORD, null);
             try {
-                deHashPassword = passwordHash.decrypt(tempPass);
+                deHashPassword = PasswordHash.decrypt(tempPass);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -184,39 +211,38 @@ public class login_user extends AppCompatActivity implements View.OnClickListene
             rememberMeCB1.setChecked(true);
 
         }
+       else{
+           rellay.setVisibility(View.VISIBLE);
 
+       }
 
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.goto_login:
 
-                registerTV.setVisibility(View.GONE);
-
-                rellay2.setVisibility(View.GONE);
-                progressBar.setVisibility(View.VISIBLE);
-                handler.postDelayed(registerToLogin, 3000);
-                break;
-            case R.id.goto_register:
-                loginTV.setVisibility(View.GONE);
-
+            case R.id.goto_registerBtn:
+                Intent i = new Intent(login_user.this, register_user.class);
+                startActivity(i);
+                finish();
+               /* progressBar.setVisibility(View.VISIBLE);
 
                 rellay.setVisibility(View.GONE);
-                progressBar.setVisibility(View.VISIBLE);
-                handler.postDelayed(loginToRegister, 3000);
+                handler.postDelayed(loginToRegister, 2000);*/
                 break;
-            case R.id.login:
+            case R.id.loginBtn:
                 if (l_email.getText().length() == 0 || l_password.getText().length() == 0) {
                     Toast.makeText(getApplicationContext(), "Please enter your email & password", Toast.LENGTH_LONG).show();
                 } else {
-                    loginEvent();
+                    progressBar.setVisibility(View.VISIBLE);
+
+                    rellay.setVisibility(View.GONE);
+                    handler.postDelayed(loginProcess, 2000);
+
                 }
                 break;
-            case R.id.r_register:
 
-                break;
         }
     }
 }

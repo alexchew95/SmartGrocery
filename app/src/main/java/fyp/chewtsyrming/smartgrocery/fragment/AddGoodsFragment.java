@@ -59,7 +59,7 @@ import fyp.chewtsyrming.smartgrocery.object.SubGoods;
 import fyp.chewtsyrming.smartgrocery.ocr.OcrCaptureActivity;
 
 public class AddGoodsFragment extends Fragment {
-    String selectedDate;
+    private String selectedDate;
     EditText tv_goodsName, expirationDate, quantity, dateOfBirthET;
     TextView barcodeTV;
     Spinner spinnerCategory;
@@ -88,10 +88,18 @@ public class AddGoodsFragment extends Fragment {
     @SuppressLint("CutPasteId")
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final String[] goodsCategory = {
-                "Fruit & Vegetables",
-                "Milk & Cheese",
-                "Bread",
-                "Water",
+                "Beverages",
+                "Bread or Bakery",
+                "Canned or Jarred Goods",
+                "Dairy",
+                "Dry or Baking Goods",
+                "Frozen Foods",
+                "Meat",
+                "Produce",
+                "Cleaners",
+                "Paper Goods",
+                "Personal Care",
+                "Other",
 
 
         };
@@ -166,7 +174,7 @@ public class AddGoodsFragment extends Fragment {
         String scanned_barcode = barcodeBundle.getString("barcode");
         DatabaseReference barCodeRef = FirebaseDatabase.getInstance().getReference().child("barcode").child(scanned_barcode);
         //Query query = barCodeRef.orderByChild("barcode").equalTo(scanned_barcode);//4260109922085
-        barCodeRef.addValueEventListener(new ValueEventListener() {
+        barCodeRef.addListenerForSingleValueEvent(new ValueEventListener() {
             // barCodeRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -198,7 +206,7 @@ public class AddGoodsFragment extends Fragment {
     }
 
     private void datePicker() {
-        final FragmentManager fm = ( getActivity()).getSupportFragmentManager();
+        final FragmentManager fm = (getActivity()).getSupportFragmentManager();
         // expirationDate = fragmentView.findViewById(R.id.editTextExpiryDate);
         expirationDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -323,7 +331,7 @@ public class AddGoodsFragment extends Fragment {
 
     private void addGoods() {
 
-        if (barcodeExist == false) {
+        if (!barcodeExist) {
             add_newGoods();
         } else {
             add_existingGoods();
@@ -335,7 +343,6 @@ public class AddGoodsFragment extends Fragment {
         final String scanned_barcode = barcodeBundle.getString("barcode");
         final String category = spinnerCategory.getSelectedItem().toString();
         final String goodsName = tv_goodsName.getText().toString();
-        bg = new BarcodeGoods(scanned_barcode, category, goodsName);
         //reff = FirebaseDatabase.getInstance().getReference().child("barcode").child(scanned_barcode);
         // reff.setValue(bg);
 
@@ -354,7 +361,10 @@ public class AddGoodsFragment extends Fragment {
                                         @Override
                                         public void onComplete(@NonNull Task<Uri> task) {
                                             final String downloadUrl = task.getResult().toString();
+
                                             bg = new BarcodeGoods(scanned_barcode, category, goodsName, downloadUrl);
+                                            Toast.makeText(getContext(), bg.getImageURL()
+                                                    , Toast.LENGTH_LONG).show();
                                             reff = FirebaseDatabase.getInstance().getReference().child("barcode").child(scanned_barcode);
                                             reff.setValue(bg).
                                                     addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -391,7 +401,10 @@ public class AddGoodsFragment extends Fragment {
                     public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                         final DatabaseReference recentReff = mainReff.child("recent");
 
-                        if (dataSnapshot.hasChild("recent")) {
+                        RecentGoods recentGoods = new RecentGoods(scanned_barcode, goodsId);
+                        DatabaseReference addRecentReff = recentReff.child(scanned_barcode);
+                        addRecentReff.setValue(recentGoods);
+                        /*if (dataSnapshot.hasChild("recent")) {
                             recentReff.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -402,7 +415,7 @@ public class AddGoodsFragment extends Fragment {
                                     if (recentFireBaseSize < 10) {
                                         RecentGoods recentGoods = new RecentGoods(scanned_barcode, goodsId);
                                         String recentID = String.valueOf(recentFireBaseSize + 1);
-                                        DatabaseReference addRecentReff = recentReff.child(recentID);
+                                        DatabaseReference addRecentReff = recentReff.child(scanned_barcode);
                                         addRecentReff.setValue(recentGoods);
                                     } else {
                                         String retrievedRecentID, retrievedBarcode, retrievedGoodsID;
@@ -422,12 +435,12 @@ public class AddGoodsFragment extends Fragment {
                                             if (Integer.valueOf(retrievedRecentID) != 1) {
                                                 int newRecentID = Integer.valueOf(retrievedRecentID) - 1;
                                                 RecentGoods newRecentGoods = new RecentGoods(retrievedBarcode, retrievedGoodsID);
-                                                DatabaseReference newAddRecentReff = recentReff.child(String.valueOf(newRecentID));
+                                                DatabaseReference newAddRecentReff = recentReff.child(retrievedBarcode);
                                                 newAddRecentReff.setValue(newRecentGoods);
                                             }
                                         }
                                         RecentGoods recentGoods = new RecentGoods(scanned_barcode, goodsId);
-                                        DatabaseReference addRecentReff = recentReff.child("10");
+                                        DatabaseReference addRecentReff = recentReff.child(scanned_barcode);
                                         addRecentReff.setValue(recentGoods);
 
                                     }
@@ -441,9 +454,9 @@ public class AddGoodsFragment extends Fragment {
                             });
                         } else {
                             RecentGoods recentGoods = new RecentGoods(scanned_barcode, goodsId);
-                            DatabaseReference addRecentReff = recentReff.child("1");
+                            DatabaseReference addRecentReff = recentReff.child(scanned_barcode);
                             addRecentReff.setValue(recentGoods);
-                        }
+                        }*/
                     }
 
                     @Override

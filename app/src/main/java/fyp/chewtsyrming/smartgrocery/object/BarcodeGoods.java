@@ -7,14 +7,8 @@ public class BarcodeGoods {
     String goodsName;
     String imageURL;
 
-    public BarcodeGoods() {
-    }
 
-    public BarcodeGoods(String barcode, String goodsCategory, String goodsName) {
-        this.barcode = barcode;
-        this.goodsCategory = goodsCategory;
-        this.goodsName = goodsName;
-    } public BarcodeGoods(String barcode, String goodsCategory, String goodsName,String imageURL) {
+    public BarcodeGoods(String barcode, String goodsCategory, String goodsName, String imageURL) {
         this.barcode = barcode;
         this.goodsCategory = goodsCategory;
         this.goodsName = goodsName;
@@ -23,6 +17,10 @@ public class BarcodeGoods {
 
     public String getBarcode() {
         return barcode;
+    }
+
+    public String getImageURL() {
+        return imageURL;
     }
 
     public String getGoodsCategory() {
@@ -39,6 +37,10 @@ public class BarcodeGoods {
 
     public void setGoodsName(String goodsName) {
         this.goodsName = goodsName;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 
     public void setBarcode(String barcode) {

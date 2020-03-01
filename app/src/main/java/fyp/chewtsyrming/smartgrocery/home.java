@@ -18,6 +18,7 @@ import fyp.chewtsyrming.smartgrocery.fragment.AddGoodsBarcodeReaderFragment;
 import fyp.chewtsyrming.smartgrocery.fragment.InventoryFragmentGrid;
 import fyp.chewtsyrming.smartgrocery.fragment.MyProfileFragment;
 import fyp.chewtsyrming.smartgrocery.fragment.ShoppingPlanFragment;
+import fyp.chewtsyrming.smartgrocery.nestedRv.fragment_home;
 
 public class home extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
     FirebaseAuth.AuthStateListener aSL;
@@ -45,7 +46,7 @@ public class home extends AppCompatActivity implements BottomNavigationView.OnNa
 
 
             case R.id.navigation_home:
-                fragment = new InventoryFragmentGrid();
+                fragment = new fragment_home();
                 break;
 
             case R.id.navigation_shoppingplan:
@@ -69,7 +70,7 @@ public class home extends AppCompatActivity implements BottomNavigationView.OnNa
         setContentView(R.layout.activity_home);
 
         //loading the default fragment
-        loadFragment(new InventoryFragmentGrid());
+        loadFragment(new fragment_home());
 
         //getting bottom navigation view and attaching the listener
         BottomNavigationView navigation = findViewById(R.id.navigation);

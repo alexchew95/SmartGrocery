@@ -2,116 +2,141 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <TextView
-        android:id="@+id/InventoryTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="INVENTORY"
-        android:textSize="30sp" />
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_below="@id/InventoryTitle"
-        android:id="@+id/InventoryOption"
-
+        android:id="@+id/topLL"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:weightSum="3">
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/InventoryTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="INVENTORY"
+            android:textSize="30sp" />
 
         <LinearLayout
-            android:id="@+id/favInventory"
+            android:id="@+id/InventoryOption"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#7a7ca9"
-            android:orientation="vertical"
+            android:layout_height="wrap_content"
             android:weightSum="3">
 
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="0dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="8dp"
-                android:layout_weight="1.5"
-                app:srcCompat="@drawable/ic_arrow" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_gravity="center"
+            <LinearLayout
+                android:id="@+id/favInventory"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:text="Favorite"
-                android:textColor="#fff"
-                android:textSize="12sp" />
-        </LinearLayout>
+                android:background="#7a7ca9"
+                android:orientation="vertical"
+                android:weightSum="3">
 
-        <LinearLayout
-            android:id="@+id/myInventory"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#728a74"
-            android:orientation="vertical"
-            android:weightSum="3">
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1.5"
+                    app:srcCompat="@drawable/ic_arrow" />
 
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="0dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="8dp"
-                android:layout_weight="1.5"
-                app:srcCompat="@drawable/ic_arrow" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Favorite"
+                    android:textColor="#fff"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_gravity="center"
+            <LinearLayout
+                android:id="@+id/myInventory"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:text="My Inventory"
-                android:textColor="#fff"
-                android:textSize="12sp" />
-        </LinearLayout>
+                android:background="#728a74"
+                android:orientation="vertical"
+                android:weightSum="3">
 
-        <LinearLayout
-            android:id="@+id/recentInventory"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#cb707f"
-            android:orientation="vertical"
-            android:weightSum="3">
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1.5"
+                    app:srcCompat="@drawable/ic_arrow" />
 
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="0dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="8dp"
-                android:layout_weight="1.5"
-                app:srcCompat="@drawable/ic_arrow" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="My Inventory"
+                    android:textColor="#fff"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_gravity="center"
+            <LinearLayout
+                android:id="@+id/recentInventory"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:text="Recent"
-                android:textColor="#fff"
-                android:textSize="12sp" />
+                android:background="#cb707f"
+                android:orientation="vertical"
+                android:weightSum="3">
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1.5"
+                    app:srcCompat="@drawable/ic_arrow" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Recent"
+                    android:textColor="#fff"
+                    android:textSize="12sp" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-    <GridView
-        android:id="@+id/gridView"
-        android:layout_width="match_parent"
+<RelativeLayout
+    android:id="@+id/rlAddGoods"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_below="@+id/topLL"
+    android:visibility="gone">
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/InventoryOption"
-        android:layout_marginTop="10sp"
-        android:numColumns="2"
-        android:stretchMode="columnWidth" />
+        android:layout_centerInParent="true"
+        android:text="Your Inventory is empty. Click here to add!"/>
+</RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:visibility="visible"
+        android:layout_height="match_parent"
+        android:layout_below="@id/topLL">
+
+        <GridView
+            android:id="@+id/gridView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/InventoryOption"
+            android:layout_marginTop="10sp"
+            android:numColumns="2"
+            android:stretchMode="columnWidth" />
+    </LinearLayout>
+
     <!-- <Button
          android:id="@+id/sortRecentAscBtn"
          android:layout_width="wrap_content"

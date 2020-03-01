@@ -52,6 +52,8 @@ public class AddGoodsBarcodeReaderFragment extends Fragment {
             RC_BARCODE_CAPTURE = 9001;//search goods code
         } else if (code.equals("9002")) {
             RC_BARCODE_CAPTURE = 9002;//add goods code
+        }else if (code.equals("9003")) {
+            RC_BARCODE_CAPTURE = 9003;//add friends
         }
         statusMessage.setText(strtext);
         scan_barcode.setOnClickListener(new View.OnClickListener() {
@@ -80,6 +82,7 @@ public class AddGoodsBarcodeReaderFragment extends Fragment {
                 //Toast.makeText(getContext(), String.valueOf(requestCode), Toast.LENGTH_LONG).show();
                 if (data != null) {
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
+
                     statusMessage.setText(R.string.barcode_success);
                     String barcodeString =barcode.displayValue;
                     //Toast.makeText(getContext(), barcodeString, Toast.LENGTH_LONG).show();
@@ -98,7 +101,7 @@ public class AddGoodsBarcodeReaderFragment extends Fragment {
                     statusMessage.setText(barcode_value);
                     //  statusMessage.setText(R.string.barcode_failure);
                     //this will go into if, laptop camera not working.
-                    barcode_value = "1060109929973";
+                    barcode_value = "9415007044598";
                     Bundle barcodeBundle = new Bundle();
                     barcodeBundle.putString("barcode", barcode_value);
                     AddGoodsFragment addGoodsFragStart = new AddGoodsFragment();
@@ -113,7 +116,22 @@ public class AddGoodsBarcodeReaderFragment extends Fragment {
                 statusMessage.setText(String.format(getString(R.string.barcode_error),
                         CommonStatusCodes.getStatusCodeString(resultCode)));
             }
-        } else {
+        }
+        else if(requestCode == 9003){
+            Bundle barcodeBundle = new Bundle();
+            Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
+            String qrCodeValue =barcode.displayValue;
+            barcodeBundle.putString("status", "add_friend");
+            barcodeBundle.putString("target_uid", qrCodeValue);
+            FollowerFragment followerFragment = new FollowerFragment();
+            followerFragment.setArguments(barcodeBundle);
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, followerFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }
+
+            else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }

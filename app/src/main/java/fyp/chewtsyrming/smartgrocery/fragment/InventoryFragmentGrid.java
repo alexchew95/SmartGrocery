@@ -1,6 +1,8 @@
 package fyp.chewtsyrming.smartgrocery.fragment;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,9 +48,9 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
     private List<GoodsGrid> goodsList, goodsFavList, recentGoodsList, filterGoodsList;
     private GoodsFromSameCategoryFragment goodsFromSameCategoryFragment;
     private SearchView svGoods;
-    private Boolean favFlag, recentFlag, categoryFlag;
+    private Boolean favFlag, recentFlag, myInventoryFlag;
     private GoodsCategoryGridAdapter categoryAdapter;
-    private GoodsListGridAdapter goodsFavAdapter, goodsAdapter, goodsRecentAdapter;
+    private GoodsListGridAdapter goodsAdapter ;
     private GoodsFromSameGoodsFragment frag;
     private ImageButton arrowRecent, arrowFav, arrowCategory;
     private LinearLayout llRecent;
@@ -59,9 +61,9 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
         userReference = database.getReference().child("user").child(userId);
 
         View fragmentView = inflater.inflate(R.layout.fragment__inventory, null);
-        favFlag = true;
-        recentFlag = true;
-        categoryFlag = false;
+        favFlag = false;
+        recentFlag = false;
+        myInventoryFlag = false;
         svGoods = fragmentView.findViewById(R.id.searchView1);
         gridView = fragmentView.findViewById(R.id.gridView);
         favInventory = fragmentView.findViewById(R.id.favInventory);
@@ -193,7 +195,13 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
         final String userId = user.getUid();
         DatabaseReference categoryReff;
         categoryReff = userReference.child("goods");
+        recentGoodsList.clear();
+        goodsList.clear();
+        goodsFavList.clear();
+        if(favFlag | recentFlag){
+            goodsAdapter.notifyDataSetChanged();
 
+        }
 
         categoryReff.addValueEventListener(new ValueEventListener() {
             @Override
@@ -298,8 +306,64 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
             }
         });
     }
+private void listGoods(String goodsType){
 
+    DatabaseReference favReff;
+    favReff = userReference.child("goods").child(goodsType);
+    favReff.addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                final String barcode = snapshot.getKey();
+                String category = snapshot.getValue().toString();
+                DatabaseReference favReference = database.getReference().child("barcode").child(barcode);
+                favReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        final String goodsName = dataSnapshot.child("goodsName").getValue().toString();
+                        final String imageURL = dataSnapshot.child("imageURL").getValue().toString();
+                        //Toast.makeText(getContext(), goodsName, Toast.LENGTH_SHORT).show();
+                        String goodsCategory = dataSnapshot.child("goodsCategory").getValue().toString();
+                        GoodsGrid goodsFav = new GoodsGrid(goodsName, imageURL, barcode, goodsCategory);
+                        goodsFavList.add(goodsFav);
+                        goodsAdapter = new GoodsListGridAdapter(getActivity(), goodsFavList);
+                        gridView.setAdapter(goodsAdapter);
+                        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                GoodsGrid goodsGrid1 = goodsFavList.get(position);
+                                Bundle cate = new Bundle();
+                                cate.putString("barcode", goodsGrid1.getBarcode());
+                                cate.putString("goodsCategory", goodsGrid1.getCategory());
+                                cate.putString("imageURL", goodsGrid1.getImageUrl());
+                                cate.putString("goodsName", goodsGrid1.getName());
+                                GoodsFromSameGoodsFragment frag = new GoodsFromSameGoodsFragment();
+                                frag = new GoodsFromSameGoodsFragment();
+                                frag.setArguments(cate);
+                                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                                transaction.replace(R.id.fragment_container, frag);
+                                transaction.addToBackStack(null);
+                                transaction.commit();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    });
+}
     private void listFavGoods() {
+        favFlag=true;
         recentGoodsList.clear();
         goodsList.clear();
         goodsFavList.clear();
@@ -321,8 +385,8 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
                             String goodsCategory = dataSnapshot.child("goodsCategory").getValue().toString();
                             GoodsGrid goodsFav = new GoodsGrid(goodsName, imageURL, barcode, goodsCategory);
                             goodsFavList.add(goodsFav);
-                            goodsFavAdapter = new GoodsListGridAdapter(getActivity(), goodsFavList);
-                            gridView.setAdapter(goodsFavAdapter);
+                            goodsAdapter = new GoodsListGridAdapter(getActivity(), goodsFavList);
+                            gridView.setAdapter(goodsAdapter);
                             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -360,6 +424,7 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
 
 
     private void listRecentGoods() {
+        recentFlag=true;
         recentGoodsList.clear();
         goodsList.clear();
         goodsFavList.clear();
@@ -384,8 +449,8 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
                             imageURL = String.valueOf(dataSnapshot.child("imageURL").getValue());
                             GoodsGrid goodsGrid = new GoodsGrid(goodsName, imageURL, barcode, goodsCategory);
                             recentGoodsList.add(goodsGrid);
-                            goodsRecentAdapter = new GoodsListGridAdapter(getActivity(), recentGoodsList);
-                            gridView.setAdapter(goodsRecentAdapter);
+                            goodsAdapter = new GoodsListGridAdapter(getActivity(), recentGoodsList);
+                            gridView.setAdapter(goodsAdapter);
                             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

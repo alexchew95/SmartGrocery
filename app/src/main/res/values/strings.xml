@@ -28,5 +28,8 @@
     <string name="name">Name</string>
     <string name="registerTV">Register</string>
     <string name="loginTV">Login</string>
+    <string name="auto_login">Auto Login</string>
+    <string name="_0">0</string>
+    <string name="log_out">LOG OUT</string>
 
 </resources>
