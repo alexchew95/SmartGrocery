@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Smart Grocery</string>
+    <string name="app_name">Home Grocery</string>
     <string name="Password">Password</string>
     <string name="login_button">LOGIN</string>
     <string name="register">Don\'t have account? Sign Up Here </string>
@@ -31,5 +31,17 @@
     <string name="auto_login">Auto Login</string>
     <string name="_0">0</string>
     <string name="log_out">LOG OUT</string>
+    <string name="login">Login</string>
+    <string name="show_all">Show All</string>
+    <string name="goods_category">Goods Category</string>
+    <string name="cancel">Cancel</string>
+    <string name="read_barcode">Read Barcode</string>
+    <string name="current_activity">Current Activity</string>
+    <string name="tap_items_name_to_cross_off">Tap items name to cross off.</string>
+    <string name="crossed_off_items">Crossed off items</string>
+    <string name="tap_items_name_to_uncross">Tap items name to uncross.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

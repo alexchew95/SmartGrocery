@@ -9,6 +9,8 @@
     <color name="hint_color">#808080</color>
     <color name="white">#ffffff</color>
     <color name="darkBlue">#11579B</color>
+    <color name="red">#313335</color>
 
     <color name="paleblue">#b0c4de</color>
+    <color name="black">#000000</color>
 </resources>

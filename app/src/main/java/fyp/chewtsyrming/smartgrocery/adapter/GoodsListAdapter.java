@@ -9,7 +9,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -50,9 +49,7 @@ public class GoodsListAdapter extends ArrayAdapter<GoodsList> implements View.On
             viewHolder.tvExpDate = convertView.findViewById(R.id.tvExpDateEdit);
             viewHolder.tvBuyDate = convertView.findViewById(R.id.tvBuyDateEdit);
             viewHolder.editBtn = convertView.findViewById(R.id.editBtn);
-            ;
             viewHolder.deleteBtn = convertView.findViewById(R.id.deleteBtn);
-            ;
             view = convertView;
             convertView.setTag(viewHolder);
         } else {
@@ -83,10 +80,10 @@ public class GoodsListAdapter extends ArrayAdapter<GoodsList> implements View.On
 
         switch (v.getId()) {
             case R.id.editBtn:
-               // editDialog();
+                // editDialog();
                 break;
             case R.id.deleteBtn:
-                Toast.makeText(getContext(), goodsList.getBuyDate(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), goodsList.getBuyDate(), Toast.LENGTH_SHORT).show();
                 final FirebaseDatabase database = FirebaseDatabase.getInstance();
                 UserModel um = new UserModel();
                 String userID = um.getUserIDFromDataBase();

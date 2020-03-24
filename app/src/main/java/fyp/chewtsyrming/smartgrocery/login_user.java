@@ -67,7 +67,8 @@ public class login_user extends AppCompatActivity implements View.OnClickListene
             rellay.setVisibility(View.VISIBLE);
 
         }
-    };Runnable registerProcess = new Runnable() {
+    };
+    Runnable registerProcess = new Runnable() {
         @Override
         public void run() {
             progressBar.setVisibility(View.GONE);
@@ -75,9 +76,13 @@ public class login_user extends AppCompatActivity implements View.OnClickListene
             rellay2.setVisibility(View.GONE);
 
         }
-    };Runnable loginProcess = new Runnable() {
+    };
+    Runnable loginProcess = new Runnable() {
         @Override
         public void run() {
+            progressBar.setVisibility(View.VISIBLE);
+
+            rellay.setVisibility(View.GONE);
             loginEvent();
 
 
@@ -116,19 +121,6 @@ public class login_user extends AppCompatActivity implements View.OnClickListene
         l_password.setText(pref.getString(PREF_PASSWORD, null));
         loginBtn.setOnClickListener(this);
         goto_registerBtn.setOnClickListener(this);
-
-//register button
-      /*  goto_register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-              *//*  Intent i = new Intent(login_user.this, register_user.class);
-                startActivity(i);
-                finish();*//*
-
-            }
-        });*/
-
     }
 
 
@@ -146,7 +138,7 @@ public class login_user extends AppCompatActivity implements View.OnClickListene
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     FirebaseUser user = task.getResult().getUser();
-                     String userId =user.getUid();
+                    String userId = user.getUid();
 
                     if (rememberMeCB1.isChecked()) {
                         String email = l_email.getText().toString();
@@ -166,7 +158,7 @@ public class login_user extends AppCompatActivity implements View.OnClickListene
 
                     }
                     OSPermissionSubscriptionState status = OneSignal.getPermissionSubscriptionState();
-                    String playerId= status.getSubscriptionStatus().getUserId();
+                    String playerId = status.getSubscriptionStatus().getUserId();
 
                     //Toast.makeText(login_user.this, playerId, Toast.LENGTH_LONG).show();
                     //goMain();
@@ -184,9 +176,11 @@ public class login_user extends AppCompatActivity implements View.OnClickListene
             }
         });
     }
-private void updatePlayerId(String playerId){
 
-}
+    private void updatePlayerId(String playerId) {
+
+    }
+
     private void goMain() {
         Intent i = new Intent(getApplicationContext(), home.class);
         i.setFlags(FLAG_ACTIVITY_NEW_TASK);
@@ -210,11 +204,10 @@ private void updatePlayerId(String playerId){
             l_password.setText(deHashPassword);
             rememberMeCB1.setChecked(true);
 
-        }
-       else{
-           rellay.setVisibility(View.VISIBLE);
+        } else {
+            rellay.setVisibility(View.VISIBLE);
 
-       }
+        }
 
     }
 
@@ -235,9 +228,7 @@ private void updatePlayerId(String playerId){
                 if (l_email.getText().length() == 0 || l_password.getText().length() == 0) {
                     Toast.makeText(getApplicationContext(), "Please enter your email & password", Toast.LENGTH_LONG).show();
                 } else {
-                    progressBar.setVisibility(View.VISIBLE);
 
-                    rellay.setVisibility(View.GONE);
                     handler.postDelayed(loginProcess, 2000);
 
                 }

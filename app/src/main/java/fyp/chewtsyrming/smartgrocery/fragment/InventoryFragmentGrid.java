@@ -1,8 +1,6 @@
 package fyp.chewtsyrming.smartgrocery.fragment;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,12 +44,12 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
     private String userId = user.getUid();
     private DatabaseReference userReference;
     private List<GoodsGrid> goodsList, goodsFavList, recentGoodsList, filterGoodsList;
-    private GoodsFromSameCategoryFragment goodsFromSameCategoryFragment;
+
     private SearchView svGoods;
     private Boolean favFlag, recentFlag, myInventoryFlag;
     private GoodsCategoryGridAdapter categoryAdapter;
     private GoodsListGridAdapter goodsAdapter ;
-    private GoodsFromSameGoodsFragment frag;
+
     private ImageButton arrowRecent, arrowFav, arrowCategory;
     private LinearLayout llRecent;
     private Button sortRecentAscBtn, sortRecentDescBtn;
@@ -216,9 +214,9 @@ public class InventoryFragmentGrid extends Fragment implements View.OnClickListe
                         if (!ParentKey.equals("recent")) {
                             int goodsCategoryIcon = R.drawable.ic_add_goods;
                             if (ParentKey.equals("Fruit & Vegetables")) {
-                                goodsCategoryIcon = R.drawable.ic_vege_fruit;
+                                goodsCategoryIcon = R.drawable.ic_category_vege_fruit;
                             } else if (ParentKey.equals("Grain Product")) {
-                                goodsCategoryIcon = R.drawable.ic_grains_products;
+                                goodsCategoryIcon = R.drawable.ic_category_vege_fruit;
 
                             }
                             GoodsCategoryGrid goodsCategory = new GoodsCategoryGrid(ParentKey, goodsCategoryIcon);

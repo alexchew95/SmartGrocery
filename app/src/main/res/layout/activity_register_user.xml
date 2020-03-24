@@ -5,35 +5,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:background="@drawable/grdnt"
+    android:background="@drawable/bg_login"
     android:gravity="center"
     tools:context=".register_user">
     <RelativeLayout
         android:id="@+id/rellay2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:paddingLeft="40dp"
         android:paddingRight="40dp"
         android:visibility="visible">
 
-        <TextView
-            android:id="@+id/registerTV"
+        <ImageView
+            android:id="@+id/logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:layout_centerHorizontal="true"
-            android:padding="30dp"
-            android:text="@string/registerTV"
-            android:textColor="@color/white"
-            android:textSize="40sp" />
+            android:layout_marginTop="50dp"
+            android:src="@drawable/logo" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/registerTV"
+            android:layout_below="@+id/logo"
             android:orientation="vertical">
 
             <LinearLayout
+                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -166,17 +164,16 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/registerBtn"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="15dp"
                 android:padding="10dp"
                 android:text="@string/r_Register"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 app:cornerRadius="20dp"
-
+                app:backgroundTint="#FF1B2539"
                 app:strokeColor="@color/white" />
 
             <com.google.android.material.button.MaterialButton
@@ -188,9 +185,9 @@
                 android:layout_gravity="center"
                 android:text="@string/r_Back"
                 android:textAllCaps="false"
-                android:textColor="@color/white"
+                android:textColor="@color/text_color"
 
-                android:textSize="12sp" />
+                android:textSize="18sp" />
 
         </LinearLayout>
 

@@ -4,12 +4,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,8 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fyp.chewtsyrming.smartgrocery.R;
+import fyp.chewtsyrming.smartgrocery.fragment.BarcodeReaderFragment;
+import fyp.chewtsyrming.smartgrocery.fragmentHandler;
+import fyp.chewtsyrming.smartgrocery.home;
 
-public class fragment_home extends Fragment {
+public class fragment_home extends Fragment implements View.OnClickListener {
     private List<Category> dataList;
     private List<Goods> goodsList;
     private ProgressBar progressBar;
@@ -36,37 +42,160 @@ public class fragment_home extends Fragment {
     private FirebaseUser user;
     private String userId;
     String name, imageUrl;
+    private Button ib_scan_barcode, ib_search_goods, ib_add_goods;
+    private Button ib_all_item, ib_category;
     Goods goods;
     int i = 0;
+    FirebaseDatabase database;
+    fragmentHandler h = new fragmentHandler();
+    View view;
+    ContentLoadingProgressBar pb_main;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_home, null);
+        database = FirebaseDatabase.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        userId = user.getUid();
         dataList = new ArrayList<>();
         adapter = new CategoryAdapter(dataList, v.getContext());
         layoutManager = new LinearLayoutManager(v.getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView = v.findViewById(R.id.rv_main);
-        progressBar = v.findViewById(R.id.pb_home);
-
-
+        recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
-        getInventoryData();
+         view = getActivity().findViewById(R.id.pb_main);
+        if( view instanceof ContentLoadingProgressBar) {
+           pb_main = (ContentLoadingProgressBar) view;
+            //Do your stuff
+        }
+        progressBar = v.findViewById(R.id.pb_home);
+        ib_scan_barcode = v.findViewById(R.id.ib_scan_barcode);
+        ib_search_goods = v.findViewById(R.id.ib_search_goods);
+        ib_add_goods = v.findViewById(R.id.ib_add_goods);
+        ib_all_item = v.findViewById(R.id.ib_all_item);
+        ib_category = v.findViewById(R.id.ib_category);
+        imageUrl = "https://firebasestorage.googleapis.com/v0/b/smart-grocery-f41a7.appspot.com/o/goods%2FUntitled.png?alt=media&token=0acec7a9-c70f-49d0-94fe-b3666b9df7f9";
+        ib_all_item.setOnClickListener(this);
+        ib_category.setOnClickListener(this);
+        ib_scan_barcode.setOnClickListener(this);
+        ib_search_goods.setOnClickListener(this);
+        ib_add_goods.setOnClickListener(this);
+       getInventoryData();
         return v;
     }
 
-    public void getInventoryData() {
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        userId = user.getUid();
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+    public void getAllData() {
+        //consist of fifo, expiring soon, and reminder alert
+        //fifo
+        dataList.clear();
+
+        adapter.notifyDataSetChanged();
+
         DatabaseReference databaseReference = database.getReference().child("user").child(userId).child("goods");
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                goodsList = new ArrayList<>();
 
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    // Toast.makeText(getContext(), snapshot2.getKey(), Toast.LENGTH_SHORT).show();
+                    String ParentKey = snapshot.getKey();
+
+                    if (ParentKey != null && !ParentKey.equals("fav")) {
+
+                        if (ParentKey != null && !ParentKey.equals("recent")) {
+
+                            for (DataSnapshot snapshot2 : snapshot.getChildren()) {
+                                final String barcode = snapshot2.getKey();
+                                //Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
+                                goods = new Goods(barcode, barcode, "as", barcode, imageUrl, "z", "0");
+                                goodsList.add(goods);
+
+
+                            }
+
+                        }
+                    }
+                }
+                Category category = new Category(goodsList, "All Goods", "tat");
+                dataList.add(category);
+                //Toast.makeText(getContext(), dataList.get(0).getGenre(), Toast.LENGTH_SHORT).show();
+                adapter.notifyDataSetChanged();
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+    public void getHomeData() {
+
+        //consist of fifo, expiring soon, and reminder alert
+        //fifo
+        DatabaseReference databaseReference = database.getReference().child("user").child(userId).child("goods");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                goodsList = new ArrayList<>();
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    // Toast.makeText(getContext(), snapshot2.getKey(), Toast.LENGTH_SHORT).show();
+                    String ParentKey = snapshot.getKey();
+
+                    if (ParentKey != null && !ParentKey.equals("fav")) {
+
+                        if (ParentKey != null && !ParentKey.equals("recent")) {
+
+                            for (DataSnapshot snapshot2 : snapshot.getChildren()) {
+                                String barcode = snapshot2.getKey();
+                                //Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
+
+
+                                goods = new Goods(barcode, barcode, "as", barcode, imageUrl, "Unknown", "0");
+
+                                goodsList.add(goods);
+                            }
+
+                        }
+                    }
+                }
+                Category category = new Category(goodsList, "All Goods", "tat");
+                dataList.add(category);
+                //Toast.makeText(getContext(), dataList.get(0).getGenre(), Toast.LENGTH_SHORT).show();
+                adapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+    public void getInventoryData() {
+
+        dataList.clear();
+        adapter.notifyDataSetChanged();
+
+        DatabaseReference databaseReference = database.getReference().child("user").child(userId).child("goods");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                pb_main.hide();
                 if (dataSnapshot.hasChild("fav")) {
                     //Toast.makeText(getContext(), dataSnapshot.child("fav").getKey(), Toast.LENGTH_SHORT).show();
 
@@ -78,7 +207,8 @@ public class fragment_home extends Fragment {
                         String barcode = snapshot2.getKey();
                         //Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
 
-                        goods = new Goods("a", barcode, "as", barcode, "hfghf");
+
+                        goods = new Goods(barcode, barcode, "as", barcode, imageUrl, "Unknown", "0");
 
                         goodsList.add(goods);
                         // Toast.makeText(getContext(), snapshot2.getKey(), Toast.LENGTH_SHORT).show();
@@ -104,7 +234,7 @@ public class fragment_home extends Fragment {
                         String barcode = snapshot2.getKey();
                         //Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
 
-                        goods = new Goods("a", barcode, "as", barcode, "hfghf");
+                        goods = new Goods(barcode, barcode, "as", barcode, imageUrl, "Unknown", "0");
 
                         goodsList.add(goods);
                         // Toast.makeText(getContext(), snapshot2.getKey(), Toast.LENGTH_SHORT).show();
@@ -132,7 +262,7 @@ public class fragment_home extends Fragment {
                                 String barcode = snapshot2.getKey();
                                 //Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
 
-                                goods = new Goods("a", barcode, "as", barcode, "hfghf");
+                                goods = new Goods(barcode, barcode, "as", barcode, imageUrl, "Unknown", "0");
 
                                 goodsList.add(goods);
                                 // Toast.makeText(getContext(), snapshot2.getKey(), Toast.LENGTH_SHORT).show();
@@ -158,4 +288,51 @@ public class fragment_home extends Fragment {
             }
         });
     }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.ib_search_goods:
+
+                break;
+            case R.id.ib_scan_barcode:
+                scanBarcode();
+
+                break;
+
+            case R.id.ib_add_goods:
+
+                addGoods();
+                break;
+            case R.id.ib_category:
+                getInventoryData();
+
+                break;
+            case R.id.ib_all_item:
+
+                getAllData();
+                break;
+        }
+    }
+
+    public void addGoods() {
+        Bundle bundle = new Bundle();
+        bundle.putString("message", "Add Goods");
+        bundle.putString("code", "9002");//9002 indicate add goods
+        Fragment fragment = null;
+        fragment = new BarcodeReaderFragment();
+        fragment.setArguments(bundle);
+        h.loadFragment(fragment,getContext());
+    }
+
+    public void scanBarcode() {
+
+        Bundle bundle = new Bundle();
+        bundle.putString("message", "Search Goods with barcode");
+        bundle.putString("code", "9001");//9001 indicate search goods
+        Fragment fragment = new BarcodeReaderFragment();
+        fragment.setArguments(bundle);
+        h.loadFragment(fragment,getContext());
+    }
+
 }

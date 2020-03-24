@@ -25,15 +25,16 @@ import java.util.ArrayList;
 
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.adapter.GoodsListGridAdapter;
+import fyp.chewtsyrming.smartgrocery.fragmentHandler;
 import fyp.chewtsyrming.smartgrocery.object.GoodsGrid;
 
 public class GoodsFromSameCategoryFragment extends Fragment {
 
-    ArrayList<GoodsGrid> goodsCategoryList = new ArrayList<>();
+    ArrayList<GoodsGrid> goodsCategoryList;
     GridView gridView;
     FirebaseUser user;
-    String userId, goodsCategory, imageURL, goodsName, category;
-    ;
+    String userId, goodsCategory, imageURL, goodsName, category, processType;
+
     TextView tvCategoryTitle;
 
     @Nullable
@@ -46,14 +47,23 @@ public class GoodsFromSameCategoryFragment extends Fragment {
         tvCategoryTitle = fragmentView.findViewById(R.id.tvCategoryTitle);
         Bundle cate = this.getArguments();
         goodsCategory = cate.getString("goodsCategory");
+        processType = "view";
+        if (cate.getString("processType") != null) processType = cate.getString("processType");
+        //  Toast.makeText(getContext(), processType, Toast.LENGTH_LONG).show();
+
         tvCategoryTitle.setText(goodsCategory);
         //reference to db
+        if (goodsCategory.equals("All Goods")) {
+            getAllGoods();
+        } else {
+            listGoods();
 
-        listAllGoods();
+        }
         return fragmentView;
     }
 
-    public void listAllGoods() {
+    public void listGoods() {
+        goodsCategoryList = new ArrayList<>();
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference parentReference = database.getReference().child("user").child(userId).
                 child("goods").child(goodsCategory);
@@ -77,11 +87,11 @@ public class GoodsFromSameCategoryFragment extends Fragment {
                             goodsName = snapshotChild.child("goodsName").getValue().toString();
                             imageURL = snapshotChild.child("imageURL").getValue().toString();
                             category = snapshotChild.child("goodsCategory").getValue().toString();
-
                             GoodsGrid goodsGrid = new GoodsGrid(goodsName, imageURL, barcode, category);
                             goodsCategoryList.add(goodsGrid);
                             final GoodsListGridAdapter goodsListGridAdapter = new GoodsListGridAdapter(getActivity(), goodsCategoryList);
                             gridView.setAdapter(goodsListGridAdapter);
+                            //Toast.makeText(getContext(), processType, Toast.LENGTH_LONG).show();
                             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -89,16 +99,16 @@ public class GoodsFromSameCategoryFragment extends Fragment {
                                     Bundle cate = new Bundle();
                                     cate.putString("barcode", goodsGrid1.getBarcode());
                                     cate.putString("goodsCategory", goodsGrid1.getCategory());
-                                    cate.putString("imageURL",imageURL);
-                                    cate.putString("goodsName",goodsName);
+                                    cate.putString("imageURL", imageURL);
+                                    cate.putString("goodsName", goodsName);
                                     GoodsFromSameGoodsFragment frag = new GoodsFromSameGoodsFragment();
                                     frag.setArguments(cate);
-                                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                                    transaction.replace(R.id.fragment_container, frag);
-                                    transaction.addToBackStack(null);
-                                    transaction.commit();
+                                    fragmentHandler h = new fragmentHandler();
+                                    h.loadFragment(frag, getContext());
+
                                 }
                             });
+
                         }
 
                         @Override
@@ -107,6 +117,103 @@ public class GoodsFromSameCategoryFragment extends Fragment {
                         }
                     });
 
+
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getAllGoods() {
+        goodsCategoryList = new ArrayList<>();
+
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference parentReference = database.getReference().child("user").child(userId).
+                child("goods");
+        /*TODO change icon to image retrieve from firebase storage*/
+
+        parentReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot ds) {
+
+                for (final DataSnapshot dataSnapshot : ds.getChildren()) {
+                    String cat = dataSnapshot.getKey();
+
+                    if (cat != null && !cat.equals("fav")) {
+
+                        if (cat != null && !cat.equals("recent")) {
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                                final String barcode = snapshot.getKey();
+
+
+                                DatabaseReference goodDetailsReference = database.getReference().child("barcode").child(barcode);
+                                goodDetailsReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshotChild) {
+
+                                        goodsName = snapshotChild.child("goodsName").getValue().toString();
+                                        imageURL = snapshotChild.child("imageURL").getValue().toString();
+                                        category = snapshotChild.child("goodsCategory").getValue().toString();
+
+                                        GoodsGrid goodsGrid = new GoodsGrid(goodsName, imageURL, barcode, category);
+                                        goodsCategoryList.add(goodsGrid);
+                                        final GoodsListGridAdapter goodsListGridAdapter = new GoodsListGridAdapter(getActivity(), goodsCategoryList);
+                                        gridView.setAdapter(goodsListGridAdapter);
+
+                                        if (processType.equals("view")) {
+                                            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                                @Override
+                                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                                    GoodsGrid goodsGrid1 = goodsCategoryList.get(position);
+                                                    Bundle cate = new Bundle();
+                                                    cate.putString("barcode", goodsGrid1.getBarcode());
+                                                    cate.putString("goodsCategory", goodsGrid1.getCategory());
+                                                    cate.putString("imageURL", imageURL);
+                                                    cate.putString("goodsName", goodsName);
+                                                    GoodsFromSameGoodsFragment frag = new GoodsFromSameGoodsFragment();
+                                                    frag.setArguments(cate);
+                                                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                                                    transaction.replace(R.id.fragment_container, frag);
+                                                    transaction.addToBackStack(null);
+                                                    transaction.commit();
+                                                }
+                                            });
+                                        } else if (processType.equals("shoppinglist")) {
+
+                                            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                                @Override
+                                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                                    GoodsGrid goodsGrid1 = goodsCategoryList.get(position);
+                                                    Bundle cate = new Bundle();
+                                                    cate.putString("barcode", goodsGrid1.getBarcode());
+                                                    ViewItemsShoppingListFragment frag = new ViewItemsShoppingListFragment();
+                                                    frag.setArguments(cate);
+                                                    fragmentHandler h = new fragmentHandler();
+                                                    h.loadFragment(frag, getContext());
+
+                                                }
+                                            });
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+
+                            }
+
+                        }
+                    }
 
                 }
 

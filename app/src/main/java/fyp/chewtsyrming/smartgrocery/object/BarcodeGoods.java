@@ -1,6 +1,8 @@
 package fyp.chewtsyrming.smartgrocery.object;
 
 public class BarcodeGoods {
+    public BarcodeGoods() {
+    }
 
     String barcode;
     String goodsCategory;

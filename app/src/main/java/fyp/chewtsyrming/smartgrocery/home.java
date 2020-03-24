@@ -1,21 +1,20 @@
 package fyp.chewtsyrming.smartgrocery;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 
-import fyp.chewtsyrming.smartgrocery.fragment.AddGoodsBarcodeReaderFragment;
-import fyp.chewtsyrming.smartgrocery.fragment.InventoryFragmentGrid;
 import fyp.chewtsyrming.smartgrocery.fragment.MyProfileFragment;
 import fyp.chewtsyrming.smartgrocery.fragment.ShoppingPlanFragment;
 import fyp.chewtsyrming.smartgrocery.nestedRv.fragment_home;
@@ -26,17 +25,8 @@ public class home extends AppCompatActivity implements BottomNavigationView.OnNa
     FloatingActionButton fab,fab1,fab2,fab3;
     Boolean isFABOpen= false;
     private TextView mTextMessage;
-    private boolean loadFragment(Fragment fragment) {
-        //switching fragment
-        if (fragment != null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .commit();
-            return true;
-        }
-        return false;
-    }
+    fragmentHandler h= new fragmentHandler();
+
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -61,7 +51,7 @@ public class home extends AppCompatActivity implements BottomNavigationView.OnNa
 
         }
 
-        return loadFragment(fragment);
+        return h.loadFragment(fragment,this);
     }
 
     @Override
@@ -70,27 +60,18 @@ public class home extends AppCompatActivity implements BottomNavigationView.OnNa
         setContentView(R.layout.activity_home);
 
         //loading the default fragment
-        loadFragment(new fragment_home());
+        h.loadFragment(new fragment_home(),this);
 
         //getting bottom navigation view and attaching the listener
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
 
-         fab = findViewById(R.id.fab);
-        fab1 = findViewById(R.id.fab1);
+
+        /*fab1 = findViewById(R.id.fab1);
         fab2 = findViewById(R.id.fab2);
-        fab3 = findViewById(R.id.fab3);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!isFABOpen){
-                    showFABMenu();
-                }else{
-                    closeFABMenu();
-                }
-            }
-        });
-        fab1.setOnClickListener(new View.OnClickListener() {
+        fab3 = findViewById(R.id.fab3);*/
+
+      /*  fab1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Bundle bundle=new Bundle();
@@ -100,7 +81,6 @@ public class home extends AppCompatActivity implements BottomNavigationView.OnNa
                 fragment=new AddGoodsBarcodeReaderFragment();
                 fragment.setArguments(bundle);
                 loadFragment(fragment);
-                closeFABMenu();
 
             }
         });
@@ -114,25 +94,11 @@ public class home extends AppCompatActivity implements BottomNavigationView.OnNa
                 fragment=new AddGoodsBarcodeReaderFragment();
                 fragment.setArguments(bundle);
                 loadFragment(fragment);
-                closeFABMenu();
 
             }
-        });
+        });*/
 
     }
 
 
-    private void showFABMenu(){
-        isFABOpen=true;
-        fab1.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
-        fab2.animate().translationY(-getResources().getDimension(R.dimen.standard_105));
-        fab3.animate().translationY(-getResources().getDimension(R.dimen.standard_155));
-    }
-
-    private void closeFABMenu(){
-        isFABOpen=false;
-        fab1.animate().translationY(0);
-        fab2.animate().translationY(0);
-        fab3.animate().translationY(0);
-    }
 }

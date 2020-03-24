@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="30dp">
+
+    <TextView
+        android:id="@+id/tv_plan_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:padding="10dp"
+        android:text="Add new item"
+        android:textAlignment="center"
+        android:textSize="22sp" />
+
+
+    <LinearLayout
+        android:id="@+id/ll_add_item_from_inventory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/button_search_inventory"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Search my inventory"
+            android:textColor="@color/text_color"
+            app:icon="@drawable/search_goods"
+            app:iconPadding="5dp"
+            app:iconSize="50dp"
+            app:iconTint="@null" />
+
+        <Button
+            android:id="@+id/button_search_barcode"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Search with barcode"
+            android:textColor="@color/text_color"
+            app:icon="@drawable/ic_barcode_scanner2"
+            app:iconPadding="5dp"
+            app:iconSize="50dp"
+            app:iconTint="@null" />
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/btn_cancel_add_shopping_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:backgroundTint="@color/colorPrimary"
+        android:padding="10dp"
+        android:text="Cancel"
+        android:textColor="#ffffff"
+        android:textSize="18sp" />
+
+
+</LinearLayout>

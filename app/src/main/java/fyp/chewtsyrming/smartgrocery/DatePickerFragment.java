@@ -36,7 +36,7 @@ public class DatePickerFragment extends AppCompatDialogFragment implements DateP
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month);
         c.set(Calendar.DAY_OF_MONTH, day);
-        String selectedDate = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(c.getTime());
+        String selectedDate = new SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH).format(c.getTime());
 
         Log.d(TAG, "onDateSet: " + selectedDate);
         // send date back to the target fragment

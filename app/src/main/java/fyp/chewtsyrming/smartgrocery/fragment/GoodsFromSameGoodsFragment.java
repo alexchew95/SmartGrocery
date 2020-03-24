@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,6 +33,8 @@ import fyp.chewtsyrming.smartgrocery.object.GoodsList;
 import fyp.chewtsyrming.smartgrocery.object.UserModel;
 
 public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClickListener {
+    private FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();;
+    private String userId= user.getUid();;
     ArrayList<GoodsList> goodsListArrayList;
     ListView listView;
     private static GoodsListAdapter adapter;
@@ -84,7 +88,7 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
 
                 for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String goodsID = snapshot.getKey();
-                    String buyDate = (String) snapshot.child("buyDate").getValue();
+                    String buyDate = (String) snapshot.child("insertDate").getValue();
                     String expirationDate = (String) snapshot.child("expirationDate").getValue();
                     String quantity = (String) snapshot.child("quantity").getValue();
                     final GoodsList goodsList = new GoodsList(goodsID, expirationDate, buyDate,

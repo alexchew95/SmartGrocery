@@ -32,6 +32,8 @@ import net.glxn.qrgen.android.QRCode;
 
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.SplashActivity;
+import fyp.chewtsyrming.smartgrocery.fragmentHandler;
+import fyp.chewtsyrming.smartgrocery.home;
 
 
 public class MyProfileFragment extends Fragment implements View.OnClickListener {
@@ -46,6 +48,8 @@ public class MyProfileFragment extends Fragment implements View.OnClickListener 
     private ImageView ivUserProfile;
     LinearLayout ll_myQrCode, ll_scanQrCode;
     Button btn_logout;
+    fragmentHandler h=new fragmentHandler();
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -95,28 +99,15 @@ public class MyProfileFragment extends Fragment implements View.OnClickListener 
                 bundle.putString("message", "Scan QR");
                 bundle.putString("code", "9003");//9003 indicate add goods
                 Fragment fragment = null;
-                fragment = new AddGoodsBarcodeReaderFragment();
+                fragment = new BarcodeReaderFragment();
                 fragment.setArguments(bundle);
-                loadFragment(fragment);
-                ;
+                h.loadFragment(fragment,getContext());
+
                 break;
 
         }
 
     }
-
-    private boolean loadFragment(Fragment fragment) {
-        //switching fragment
-        if (fragment != null) {
-            getActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .commit();
-            return true;
-        }
-        return false;
-    }
-
     private void getUserInfo() {
         followRef = database.getReference().child("user").child(userId).child("sharedInventory");
 

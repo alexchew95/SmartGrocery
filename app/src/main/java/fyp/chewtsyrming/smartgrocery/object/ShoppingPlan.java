@@ -1,38 +1,52 @@
 package fyp.chewtsyrming.smartgrocery.object;
 
 public class ShoppingPlan {
-    private String shoppingName,shoppingDate;
-    private Boolean shoppingStatus;
+    private String shoppingId,shoppingPlanName,dateCreated,noOfItem;
 
-    public ShoppingPlan(String shoppingName, String shoppingDate, Boolean shoppingStatus) {
-        this.shoppingName = shoppingName;
-        this.shoppingDate = shoppingDate;
-        this.shoppingStatus = shoppingStatus;
+    public String getShoppingId() {
+        return shoppingId;
     }
 
-    public String getShoppingName() {
-        return shoppingName;
+    public void setShoppingId(String shoppingId) {
+        this.shoppingId = shoppingId;
     }
 
-    public void setShoppingName(String shoppingName) {
-        this.shoppingName = shoppingName;
+    public String getNoOfItem() {
+        return noOfItem;
     }
 
-    public String getShoppingDate() {
-        return shoppingDate;
+    public void setNoOfItem(String noOfItem) {
+        this.noOfItem = noOfItem;
     }
 
-    public void setShoppingDate(String shoppingDate) {
-        this.shoppingDate = shoppingDate;
+    public ShoppingPlan(String shoppingId, String shoppingPlanName, String dateCreated, String noOfItem ) {
+        this.shoppingId = shoppingId;
+        this.shoppingPlanName = shoppingPlanName;
+        this.dateCreated = dateCreated;
+        this.noOfItem = noOfItem;
     }
 
-    public Boolean getShoppingStatus() {
-        return shoppingStatus;
+    public ShoppingPlan(String shoppingPlanName, String dateCreated) {
+        this.shoppingPlanName = shoppingPlanName;
+        this.dateCreated = dateCreated;
     }
 
-    public void setShoppingStatus(Boolean shoppingStatus) {
-        this.shoppingStatus = shoppingStatus;
+    public String getShoppingPlanName() {
+        return shoppingPlanName;
     }
 
+    public void setShoppingPlanName(String shoppingPlanName) {
+        this.shoppingPlanName = shoppingPlanName;
+    }
 
+    public String getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(String dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public ShoppingPlan() {
+    }
 }

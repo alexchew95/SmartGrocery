@@ -4,30 +4,24 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class SubGoods implements Parcelable {
-    String quantity, expirationDate, category, masterExpirationQuantityID, barcode, goodsName;
+   private String quantity, expirationDate, category, masterExpirationQuantityID, barcode, goodsName, alertType, alertData, insertDate,goodsLocation;
 
 
     public SubGoods() {
 
     }
 
-    public SubGoods(String expirationDate,String quantity
+    public SubGoods(String expirationDate, String quantity,String alertType,String alertData,String insertDate,String goodsLocation
     ) {
         this.expirationDate = expirationDate;
         this.quantity = quantity;
-
+        this.alertType = alertType;
+        this.alertData = alertData;
+        this.insertDate = insertDate;
+        this.goodsLocation=goodsLocation;
     }
 
-    public SubGoods(String barcode, String category, String expirationDate,
-                    String masterExpirationQuantityID, String quantity,String goodsName
-    ) {
-        this.category = category;
-        this.expirationDate = expirationDate;
-        this.masterExpirationQuantityID = masterExpirationQuantityID;
-        this.quantity = quantity;
-        this.barcode = barcode;
-        this.goodsName=goodsName;
-    }
+
 
     protected SubGoods(Parcel in) {
         barcode = in.readString();
@@ -36,6 +30,10 @@ public class SubGoods implements Parcelable {
         masterExpirationQuantityID = in.readString();
         quantity = in.readString();
         goodsName = in.readString();
+        alertType = in.readString();
+        alertData = in.readString();
+        insertDate = in.readString();
+        goodsLocation = in.readString();
     }
 
     public static final Creator<SubGoods> CREATOR = new Creator<SubGoods>() {
@@ -68,6 +66,38 @@ public class SubGoods implements Parcelable {
 
     public void setQuantity(String quantity) {
         this.quantity = quantity;
+    }
+
+    public String getAlertType() {
+        return alertType;
+    }
+
+    public String getGoodsLocation() {
+        return goodsLocation;
+    }
+
+    public void setGoodsLocation(String goodsLocation) {
+        this.goodsLocation = goodsLocation;
+    }
+
+    public void setAlertType(String alertType) {
+        this.alertType = alertType;
+    }
+
+    public String getAlertData() {
+        return alertData;
+    }
+
+    public void setAlertData(String alertData) {
+        this.alertData = alertData;
+    }
+
+    public String getInsertDate() {
+        return insertDate;
+    }
+
+    public void setInsertDate(String insertDate) {
+        this.insertDate = insertDate;
     }
 
     public void setExpirationDate(String expirationDate) {
