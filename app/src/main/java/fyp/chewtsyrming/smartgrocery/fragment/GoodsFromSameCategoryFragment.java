@@ -191,8 +191,15 @@ public class GoodsFromSameCategoryFragment extends Fragment {
                                                 @Override
                                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                                     GoodsGrid goodsGrid1 = goodsCategoryList.get(position);
+                                                    String shoppingPlanID=getArguments().getString("shoppingPlanID");
+                                                    String shoppingPlanName=getArguments().getString("shoppingPlanName");
+
                                                     Bundle cate = new Bundle();
                                                     cate.putString("barcode", goodsGrid1.getBarcode());
+                                                    cate.putString("shoppingPlanID", shoppingPlanID);
+                                                    cate.putString("shoppingPlanName", shoppingPlanName);
+
+
                                                     ViewItemsShoppingListFragment frag = new ViewItemsShoppingListFragment();
                                                     frag.setArguments(cate);
                                                     fragmentHandler h = new fragmentHandler();

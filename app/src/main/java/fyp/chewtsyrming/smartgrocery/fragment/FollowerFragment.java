@@ -27,7 +27,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.fragmentHandler;
-import fyp.chewtsyrming.smartgrocery.home;
 
 
 public class FollowerFragment extends Fragment implements View.OnClickListener {

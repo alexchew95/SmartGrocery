@@ -1,27 +1,48 @@
 package fyp.chewtsyrming.smartgrocery.object;
 
 public class ShoppingPlanItem {
-    String shoppingPlanID,itemID, buyStatus,goodsBarcode,goodsCategory,goodsName,inventoryStatus,quantity;
+    private String shoppingPlanID, itemID, buyStatus, goodsBarcode, goodsCategory, goodsName, quantity, imageURL;
 
-    public ShoppingPlanItem(String shoppingPlanID, String itemID, String buyStatus, String goodsBarcode, String goodsCategory, String goodsName, String inventoryStatus, String quantity) {
+    public ShoppingPlanItem(String shoppingPlanID, String itemID, String buyStatus, String goodsBarcode, String goodsCategory, String goodsName, String quantity) {
         this.shoppingPlanID = shoppingPlanID;
         this.itemID = itemID;
         this.buyStatus = buyStatus;
         this.goodsBarcode = goodsBarcode;
         this.goodsCategory = goodsCategory;
         this.goodsName = goodsName;
-        this.inventoryStatus = inventoryStatus;
         this.quantity = quantity;
     }
 
-    public ShoppingPlanItem(String shoppingPlanID, String buyStatus, String goodsBarcode, String goodsCategory, String goodsName, String inventoryStatus, String quantity) {
+    public ShoppingPlanItem(String shoppingPlanID, String itemID, String buyStatus, String goodsBarcode, String goodsCategory, String goodsName, String quantity, String imageURL) {
+        this.shoppingPlanID = shoppingPlanID;
+        this.itemID = itemID;
+        this.buyStatus = buyStatus;
+        this.goodsBarcode = goodsBarcode;
+        this.goodsCategory = goodsCategory;
+        this.goodsName = goodsName;
+        this.quantity = quantity;
+        this.imageURL = imageURL;
+    }
+
+    public ShoppingPlanItem(String shoppingPlanID, String buyStatus, String goodsBarcode, String goodsCategory, String goodsName, String quantity) {
         this.shoppingPlanID = shoppingPlanID;
         this.buyStatus = buyStatus;
         this.goodsBarcode = goodsBarcode;
         this.goodsCategory = goodsCategory;
         this.goodsName = goodsName;
-        this.inventoryStatus = inventoryStatus;
         this.quantity = quantity;
+    }
+
+    public ShoppingPlanItem() {
+
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 
     public String getItemID() {
@@ -72,24 +93,12 @@ public class ShoppingPlanItem {
         this.goodsName = goodsName;
     }
 
-    public String getInventoryStatus() {
-        return inventoryStatus;
-    }
-
-    public void setInventoryStatus(String inventoryStatus) {
-        this.inventoryStatus = inventoryStatus;
-    }
-
     public String getQuantity() {
         return quantity;
     }
 
     public void setQuantity(String quantity) {
         this.quantity = quantity;
-    }
-
-    public ShoppingPlanItem() {
-
     }
 
 }

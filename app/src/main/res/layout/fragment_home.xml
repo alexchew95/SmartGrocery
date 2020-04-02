@@ -72,12 +72,27 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/ll_notification"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ll_home_main"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/ib_notification"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:src="@drawable/ic_notifications_black_24dp" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/ll_inventory_type"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_below="@+id/ll_home_main"
+                android:layout_below="@+id/ll_notification"
                 android:orientation="horizontal"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
@@ -143,9 +158,5 @@
 
     </ScrollView>
 
-    <ProgressBar
-        android:id="@+id/pb_home"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
+
 </RelativeLayout>

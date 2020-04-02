@@ -10,11 +10,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -22,7 +24,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,7 +65,13 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
         tvGoodsName.setText(goodsName);
         listAllGoods();
         checkFavStatus();
-        Picasso.get().load(imageURL).fit().into(ivGoods);
+       // Picasso.get().load(imageURL).fit().into(ivGoods);
+        Glide.with(getContext())
+                .load(imageURL)
+                .centerCrop()
+                .placeholder(R.drawable.ic_loading_static)
+                .dontAnimate()
+                .into(ivGoods);
         sortQuantityAscBtn = fragmentView.findViewById(R.id.sortQuantityAscBtn);
         sortQuantityDescBtn = fragmentView.findViewById(R.id.sortQuantityDescBtn);
         favBtn = fragmentView.findViewById(R.id.favBtn);
@@ -142,6 +149,7 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
     private void changeFavStatus() {
         DatabaseReference goodsFavReff = database.getReference().child("user").child(um.getUserIDFromDataBase()).
                 child("goods").child("fav");
+        Toast.makeText(getContext(), goodsCategory,Toast.LENGTH_LONG).show();
         if (goodsFav) {//task to do:remove from fav list
             goodsFavReff.child(barcode).removeValue();
             favBtn.setImageResource(R.drawable.ic_disabled_star);

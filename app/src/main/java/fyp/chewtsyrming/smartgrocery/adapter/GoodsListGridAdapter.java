@@ -10,12 +10,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 import java.util.Locale;
@@ -74,7 +74,13 @@ public class GoodsListGridAdapter extends BaseAdapter {
 
         final ViewHolder viewHolder = (ViewHolder) convertView.getTag();
 //    viewHolder.imageViewCoverArt.setImageResource(book.getImageResource());
-        Picasso.get().load(book.getImageUrl()).fit().into(viewHolder.imageView);
+        //Picasso.get().load(book.getImageUrl()).fit().into(viewHolder.imageView);
+        Glide.with(mContext)
+                .load(book.getImageUrl())
+                .centerCrop()
+                .placeholder(R.drawable.ic_loading_static)
+                .dontAnimate()
+                .into(viewHolder.imageView);
         //viewHolder.imageView.setImageResource(book.getImageResource());
         viewHolder.nameTextView.setText(book.getName());
         DatabaseReference favReff = FirebaseDatabase.getInstance().getReference().

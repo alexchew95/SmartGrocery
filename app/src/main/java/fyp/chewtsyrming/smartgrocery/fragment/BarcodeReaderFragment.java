@@ -9,29 +9,22 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
 
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.barcode.BarcodeCaptureActivity;
 import fyp.chewtsyrming.smartgrocery.fragmentHandler;
-import fyp.chewtsyrming.smartgrocery.home;
 
 public class BarcodeReaderFragment extends Fragment {
 
@@ -129,18 +122,10 @@ public class BarcodeReaderFragment extends Fragment {
 
                 } else {
 
-                    statusMessage.setText(barcode_value);
-                    //  statusMessage.setText(R.string.barcode_failure);
-                    //this will go into if, laptop camera not working.
-                    barcode_value = "9415007044598";
-                    Bundle barcodeBundle = new Bundle();
-                    barcodeBundle.putString("barcode", barcode_value);
-                    AddGoodsFragment addGoodsFragStart = new AddGoodsFragment();
-                    addGoodsFragStart.setArguments(barcodeBundle);
-                    h.loadFragment(addGoodsFragStart,getContext());
 
 
-                    // end of if code
+
+
                 }
             } else {
                 statusMessage.setText(String.format(getString(R.string.barcode_error),
@@ -162,10 +147,12 @@ public class BarcodeReaderFragment extends Fragment {
                 if (data != null) {
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
                     String shoppingPlanID = getArguments().getString("shoppingPlanID");
+                    String shoppingPlanName = getArguments().getString("shoppingPlanName");
                     Bundle shoppingListItemBundle = new Bundle();
                     String qrCodeValue = barcode.displayValue;
                     shoppingListItemBundle.putString("shoppingPlanID",shoppingPlanID );
                     shoppingListItemBundle.putString("barcode", qrCodeValue);
+                    shoppingListItemBundle.putString("shoppingPlanName", shoppingPlanName);
                     ViewItemsShoppingListFragment viewItemsShoppingListFragment = new ViewItemsShoppingListFragment();
                     viewItemsShoppingListFragment.setArguments(shoppingListItemBundle);
                     h.loadFragment(viewItemsShoppingListFragment,getContext());

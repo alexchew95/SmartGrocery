@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -57,14 +59,14 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
         Bundle cate = this.getArguments();
         assert cate != null;
         String shoppingPlanID = cate.getString("shoppingPlanID");
-        String shoppingPlanName = cate.getString("shoppingName");
+        String shoppingPlanName = cate.getString("shoppingPlanName");
         tv_fragment_title = fragmentView.findViewById(R.id.tv_fragment_title);
         tv_rv_empty = fragmentView.findViewById(R.id.tv_rv_empty);
         rl_rv = fragmentView.findViewById(R.id.rl_rv);
         pb = fragmentView.findViewById(R.id.pb);
         btn_add_shopping_plan_item = fragmentView.findViewById(R.id.btn_add_shopping_plan_item);
         tv_fragment_title.setText(shoppingPlanName);
-        //pending
+       //pending
         layoutManager = new LinearLayoutManager(fragmentView.getContext(), LinearLayoutManager.VERTICAL, false);
         shoppingPlanItemList = new ArrayList<>();
         adapterPending = new ShoppingPlanItemListAdapter(shoppingPlanItemList, fragmentView.getContext());
@@ -74,6 +76,10 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
         rvShoppingPlanItemPending.setLayoutManager(layoutManager);
         rvShoppingPlanItemPending.setAdapter(adapterPending);
         rvShoppingPlanItemPending.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        int resId = R.anim.layout_animation_fall_down;
+        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getContext(), resId);
+        rvShoppingPlanItemPending.setLayoutAnimation(animation);
+
         //crossed
         layoutManagerCrossed = new LinearLayoutManager(fragmentView.getContext(), LinearLayoutManager.VERTICAL, false);
         shoppingPlanItemListCrossed = new ArrayList<>();
@@ -84,6 +90,9 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
         rvShoppingPlanItemCrossed.setLayoutManager(layoutManagerCrossed);
         rvShoppingPlanItemCrossed.setAdapter(adapterCrossed);
         rvShoppingPlanItemCrossed.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        LayoutAnimationController animation2 = AnimationUtils.loadLayoutAnimation(getContext(), resId);
+        rvShoppingPlanItemCrossed.setLayoutAnimation(animation2);
+
         btn_add_shopping_plan_item.setOnClickListener(this);
         getItemList(shoppingPlanID);
         return fragmentView;
@@ -107,16 +116,17 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
                     shoppingPlanItemList.clear();
                     shoppingPlanItemListCrossed.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        String itemID, goodsBarcode, buyStatus, goodsCategory, goodsName, inventoryStatus, quantity;
+                        String itemID, goodsBarcode, buyStatus, goodsCategory, goodsName, quantity,imageURL;
                         itemID = snapshot.getKey();
                         buyStatus = (String) snapshot.child("buyStatus").getValue();
                         goodsBarcode = (String) snapshot.child("goodsBarcode").getValue();
                         goodsCategory = (String) snapshot.child("goodsCategory").getValue();
                         goodsName = (String) snapshot.child("goodsName").getValue();
-                        inventoryStatus = (String) snapshot.child("inventoryStatus").getValue();
                         quantity = (String) snapshot.child("quantity").getValue();
+                        imageURL = (String) snapshot.child("imageURL").getValue();
+
                         ShoppingPlanItem shoppingPlanItem = new ShoppingPlanItem(shoppingPlanID, itemID, buyStatus, goodsBarcode
-                                , goodsCategory, goodsName, inventoryStatus, quantity);
+                                , goodsCategory, goodsName, quantity,imageURL);
                         if (buyStatus.equals("Pending")) {
                             shoppingPlanItemList.add(shoppingPlanItem);
                         } else {
@@ -125,6 +135,8 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
                     }
                     adapterPending.notifyDataSetChanged();
                     adapterCrossed.notifyDataSetChanged();
+
+
                 }
             }
 
@@ -139,13 +151,13 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_add_shopping_plan_item:
-                btn_showMessage();
+                show_add_item_dialog();
                 break;
         }
 
     }
 
-    public void btn_showMessage() {
+    public void show_add_item_dialog() {
         final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
         View mView = getLayoutInflater().inflate(R.layout.shopping_plan_add_item_choice_dialog, null);
         Button button_search_inventory = mView.findViewById(R.id.button_search_inventory);
@@ -182,7 +194,7 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
         Bundle cate = this.getArguments();
         assert cate != null;
         String shoppingPlanID = cate.getString("shoppingPlanID");
-        String shoppingPlanName = cate.getString("shoppingName");
+        String shoppingPlanName = cate.getString("shoppingPlanName");
         Bundle bundle = new Bundle();
         bundle.putString("message", "Add items to " + shoppingPlanName + " list");
         bundle.putString("shoppingPlanID", shoppingPlanID);
@@ -198,7 +210,7 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
         Bundle cate = this.getArguments();
         assert cate != null;
         String shoppingPlanID = cate.getString("shoppingPlanID");
-        String shoppingPlanName = cate.getString("shoppingName");
+        String shoppingPlanName = cate.getString("shoppingPlanName");
 
         Bundle bundle = new Bundle();
         bundle.putString("shoppingPlanID", shoppingPlanID);

@@ -4,17 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <androidx.core.widget.ContentLoadingProgressBar
-        android:id="@+id/progress_bar_add_goods"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_centerInParent="true" />
-
-    <RelativeLayout
+    <Button
+        android:id="@+id/button_cancel"
+        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true">
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        app:icon="@drawable/ic_cancel_red_24dp"
+        app:iconGravity="textStart"
+        app:iconSize="50dp"
+        app:iconTint="#FF0000" />
+
+    <RelativeLayout
+        android:id="@+id/rl_goods_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="visible">
 
         <RelativeLayout
             android:id="@+id/rlImage"
@@ -23,17 +30,13 @@
 
             <ImageView
                 android:id="@+id/imgGoods"
-                android:layout_width="140dp"
-                android:layout_height="140dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
                 android:src="@drawable/camera" />
-            <TextView
-                android:id="@+id/tv_imageURL"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="invisible"/>
+
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -41,24 +44,7 @@
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@+id/imgGoods"
                 android:layout_toRightOf="@+id/imgGoods"
-                android:orientation="vertical">
-
-                <ImageButton
-                    android:id="@+id/ibCamera"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_menu_camera"
-
-                    />
-
-                <ImageButton
-                    android:id="@+id/ibGallery"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_menu_gallery" />
-            </LinearLayout>
+                android:orientation="vertical" />
 
 
         </RelativeLayout>
@@ -73,8 +59,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/et_bg_add_goods"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="10dp">
 
                 <LinearLayout
 
@@ -90,25 +78,16 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Item Name : "
-
                         android:textColor="@color/black" />
 
-                    <EditText
-                        android:id="@+id/editTextGoodsName"
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/tv_textGoodsName"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
                         android:ems="10"
-                        android:hint="Eg: Dutch Lady Choc Mlik"
-                        android:inputType="textPersonName" />
+                        android:textColor="@color/black" />
 
-                    <ImageButton
-                        android:id="@+id/imageButtonScanGoodsName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:background="@drawable/ic_barcode_scanner2" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -116,9 +95,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="7dp"
-
-                    android:textColor="@color/black">
+                    android:padding="7dp">
 
                     <TextView
                         android:id="@+id/textView2"
@@ -129,11 +106,49 @@
 
                         android:textColor="@color/black" />
 
-                    <Spinner
-                        android:id="@+id/spinnerCategory"
+                    <TextView
+                        android:id="@+id/tv_category"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:textColor="@color/black" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_quantity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="7dp"
+
+                    >
+
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Quantity : "
+                        android:textColor="@color/black" />
+
+                    <EditText
+                        android:id="@+id/editTextQuantity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="3" />
+                        android:layout_weight="3"
+                        android:ems="2"
+                        android:inputType="number"
+                        android:text="@string/_0"
+                        android:textAlignment="center"
+                        android:textColor="@color/black" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/ic_question"
+                        android:tooltipText="Leave it 0 if you are unsure how many to buy." />
 
 
                 </LinearLayout>
@@ -148,52 +163,27 @@
                     >
 
                     <TextView
-                        android:layout_width="80dp"
-
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
                         android:layout_weight="1"
-                        android:text="Expiry Date :"
+                        android:text="Expiry Dates : "
                         android:textColor="@color/black" />
-
-                    <EditText
-                        android:id="@+id/editTextExpiryDate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:ems="5"
-                        android:focusable="false"
-                        android:text="" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_quantity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="7dp"
-
-                    >
 
                     <TextView
-
-                        android:layout_width="80dp"
+                        android:id="@+id/tv_expirationDate"
+                        android:layout_width="100dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Quantity : "
-                        android:textColor="@color/black" />
+                        android:layout_gravity="center_vertical"
+                        android:hint="Select date"
+                        android:inputType="none" />
 
-                    <EditText
-                        android:id="@+id/editTextQuantity"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:ems="2"
-                        android:inputType="number"
-                        android:text="" />
-
+                    <ImageButton
+                        android:id="@+id/ib_selectExpDate"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/ic_date_range_black_24dp" />
                 </LinearLayout>
-
                 <LinearLayout
                     android:id="@+id/ll_alert"
                     android:layout_width="wrap_content"
@@ -238,7 +228,6 @@
                         android:text="1" />
 
                 </LinearLayout>
-
                 <LinearLayout
                     android:id="@+id/ll_location"
                     android:layout_width="wrap_content"
@@ -249,36 +238,99 @@
                     >
 
                     <TextView
-
-                        android:layout_width="120dp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
                         android:layout_weight="1"
-                        android:text="Goods Location: "
+                        android:text="Location : "
                         android:textColor="@color/black" />
 
                     <Spinner
                         android:id="@+id/spinnerGoodsLocation"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <ImageButton
-                        android:id="@+id/ib_add_storage_location"
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:background="@drawable/ic_add_circle_24dp" />
+                        android:layout_gravity="center_vertical"
+                        android:hint="Select date"
+                        android:inputType="date" />
 
                 </LinearLayout>
 
-                <Button
-                    android:id="@+id/buttonAddGoods"
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/black" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/tv_inventory_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="Inventory Status"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold|italic" />
+
+                    <androidx.core.widget.ContentLoadingProgressBar
+                        android:id="@+id/pb_item_status"
+                        style="?android:attr/progressBarStyleLarge"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_below="@+id/tv_item_inventory_status"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="10dp" />
+
+                    <TextView
+                        android:id="@+id/tv_item_inventory_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tv_inventory_status"
+                        android:layout_centerHorizontal="true"
+                        android:text="Checking...."
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                </RelativeLayout>
+
+                <LinearLayout
                     android:layout_width="wrap_content"
+                    android:layout_gravity="center_horizontal"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_gravity="center"
-                    android:text="Add Goods" />
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/button_add_to_inventory_list"
+
+                        android:layout_marginRight="10dp"
+                        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center"
+                        app:icon="@drawable/ic_add_goods"
+                        app:iconGravity="textStart"
+                        app:iconSize="75dp"
+                        app:iconTint="@null" />
+
+                    <Button
+                        android:id="@+id/button_delete"
+
+                        android:layout_marginLeft="10dp"
+                        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center"
+                        app:icon="@drawable/ic_delete_black_24dp"
+                        app:iconGravity="textStart"
+                        app:iconSize="75dp"
+                        app:iconTint="@null"/>
+                </LinearLayout>
             </LinearLayout>
-            -->
         </ScrollView>
     </RelativeLayout>
 

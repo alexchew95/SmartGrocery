@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.Date;
 
 public class GoodsList {
-    String goodsId, expiryDate, buyDate, quantity, category, barcode;
+    private String goodsId, expiryDate, buyDate, quantity, category, barcode;
 
     public GoodsList(String goodsId, String expiryDate, String buyDate, String quantity
             , String category, String barcode) {

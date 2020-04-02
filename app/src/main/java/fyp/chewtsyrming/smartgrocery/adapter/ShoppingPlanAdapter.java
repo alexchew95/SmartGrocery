@@ -7,10 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -26,7 +24,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.List;
 
 import fyp.chewtsyrming.smartgrocery.R;
-import fyp.chewtsyrming.smartgrocery.fragment.GoodsFromSameGoodsFragment;
 import fyp.chewtsyrming.smartgrocery.fragment.ShoppingPlanItemFragment;
 import fyp.chewtsyrming.smartgrocery.object.ShoppingPlan;
 
@@ -35,14 +32,19 @@ public class ShoppingPlanAdapter extends RecyclerView.Adapter<ShoppingPlanAdapte
     private List<ShoppingPlan> shoppingPlans;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private String userId = user.getUid();
-
+    RecyclerView mRecyclerView;
     public ShoppingPlanAdapter(List<ShoppingPlan> shoppingPlans, Context context) {
         this.shoppingPlans = shoppingPlans;
         this.context = context;
 
 
     }
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
 
+        mRecyclerView = recyclerView;
+    }
 
     @NonNull
     @Override
@@ -69,7 +71,7 @@ public class ShoppingPlanAdapter extends RecyclerView.Adapter<ShoppingPlanAdapte
                 String shoppingPlanID=shoppingPlan.getShoppingId();
                 String shoppingPlanName=shoppingPlan.getShoppingPlanName();
                 cate.putString("shoppingPlanID", shoppingPlanID);
-                cate.putString("shoppingName", shoppingPlanName);
+                cate.putString("shoppingPlanName", shoppingPlanName);
                 ShoppingPlanItemFragment frag = new ShoppingPlanItemFragment();
                 frag.setArguments(cate);
                 FragmentTransaction transaction = ((FragmentActivity) context).getSupportFragmentManager().beginTransaction();
@@ -104,7 +106,9 @@ public class ShoppingPlanAdapter extends RecyclerView.Adapter<ShoppingPlanAdapte
                             @Override
                             public void onSuccess(Void aVoid) {
                                 alertDialog.dismiss();
+                               /* notifyDataSetChanged();
 
+                                mRecyclerView.scheduleLayoutAnimation();*/
                             }
                         });
 

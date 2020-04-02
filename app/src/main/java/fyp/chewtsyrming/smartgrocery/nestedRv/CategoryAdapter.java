@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -70,7 +72,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.HomeVi
         GoodsAdapter horizontalAdapter = new GoodsAdapter(data.get(position).getList(), context);
         holder.recyclerViewHorizontal.setAdapter(horizontalAdapter);
         holder.recyclerViewHorizontal.setRecycledViewPool(recycledViewPool);
-
+        int resId = R.anim.layout_animation_fall_down;
+        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(context, resId);
+        holder.recyclerViewHorizontal.setLayoutAnimation(animation);
         holder.recyclerViewHorizontal.
                 addOnItemTouchListener(new RecyclerTouchListener(context,
                         holder.recyclerViewHorizontal, new RecyclerTouchListener.ClickListener() {
@@ -80,7 +84,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.HomeVi
                     public void onClick(View view, int position) {
                         Goods goods = goodsList.get(position);
                         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-                        DatabaseReference barcodeReference = database.getReference().child("barcode").child(goods.getId());
+                        DatabaseReference barcodeReference = database.getReference().child("barcode").child(goods.getBarcode());
 
                         barcodeReference.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -109,7 +113,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.HomeVi
                         });
 
 
-                        Toast.makeText(context, goods.getName() + " is selected!", Toast.LENGTH_SHORT).show();
+                   //     Toast.makeText(context, goods.getGoodsName() + " is selected!", Toast.LENGTH_SHORT).show();
 
                     }
 

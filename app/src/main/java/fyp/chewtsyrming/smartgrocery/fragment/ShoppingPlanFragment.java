@@ -1,11 +1,12 @@
 package fyp.chewtsyrming.smartgrocery.fragment;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -68,6 +69,10 @@ public class ShoppingPlanFragment extends Fragment implements View.OnClickListen
         rvShoppingPlan.setLayoutManager(layoutManager);
         rvShoppingPlan.setAdapter(adapter);
         rvShoppingPlan.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        int resId = R.anim.layout_animation_slide_right;
+        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getContext(), resId);
+        rvShoppingPlan.setLayoutAnimation(animation);
+
         btn_add_shopping_plan.setOnClickListener(this);
         getShoppingList();
 
@@ -100,7 +105,7 @@ public class ShoppingPlanFragment extends Fragment implements View.OnClickListen
 
                     }
                     adapter.notifyDataSetChanged();
-
+                    rvShoppingPlan.scheduleLayoutAnimation();
                 }
             }
 

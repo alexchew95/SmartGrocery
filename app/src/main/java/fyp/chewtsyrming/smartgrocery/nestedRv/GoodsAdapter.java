@@ -2,12 +2,14 @@ package fyp.chewtsyrming.smartgrocery.nestedRv;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,12 +26,11 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 import fyp.chewtsyrming.smartgrocery.R;
+import fyp.chewtsyrming.smartgrocery.object.FirebaseHandler;
 
 public class GoodsAdapter extends RecyclerView.Adapter<GoodsAdapter.GoodsViewHolder> {
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -58,82 +59,116 @@ public class GoodsAdapter extends RecyclerView.Adapter<GoodsAdapter.GoodsViewHol
     public void onBindViewHolder(@NonNull final GoodsViewHolder holder, final int position) {
 
         final Goods goods = goodsList.get(position);
-        //holder.tv_earliestExpDate.setText(goods.getExpiredSoon());
         final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         Date date = new Date();
         final String currentDate = dateFormat.format(date);
+        final String barcode = goods.getBarcode();
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference barcodeReference = database.getReference().child("barcode").child(goods.getId());
+        DatabaseReference barcodeReference = database.getReference().child("barcode").child(barcode);
 
         barcodeReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String name = (String) dataSnapshot.child("goodsName").getValue();
-                String imageUrl = (String) dataSnapshot.child("imageURL").getValue();
-                goods.setName(name);
-                goods.setImageUrl(imageUrl);
-                holder.textViewTitle.setText(goods.getName());
-              //  Glide.with(context).asGif().load(R.drawable.loading_spinner).into(holder.imageViewMovie);
-                Glide.with(context)
-                        .load(goods.getImageUrl())
-                        .centerCrop()
-                        .placeholder(R.drawable.ic_loading_static)
-                        .into(holder.imageViewMovie);
-                // Picasso.get().load(goods.getImageUrl()).fit().into(holder.imageViewMovie);
+                final String name = (String) dataSnapshot.child("goodsName").getValue();
+                final String imageUrl = (String) dataSnapshot.child("imageURL").getValue();
+                final String goodsCategory = (String) dataSnapshot.child("goodsCategory").getValue();
+
+
                 holder.pb_item.setVisibility(View.GONE);
+                FirebaseHandler fh = new FirebaseHandler();
+                DatabaseReference expStatusRef = fh.getUserRef().child("goods").child(goodsCategory).child(barcode);
 
-            }
+                expStatusRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        boolean earlieastExpDateExist = false;
+                        String earliestexpirationDate = "asdsa  ";
+                        int x = 0;
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            x++;
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                            String expirationDate = snapshot.child("expirationDate").getValue(String.class);
+                            if (!earlieastExpDateExist) {
+                                earlieastExpDateExist = true;
+                                earliestexpirationDate = expirationDate;
+                            } else {
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+                                Date currentEarliestExpDate = null;
+                                Date newExpDate = null;
 
-            }
-        });
-        final String barcode = goods.getId();
-        DatabaseReference databaseReference = database.getReference().child("user").child(userId).child("goodsData");
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChild(barcode)) {
-                    String expired = dataSnapshot.child(barcode).child("expiringSoon").getValue().toString();
-                    goods.setExpiredSoon(expired);
-                    try {
-                        Date date1 = dateFormat.parse(currentDate);
-                        Date date2 = dateFormat.parse(expired);
-                        long diff = date2.getTime() - date1.getTime();
-                        float daysF = (diff / (1000 * 60 * 60 * 24));
-                        int days = Math.round(daysF);
-                        String d = String.valueOf(days);
-                        String daysLeft = d + " days left.";
-                        goods.setRemainingDays(d);
+                                try {
+                                    currentEarliestExpDate = sdf.parse(earliestexpirationDate);
+                                    newExpDate = sdf.parse(expirationDate);
 
-                        if (days < 1) {
-                            holder.tv_earliestExpDate.setText("EXPIRED");
-                            holder.tv_earliestExpDate.setTextColor(Color.parseColor("#FFFF0000"));
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
 
-                        } else {
-                            holder.tv_earliestExpDate.setText(daysLeft);
-                            holder.tv_earliestExpDate.setTextColor(Color.parseColor("#FF1A1A1A"));
+                                if (newExpDate.compareTo(currentEarliestExpDate) < 0) {
+
+                                    earliestexpirationDate = expirationDate;
+
+                                }
+
+
+                            }
+                            //when the last row is checked. calculate the remaining days
+                            if (x ==  dataSnapshot.getChildrenCount()) {
+                                Date date1=null;
+                                Date date2 =null;
+                                try {
+                                    date1 = dateFormat.parse(currentDate);
+                                    date2 = dateFormat.parse(earliestexpirationDate);
+
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                                long diff = date2.getTime() - date1.getTime();
+                                float daysF = (diff / (1000 * 60 * 60 * 24));
+                                int days = Math.round(daysF);
+                                String d = String.valueOf(days);
+                                goodsList.get(position).setRemainingDays(d);
+                                String statusMessage="";
+                                if(days<0){
+                                    days= Math.abs(days);
+                                    String sDays= String.valueOf(days);
+                                    statusMessage= "Expired "+sDays+ " days ago.";
+                                    holder.tv_earliestExpDate.setText(statusMessage);
+                                    holder.tv_earliestExpDate.setTextColor(Color.RED);
+                                }
+                                else if(days==0){
+                                    days= Math.abs(days);
+                                    String sDays= String.valueOf(days);
+                                    statusMessage= "Expired  today";
+                                    holder.tv_earliestExpDate.setText(statusMessage);
+                                    holder.tv_earliestExpDate.setTextColor(Color.RED);
+                                }
+                                else{
+                                    String sDays= String.valueOf(days);
+                                    statusMessage= "Expiring in "+sDays+ " days.";
+                                    holder.tv_earliestExpDate.setText(statusMessage);
+                                    holder.tv_earliestExpDate.setTextColor(Color.GREEN);
+                                }
+
+                                holder.textViewTitle.setText(name);
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .centerCrop()
+                                        .placeholder(R.drawable.ic_loading_static)
+                                        .dontAnimate()
+                                        .into(holder.imageViewMovie);
+
+                            }
 
                         }
-
-
-                        //Toast.makeText(context,Float.toString(days), Toast.LENGTH_SHORT).show();
-
-                    } catch (ParseException e) {
-                        e.printStackTrace();
                     }
 
-                    Collections.sort(goodsList, new Comparator<Goods>() {
-                        public int compare(Goods o1, Goods o2) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                            return o1.getRemainingDays().compareTo(o2.getRemainingDays());
-                        }
-                    });
-                    notifyDataSetChanged();
-                }
-
+                    }
+                });
             }
 
             @Override
@@ -142,13 +177,6 @@ public class GoodsAdapter extends RecyclerView.Adapter<GoodsAdapter.GoodsViewHol
             }
         });
 
-      /*  Collections.sort(goodsList, new Comparator<Goods>() {
-            public int compare(Goods o1, Goods o2) {
-                Toast.makeText(context, o2.getExpiredSoon(), Toast.LENGTH_SHORT).show();
-
-                return o2.getExpiredSoon().compareTo(o1.getExpiredSoon());
-            }
-        });*/
     }
 
     @Override

@@ -4,15 +4,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,31 +24,30 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.fragment.BarcodeReaderFragment;
 import fyp.chewtsyrming.smartgrocery.fragmentHandler;
-import fyp.chewtsyrming.smartgrocery.home;
 
 public class fragment_home extends Fragment implements View.OnClickListener {
-    private List<Category> dataList;
-    private List<Goods> goodsList;
-    private ProgressBar progressBar;
-    private RecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
-    private FirebaseUser user;
-    private String userId;
     String name, imageUrl;
-    private Button ib_scan_barcode, ib_search_goods, ib_add_goods;
-    private Button ib_all_item, ib_category;
     Goods goods;
     int i = 0;
     FirebaseDatabase database;
     fragmentHandler h = new fragmentHandler();
     View view;
     ContentLoadingProgressBar pb_main;
+    private List<Category> dataList;
+    private List<Goods> goodsList;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+    private FirebaseUser user;
+    private String userId;
+    private Button ib_scan_barcode, ib_search_goods, ib_add_goods;
+    private Button ib_all_item, ib_category;
 
     @Nullable
     @Override
@@ -67,12 +65,15 @@ public class fragment_home extends Fragment implements View.OnClickListener {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
-         view = getActivity().findViewById(R.id.pb_main);
-        if( view instanceof ContentLoadingProgressBar) {
-           pb_main = (ContentLoadingProgressBar) view;
+        int resId = R.anim.layout_animation_fall_down;
+        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getContext(), resId);
+        recyclerView.setLayoutAnimation(animation);
+        view = getActivity().findViewById(R.id.pb_main);
+        if (view instanceof ContentLoadingProgressBar) {
+            pb_main = (ContentLoadingProgressBar) view;
             //Do your stuff
         }
-        progressBar = v.findViewById(R.id.pb_home);
+
         ib_scan_barcode = v.findViewById(R.id.ib_scan_barcode);
         ib_search_goods = v.findViewById(R.id.ib_search_goods);
         ib_add_goods = v.findViewById(R.id.ib_add_goods);
@@ -84,10 +85,10 @@ public class fragment_home extends Fragment implements View.OnClickListener {
         ib_scan_barcode.setOnClickListener(this);
         ib_search_goods.setOnClickListener(this);
         ib_add_goods.setOnClickListener(this);
-       getInventoryData();
+        getInventoryData();
+
         return v;
     }
-
 
     public void getAllData() {
         //consist of fifo, expiring soon, and reminder alert
@@ -114,7 +115,7 @@ public class fragment_home extends Fragment implements View.OnClickListener {
                             for (DataSnapshot snapshot2 : snapshot.getChildren()) {
                                 final String barcode = snapshot2.getKey();
                                 //Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
-                                goods = new Goods(barcode, barcode, "as", barcode, imageUrl, "z", "0");
+                                goods = new Goods(barcode);
                                 goodsList.add(goods);
 
 
@@ -205,22 +206,25 @@ public class fragment_home extends Fragment implements View.OnClickListener {
 
                     for (DataSnapshot snapshot2 : dataSnapshot.child("fav").getChildren()) {
                         String barcode = snapshot2.getKey();
+                        String category = snapshot2.getValue().toString();
                         //Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
 
+                        if (dataSnapshot.hasChild(category)) {
+                            if (dataSnapshot.child(category).hasChild(barcode)) {
+                                goods = new Goods(barcode);
+                                goodsList.add(goods);
+                            }
+                        }
 
-                        goods = new Goods(barcode, barcode, "as", barcode, imageUrl, "Unknown", "0");
-
-                        goodsList.add(goods);
                         // Toast.makeText(getContext(), snapshot2.getKey(), Toast.LENGTH_SHORT).show();
-
-
                     }
-                    progressBar.setVisibility(View.GONE);
+                    if (!goodsList.isEmpty()) {
+                        Category category = new Category(goodsList, ParentKey, "tat");
+                        dataList.add(category);
+                        //Toast.makeText(getContext(), dataList.get(0).getGenre(), Toast.LENGTH_SHORT).show();
+                        adapter.notifyDataSetChanged();
+                    }
 
-                    Category category = new Category(goodsList, ParentKey, "tat");
-                    dataList.add(category);
-                    //Toast.makeText(getContext(), dataList.get(0).getGenre(), Toast.LENGTH_SHORT).show();
-                    adapter.notifyDataSetChanged();
 
                 }
                 if (dataSnapshot.hasChild("recent")) {
@@ -232,17 +236,28 @@ public class fragment_home extends Fragment implements View.OnClickListener {
 
                     for (DataSnapshot snapshot2 : dataSnapshot.child("recent").getChildren()) {
                         String barcode = snapshot2.getKey();
+                        String category = snapshot2.child("goodsCategory").getValue(String.class);
+
+                        String timeStamp = snapshot2.child("timeStamp").getValue(String.class);
                         //Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
+                        if (dataSnapshot.hasChild(category)) {
+                            if (dataSnapshot.child(category).hasChild(barcode)) {
+                                goods = new Goods(barcode, timeStamp);
 
-                        goods = new Goods(barcode, barcode, "as", barcode, imageUrl, "Unknown", "0");
+                                goodsList.add(goods);
+                            }
+                        }
 
-                        goodsList.add(goods);
                         // Toast.makeText(getContext(), snapshot2.getKey(), Toast.LENGTH_SHORT).show();
 
 
                     }
-                    progressBar.setVisibility(View.GONE);
+                    //  Toast.makeText(getContext(), String.valueOf(goodsList.size()), Toast.LENGTH_SHORT).show();
 
+                    if (goodsList.size() > 1) {
+                        Collections.sort(goodsList, Goods.sortRecentItem);
+
+                    }
                     Category category = new Category(goodsList, ParentKey, "tat");
                     dataList.add(category);
                     //Toast.makeText(getContext(), dataList.get(0).getGenre(), Toast.LENGTH_SHORT).show();
@@ -260,17 +275,16 @@ public class fragment_home extends Fragment implements View.OnClickListener {
                         if (ParentKey != null && !ParentKey.equals("recent")) {
                             for (DataSnapshot snapshot2 : snapshot.getChildren()) {
                                 String barcode = snapshot2.getKey();
+
                                 //Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
 
-                                goods = new Goods(barcode, barcode, "as", barcode, imageUrl, "Unknown", "0");
+                                goods = new Goods(barcode);
 
                                 goodsList.add(goods);
                                 // Toast.makeText(getContext(), snapshot2.getKey(), Toast.LENGTH_SHORT).show();
 
 
                             }
-                            progressBar.setVisibility(View.GONE);
-
                             Category category = new Category(goodsList, ParentKey, "tat");
                             dataList.add(category);
                             //Toast.makeText(getContext(), dataList.get(0).getGenre(), Toast.LENGTH_SHORT).show();
@@ -322,7 +336,7 @@ public class fragment_home extends Fragment implements View.OnClickListener {
         Fragment fragment = null;
         fragment = new BarcodeReaderFragment();
         fragment.setArguments(bundle);
-        h.loadFragment(fragment,getContext());
+        h.loadFragment(fragment, getContext());
     }
 
     public void scanBarcode() {
@@ -332,7 +346,7 @@ public class fragment_home extends Fragment implements View.OnClickListener {
         bundle.putString("code", "9001");//9001 indicate search goods
         Fragment fragment = new BarcodeReaderFragment();
         fragment.setArguments(bundle);
-        h.loadFragment(fragment,getContext());
+        h.loadFragment(fragment, getContext());
     }
 
 }

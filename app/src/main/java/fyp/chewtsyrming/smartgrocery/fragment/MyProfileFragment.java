@@ -33,7 +33,6 @@ import net.glxn.qrgen.android.QRCode;
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.SplashActivity;
 import fyp.chewtsyrming.smartgrocery.fragmentHandler;
-import fyp.chewtsyrming.smartgrocery.home;
 
 
 public class MyProfileFragment extends Fragment implements View.OnClickListener {
