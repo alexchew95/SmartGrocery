@@ -27,16 +27,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import fyp.chewtsyrming.smartgrocery.FragmentHandler;
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.fragment.BarcodeReaderFragment;
-import fyp.chewtsyrming.smartgrocery.fragmentHandler;
+import fyp.chewtsyrming.smartgrocery.fragment.GoodsFromSameCategoryFragment;
 
 public class fragment_home extends Fragment implements View.OnClickListener {
     String name, imageUrl;
     Goods goods;
     int i = 0;
     FirebaseDatabase database;
-    fragmentHandler h = new fragmentHandler();
+    FragmentHandler h = new FragmentHandler();
     View view;
     ContentLoadingProgressBar pb_main;
     private List<Category> dataList;
@@ -307,7 +308,12 @@ public class fragment_home extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ib_search_goods:
-
+                Bundle bundle = new Bundle();
+                bundle.putString("goodsCategory", "All Goods");
+                Fragment fragment = null;
+                fragment = new GoodsFromSameCategoryFragment();
+                fragment.setArguments(bundle);
+                h.loadFragment(fragment, getContext());
                 break;
             case R.id.ib_scan_barcode:
                 scanBarcode();

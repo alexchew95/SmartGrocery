@@ -25,8 +25,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import fyp.chewtsyrming.smartgrocery.FragmentHandler;
 import fyp.chewtsyrming.smartgrocery.R;
-import fyp.chewtsyrming.smartgrocery.fragmentHandler;
 
 
 public class FollowerFragment extends Fragment implements View.OnClickListener {
@@ -43,7 +43,7 @@ public class FollowerFragment extends Fragment implements View.OnClickListener {
     RelativeLayout mainRellay;
     Bundle bundle;
     LinearLayout ll_add_reject, ll_follower_request;
-    fragmentHandler h= new fragmentHandler();
+    FragmentHandler h = new FragmentHandler();
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
-public class fragmentHandler {
+public class FragmentHandler {
     public boolean loadFragment(Fragment fragment, Context context) {
         //switching fragment
         if (fragment != null) {

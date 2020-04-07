@@ -30,9 +30,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import net.glxn.qrgen.android.QRCode;
 
+import fyp.chewtsyrming.smartgrocery.FragmentHandler;
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.SplashActivity;
-import fyp.chewtsyrming.smartgrocery.fragmentHandler;
 
 
 public class MyProfileFragment extends Fragment implements View.OnClickListener {
@@ -47,7 +47,7 @@ public class MyProfileFragment extends Fragment implements View.OnClickListener 
     private ImageView ivUserProfile;
     LinearLayout ll_myQrCode, ll_scanQrCode;
     Button btn_logout;
-    fragmentHandler h=new fragmentHandler();
+    FragmentHandler h = new FragmentHandler();
 
 
     @Override

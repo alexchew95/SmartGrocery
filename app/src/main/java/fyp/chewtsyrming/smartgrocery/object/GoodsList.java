@@ -76,7 +76,7 @@ public class GoodsList {
     public static Comparator<GoodsList> sortExpDateAsc = new Comparator<GoodsList>() {
         @Override
         public int compare(GoodsList o1, GoodsList o2) {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
             Date d1 = null;
             Date d2 = null;
             try {

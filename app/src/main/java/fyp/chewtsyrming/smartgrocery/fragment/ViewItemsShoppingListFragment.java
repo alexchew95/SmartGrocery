@@ -43,17 +43,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import fyp.chewtsyrming.smartgrocery.FirebaseHandler;
+import fyp.chewtsyrming.smartgrocery.FragmentHandler;
 import fyp.chewtsyrming.smartgrocery.R;
-import fyp.chewtsyrming.smartgrocery.fragmentHandler;
 import fyp.chewtsyrming.smartgrocery.nestedRv.Goods;
-import fyp.chewtsyrming.smartgrocery.object.FirebaseHandler;
 import fyp.chewtsyrming.smartgrocery.object.ShoppingPlanItem;
 import fyp.chewtsyrming.smartgrocery.object.UserModel;
 
 public class ViewItemsShoppingListFragment extends Fragment implements View.OnClickListener {
     private static final int RC_OCR_CAPTURE = 9003;
     private static final int REQUEST_CODE = 11;
-    fragmentHandler h = new fragmentHandler();
+    FragmentHandler h = new FragmentHandler();
     UserModel um = new UserModel();
     FirebaseHandler fb = new FirebaseHandler();
     View view;
@@ -269,7 +269,7 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
                 cate.putString("shoppingPlanName", shoppingPlanName);
                 ShoppingPlanItemFragment frag = new ShoppingPlanItemFragment();
                 frag.setArguments(cate);
-                fragmentHandler f = new fragmentHandler();
+                FragmentHandler f = new FragmentHandler();
                 f.loadFragment(frag, getContext());
                 if (view instanceof ContentLoadingProgressBar) {
                     ((ContentLoadingProgressBar) view).hide();

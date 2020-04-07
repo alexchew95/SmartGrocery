@@ -1,18 +1,20 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="10dp">
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="10dp"
+    android:weightSum="11">
 
     <RelativeLayout
         android:id="@+id/rlQuantity"
         android:layout_width="wrap_content"
-
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true">
+        android:layout_centerVertical="true"
+        android:layout_weight="3">
 
         <TextView
             android:id="@+id/tvQuantity"
@@ -34,12 +36,13 @@
     <RelativeLayout
         android:id="@+id/rlExpDate"
         android:layout_width="wrap_content"
-
         android:layout_height="wrap_content"
+
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
         android:layout_toEndOf="@+id/rlQuantity"
-        android:layout_toRightOf="@+id/rlQuantity">
+        android:layout_toRightOf="@+id/rlQuantity"
+        android:layout_weight="3">
 
         <TextView
             android:id="@+id/tvExpDate"
@@ -65,19 +68,20 @@
         android:layout_marginStart="10dp"
         android:layout_marginLeft="10dp"
         android:layout_toEndOf="@+id/rlExpDate"
-        android:layout_toRightOf="@+id/rlExpDate">
+        android:layout_toRightOf="@+id/rlExpDate"
+        android:layout_weight="3">
 
         <TextView
-            android:id="@+id/tvBuyDate"
+            android:id="@+id/tvStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Expiry Date" />
+            android:text="Status" />
 
         <TextView
             android:id="@+id/tvBuyDateEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tvBuyDate"
+            android:layout_below="@+id/tvStatus"
             android:layout_centerHorizontal="true"
 
             android:text="0/0/0" />
@@ -87,25 +91,23 @@
         android:id="@+id/editBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_toStartOf="@+id/deleteBtn"
-        android:layout_toLeftOf="@+id/deleteBtn"
+        android:layout_weight="1"
+
+
         android:background="@null"
+        android:padding="10dp"
+
         app:srcCompat="@drawable/ic_edit" />
 
     <ImageButton
         android:id="@+id/deleteBtn"
-        android:background="@null"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
+
+        android:layout_weight="1"
+        android:background="@null"
+
+        android:padding="10dp"
         app:srcCompat="@drawable/ic_delete" />
 
-</RelativeLayout>
+</LinearLayout>

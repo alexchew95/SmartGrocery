@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 
-import fyp.chewtsyrming.smartgrocery.object.FirebaseHandler;
+import fyp.chewtsyrming.smartgrocery.FirebaseHandler;
 import fyp.chewtsyrming.smartgrocery.object.UserModel;
 
 public class Goods {

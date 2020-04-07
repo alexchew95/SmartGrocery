@@ -1,7 +1,9 @@
-package fyp.chewtsyrming.smartgrocery.object;
+package fyp.chewtsyrming.smartgrocery;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import fyp.chewtsyrming.smartgrocery.object.UserModel;
 
 public class FirebaseHandler {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();

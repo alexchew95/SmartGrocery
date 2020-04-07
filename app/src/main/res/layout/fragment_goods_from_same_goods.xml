@@ -4,6 +4,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageButton
+        android:id="@+id/ib_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="@null"
+        android:padding="20dp"
+        android:src="@drawable/ic_arrow_back_black_24dp" />
+
+    <ImageButton
+        android:id="@+id/settingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvGoodsName"
+        android:layout_gravity="center_vertical"
+        android:layout_toEndOf="@id/ivGoods"
+        android:background="@null"
+        android:padding="20dp"
+        app:srcCompat="@drawable/ic_settings_black_24dp" />
+
+    <ImageButton
+        android:id="@+id/favBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/settingButton"
+        android:layout_toEndOf="@id/ivGoods"
+        android:background="@null"
+        android:padding="20dp"
+        android:src="@drawable/ic_favorite_white_24dp" />
+
+
     <TextView
 
         android:id="@+id/tvGoodsName"
@@ -19,57 +51,25 @@
         android:layout_height="200dp"
         android:layout_below="@id/tvGoodsName"
         android:layout_centerHorizontal="true" />
+
     <LinearLayout
         android:id="@+id/rl1"
-    android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_below="@+id/ivGoods"
-        android:orientation="horizontal">
-        <ImageButton
-            android:id="@+id/favBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_disabled_star"
-            android:background="@null"
-            android:layout_gravity="center_vertical"
-            android:contentDescription="Fav" />
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/ivGoods"
+        android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/settingButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_settings_black_24dp"
-            android:background="@null"
-            android:layout_gravity="center_vertical"
-            android:contentDescription="Fav" />
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/sortQuantityAscBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tvGoodsName"
-        android:layout_toRightOf="@id/ivGoods"
-        android:text="QUANTITY Asc" />
-
-    <Button
-        android:id="@+id/sortQuantityDescBtn"
-
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/sortQuantityAscBtn"
-        android:layout_toRightOf="@id/ivGoods"
-        android:text="QUANTITY Desc"
-       />
 
 
     <ListView
         android:id="@+id/listGoods"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/rl1" />
+        android:layout_below="@+id/ivGoods"
+        android:background="@drawable/et_bg_2" />
 
 
 </RelativeLayout>

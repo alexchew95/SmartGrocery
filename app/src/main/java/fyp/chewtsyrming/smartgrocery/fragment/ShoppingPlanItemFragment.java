@@ -31,16 +31,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import fyp.chewtsyrming.smartgrocery.FragmentHandler;
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.adapter.ShoppingPlanItemListAdapter;
-import fyp.chewtsyrming.smartgrocery.fragmentHandler;
 import fyp.chewtsyrming.smartgrocery.object.ShoppingPlanItem;
 
 public class ShoppingPlanItemFragment extends Fragment implements View.OnClickListener {
     TextView tv_fragment_title, tv_rv_empty;
     Button btn_add_shopping_plan_item;
     RelativeLayout rl_rv;
-    fragmentHandler h = new fragmentHandler();
+    FragmentHandler h = new FragmentHandler();
 
 
     List<ShoppingPlanItem> shoppingPlanItemList, shoppingPlanItemListCrossed;

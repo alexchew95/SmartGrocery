@@ -29,7 +29,7 @@ public class GoodsListAdapter extends ArrayAdapter<GoodsList> implements View.On
     }
 
     public GoodsListAdapter(ArrayList<GoodsList> goodsLists, Context context) {
-        super(context, R.layout.specific_goods_item, goodsLists);
+        super(context, R.layout.linearlayout_subitems, goodsLists);
         this.goodsLists = goodsLists;
         this.mContext = context;
     }
@@ -44,7 +44,7 @@ public class GoodsListAdapter extends ArrayAdapter<GoodsList> implements View.On
         if (convertView == null) {
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.specific_goods_item, parent, false);
+            convertView = inflater.inflate(R.layout.linearlayout_subitems, parent, false);
             viewHolder.tvQuantity = convertView.findViewById(R.id.tvQuantityEdit);
             viewHolder.tvExpDate = convertView.findViewById(R.id.tvExpDateEdit);
             viewHolder.tvBuyDate = convertView.findViewById(R.id.tvBuyDateEdit);

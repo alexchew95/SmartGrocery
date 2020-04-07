@@ -25,7 +25,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.adapter.GoodsCategoryGridAdapter;
@@ -36,14 +35,14 @@ import fyp.chewtsyrming.smartgrocery.object.GoodsGrid;
 public class InventoryFragmentGrid extends Fragment implements View.OnClickListener {
 
     @Nullable
-    private List<GoodsCategoryGrid> categoryList = new ArrayList<>();
+    private ArrayList<GoodsCategoryGrid> categoryList = new ArrayList<>();
     private GridView gridView;
     private LinearLayout favInventory, myInventory, recentInventory;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private String userId = user.getUid();
     private DatabaseReference userReference;
-    private List<GoodsGrid> goodsList, goodsFavList, recentGoodsList, filterGoodsList;
+    private ArrayList<GoodsGrid> goodsList, goodsFavList, recentGoodsList, filterGoodsList;
 
     private SearchView svGoods;
     private Boolean favFlag, recentFlag, myInventoryFlag;

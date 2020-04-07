@@ -17,8 +17,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.object.GoodsGrid;
@@ -26,19 +26,27 @@ import fyp.chewtsyrming.smartgrocery.object.UserModel;
 
 public class GoodsListGridAdapter extends BaseAdapter {
     private final Context mContext;
-    private final List<GoodsGrid> goodsSpecific;
     UserModel um;
-    private List<GoodsGrid> filteredList;
+    private List<GoodsGrid> goodsList;
+    private List<GoodsGrid> tempList;
+    ;
+    private List<GoodsGrid> originalList = new ArrayList<>();
 
-    public GoodsListGridAdapter(Context mContext, List<GoodsGrid> goodsSpecific) {
+    public GoodsListGridAdapter(Context mContext, List<GoodsGrid> goodsList) {
         this.mContext = mContext;
-        this.goodsSpecific = goodsSpecific;
-        this.filteredList = goodsSpecific;
+        this.goodsList = goodsList;
+        this.tempList = goodsList;
+        //     this.tempList=new ArrayList<>();
+        // this.tempList.addAll(goodsList);
+    }
+
+    public static boolean containsIgnoreCase(String str, String subString) {
+        return str.toLowerCase().contains(subString.toLowerCase());
     }
 
     @Override
     public int getCount() {
-        return goodsSpecific.size();
+        return goodsList.size();
     }
 
     @Override
@@ -48,15 +56,14 @@ public class GoodsListGridAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return goodsSpecific.get(position);
+        return goodsList.get(position);
     }
-
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         um = new UserModel();
         String userId = um.getUserIDFromDataBase();
-        final GoodsGrid book = goodsSpecific.get(position);
+        final GoodsGrid book = goodsList.get(position);
 
         if (convertView == null) {
             final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
@@ -89,7 +96,7 @@ public class GoodsListGridAdapter extends BaseAdapter {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild(book.getBarcode())) {
-                    viewHolder.imageview_favorite.setImageResource(R.drawable.ic_enabled_star);
+                    viewHolder.imageview_favorite.setImageResource(R.drawable.ic_favorite_red_24dp);
                 }
             }
 
@@ -102,15 +109,26 @@ public class GoodsListGridAdapter extends BaseAdapter {
         return convertView;
     }
 
+    //filter
     public void filter(String charText) {
-        charText = charText.toLowerCase(Locale.getDefault());
-        goodsSpecific.clear();
+        if (originalList.isEmpty()) {
+            originalList.addAll(goodsList);
+        }
+
+        goodsList.clear();
+
+        // filteredList.clear();
         if (charText.length() == 0) {
-            goodsSpecific.addAll(filteredList);
+            goodsList.addAll(originalList);
+            notifyDataSetChanged();
+
         } else {
-            for (GoodsGrid wp : filteredList) {
-                if (wp.getName().toLowerCase(Locale.getDefault()).contains(charText)) {
-                    goodsSpecific.add(wp);
+            for (GoodsGrid goodsGrid : originalList) {
+                if (containsIgnoreCase(goodsGrid.getName(), charText)) {
+
+                    goodsList.add(goodsGrid);
+
+
                 }
             }
         }

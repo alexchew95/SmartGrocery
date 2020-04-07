@@ -23,7 +23,7 @@ public class home extends AppCompatActivity implements BottomNavigationView.OnNa
     FloatingActionButton fab,fab1,fab2,fab3;
     Boolean isFABOpen= false;
     private TextView mTextMessage;
-    fragmentHandler h= new fragmentHandler();
+    FragmentHandler h = new FragmentHandler();
 
 
     @Override

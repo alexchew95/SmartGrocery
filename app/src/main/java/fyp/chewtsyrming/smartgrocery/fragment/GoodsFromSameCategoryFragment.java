@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,19 +24,20 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import fyp.chewtsyrming.smartgrocery.FragmentHandler;
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.adapter.GoodsListGridAdapter;
-import fyp.chewtsyrming.smartgrocery.fragmentHandler;
 import fyp.chewtsyrming.smartgrocery.object.GoodsGrid;
 
 public class GoodsFromSameCategoryFragment extends Fragment {
 
-    ArrayList<GoodsGrid> goodsCategoryList;
-    GridView gridView;
-    FirebaseUser user;
-    String userId, goodsCategory, imageURL, goodsName, category, processType;
-
-    TextView tvCategoryTitle;
+    GoodsListGridAdapter goodsListGridAdapter;
+    private ArrayList<GoodsGrid> goodsCategoryList;
+    private GridView gridView;
+    private FirebaseUser user;
+    private String userId, goodsCategory, imageURL, goodsName, category, processType;
+    private SearchView searchView1;
+    private TextView tvCategoryTitle;
 
     @Nullable
     @Override
@@ -45,6 +47,10 @@ public class GoodsFromSameCategoryFragment extends Fragment {
         user = FirebaseAuth.getInstance().getCurrentUser();
         userId = user.getUid();
         tvCategoryTitle = fragmentView.findViewById(R.id.tvCategoryTitle);
+        searchView1 = fragmentView.findViewById(R.id.searchView1);
+        goodsCategoryList = new ArrayList<>();
+        goodsListGridAdapter = new GoodsListGridAdapter(getActivity(), goodsCategoryList);
+        gridView.setAdapter(goodsListGridAdapter);
         Bundle cate = this.getArguments();
         goodsCategory = cate.getString("goodsCategory");
         processType = "view";
@@ -59,11 +65,29 @@ public class GoodsFromSameCategoryFragment extends Fragment {
             listGoods();
 
         }
+
+
+        searchView1.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                if (s.isEmpty()) {
+
+                }
+                goodsListGridAdapter.filter(s);
+
+                return false;
+            }
+        });
+
         return fragmentView;
     }
 
     public void listGoods() {
-        goodsCategoryList = new ArrayList<>();
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference parentReference = database.getReference().child("user").child(userId).
                 child("goods").child(goodsCategory);
@@ -72,9 +96,7 @@ public class GoodsFromSameCategoryFragment extends Fragment {
         parentReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                goodsCategoryList.clear();
 
-                final int goodsCategoryIcon = R.drawable.ic_add_goods;
                 for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     final String barcode = snapshot.getKey();
 
@@ -89,8 +111,7 @@ public class GoodsFromSameCategoryFragment extends Fragment {
                             category = snapshotChild.child("goodsCategory").getValue().toString();
                             GoodsGrid goodsGrid = new GoodsGrid(goodsName, imageURL, barcode, category);
                             goodsCategoryList.add(goodsGrid);
-                            final GoodsListGridAdapter goodsListGridAdapter = new GoodsListGridAdapter(getActivity(), goodsCategoryList);
-                            gridView.setAdapter(goodsListGridAdapter);
+
                             //Toast.makeText(getContext(), processType, Toast.LENGTH_LONG).show();
                             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
@@ -103,12 +124,12 @@ public class GoodsFromSameCategoryFragment extends Fragment {
                                     cate.putString("goodsName", goodsName);
                                     GoodsFromSameGoodsFragment frag = new GoodsFromSameGoodsFragment();
                                     frag.setArguments(cate);
-                                    fragmentHandler h = new fragmentHandler();
+                                    FragmentHandler h = new FragmentHandler();
                                     h.loadFragment(frag, getContext());
 
                                 }
                             });
-
+                            goodsListGridAdapter.notifyDataSetChanged();
                         }
 
                         @Override
@@ -131,7 +152,6 @@ public class GoodsFromSameCategoryFragment extends Fragment {
     }
 
     private void getAllGoods() {
-        goodsCategoryList = new ArrayList<>();
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference parentReference = database.getReference().child("user").child(userId).
@@ -164,8 +184,6 @@ public class GoodsFromSameCategoryFragment extends Fragment {
 
                                         GoodsGrid goodsGrid = new GoodsGrid(goodsName, imageURL, barcode, category);
                                         goodsCategoryList.add(goodsGrid);
-                                        final GoodsListGridAdapter goodsListGridAdapter = new GoodsListGridAdapter(getActivity(), goodsCategoryList);
-                                        gridView.setAdapter(goodsListGridAdapter);
 
                                         if (processType.equals("view")) {
                                             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -191,8 +209,8 @@ public class GoodsFromSameCategoryFragment extends Fragment {
                                                 @Override
                                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                                     GoodsGrid goodsGrid1 = goodsCategoryList.get(position);
-                                                    String shoppingPlanID=getArguments().getString("shoppingPlanID");
-                                                    String shoppingPlanName=getArguments().getString("shoppingPlanName");
+                                                    String shoppingPlanID = getArguments().getString("shoppingPlanID");
+                                                    String shoppingPlanName = getArguments().getString("shoppingPlanName");
 
                                                     Bundle cate = new Bundle();
                                                     cate.putString("barcode", goodsGrid1.getBarcode());
@@ -202,12 +220,14 @@ public class GoodsFromSameCategoryFragment extends Fragment {
 
                                                     ViewItemsShoppingListFragment frag = new ViewItemsShoppingListFragment();
                                                     frag.setArguments(cate);
-                                                    fragmentHandler h = new fragmentHandler();
+                                                    FragmentHandler h = new FragmentHandler();
                                                     h.loadFragment(frag, getContext());
 
                                                 }
                                             });
                                         }
+                                        goodsListGridAdapter.notifyDataSetChanged();
+
                                     }
 
                                     @Override

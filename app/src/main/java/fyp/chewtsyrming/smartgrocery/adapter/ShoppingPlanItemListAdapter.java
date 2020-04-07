@@ -39,10 +39,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import fyp.chewtsyrming.smartgrocery.FirebaseHandler;
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.fragment.AddGoodsFragment;
 import fyp.chewtsyrming.smartgrocery.nestedRv.Goods;
-import fyp.chewtsyrming.smartgrocery.object.FirebaseHandler;
 import fyp.chewtsyrming.smartgrocery.object.ShoppingPlanItem;
 
 public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPlanItemListAdapter.HomeViewHolder> {

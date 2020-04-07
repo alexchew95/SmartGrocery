@@ -57,11 +57,11 @@ import java.util.List;
 import java.util.Locale;
 
 import fyp.chewtsyrming.smartgrocery.DatePickerFragment;
+import fyp.chewtsyrming.smartgrocery.FirebaseHandler;
+import fyp.chewtsyrming.smartgrocery.FragmentHandler;
 import fyp.chewtsyrming.smartgrocery.R;
-import fyp.chewtsyrming.smartgrocery.fragmentHandler;
 import fyp.chewtsyrming.smartgrocery.nestedRv.Goods;
 import fyp.chewtsyrming.smartgrocery.nestedRv.fragment_home;
-import fyp.chewtsyrming.smartgrocery.object.FirebaseHandler;
 
 public class AddGoodsFragment extends Fragment {
     private static final int RC_OCR_CAPTURE = 9003;
@@ -264,6 +264,11 @@ public class AddGoodsFragment extends Fragment {
                             if (dataSnapshot.getValue() != null) {
                                 String alertData = dataSnapshot.child("alertData").getValue(String.class);
                                 String alertStatus = dataSnapshot.child("alertStatus").getValue(String.class);
+                                String goodsLocation = dataSnapshot.child("goodsLocation").getValue(String.class);
+                                //Toast.makeText(getContext(), goodsLocation, Toast.LENGTH_LONG).show();
+
+                                int spinnerPosition = adapter2.getPosition(goodsLocation);
+                                spinnerGoodsLocation.setSelection(spinnerPosition);
                                 if (alertStatus.contains("enabled")) {
                                     editAlertTextQuantity.setText(alertData);
                                     switch_reminderStatus.setChecked(true);
@@ -404,7 +409,7 @@ public class AddGoodsFragment extends Fragment {
             imgGoods.setImageURI(data.getData());
             imageURI = data.getData();
 
-            Toast.makeText(getContext(), String.valueOf(imageURI), Toast.LENGTH_LONG).show();
+            //   Toast.makeText(getContext(), String.valueOf(imageURI), Toast.LENGTH_LONG).show();
 
         }
 
@@ -424,6 +429,8 @@ public class AddGoodsFragment extends Fragment {
         );
 
         imageFilePath = image.getAbsolutePath();
+        imageURI = Uri.fromFile(new File(imageFilePath));
+
         return image;
     }
 
@@ -448,7 +455,7 @@ public class AddGoodsFragment extends Fragment {
         // reff.setValue(bg);
 
         //Toast.makeText(getContext(), imageURI.toString(), Toast.LENGTH_LONG).show();
-        imageURI = Uri.fromFile(new File(imageFilePath));
+
         imagesRef = storageRef.child("goods").child(scanned_barcode);
 
         imagesRef.putFile(imageURI).
@@ -517,7 +524,7 @@ public class AddGoodsFragment extends Fragment {
 
         progress_bar_add_goods.hide();
         fragment_home frag = new fragment_home();
-        fragmentHandler h = new fragmentHandler();
+        FragmentHandler h = new FragmentHandler();
         h.loadFragment(frag, getContext());
         //Toast.makeText(getContext(), userId, Toast.LENGTH_LONG).show();
     }
