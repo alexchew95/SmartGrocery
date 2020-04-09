@@ -523,9 +523,7 @@ public class AddGoodsFragment extends Fragment {
         checkGoodsDataExist(barcode, goodsCategory, goodsLocation, alertData, alertStatus);
 
         progress_bar_add_goods.hide();
-        fragment_home frag = new fragment_home();
-        FragmentHandler h = new FragmentHandler();
-        h.loadFragment(frag, getContext());
+
         //Toast.makeText(getContext(), userId, Toast.LENGTH_LONG).show();
     }
 
@@ -548,7 +546,13 @@ public class AddGoodsFragment extends Fragment {
                             activeDays, status, totalUsed, rate);
 
                     goodsDataRef.setValue(goods);
-
+                    fragment_home frag = new fragment_home();
+                    FragmentHandler h = new FragmentHandler();
+                    h.loadFragment(frag, getContext());
+                } else {
+                    fragment_home frag = new fragment_home();
+                    FragmentHandler h = new FragmentHandler();
+                    h.loadFragment(frag, getContext());
                 }
 
             }

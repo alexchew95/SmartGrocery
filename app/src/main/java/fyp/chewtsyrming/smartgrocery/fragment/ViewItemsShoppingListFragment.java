@@ -56,7 +56,6 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
     FragmentHandler h = new FragmentHandler();
     UserModel um = new UserModel();
     FirebaseHandler fb = new FirebaseHandler();
-    View view;
     String name, quantity;
     Button button_add_to_shop_list;
     String imageFilePath;
@@ -92,11 +91,7 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
         if (getArguments() == null) {
             h.prevFragment(getContext());
         }
-        view = getActivity().findViewById(R.id.pb_main);
-        if (view instanceof ContentLoadingProgressBar) {
-            ((ContentLoadingProgressBar) view).show();
-            //Do your stuff
-        }
+
         // Toast.makeText(getContext(), getArguments().getString("shoppingPlanName"), Toast.LENGTH_LONG).show();
         imgGoods = fragmentView.findViewById(R.id.imgGoods);
         ibGallery = fragmentView.findViewById(R.id.ibGallery);
@@ -204,10 +199,8 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
         goodsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (view instanceof ContentLoadingProgressBar) {
-                    ((ContentLoadingProgressBar) view).hide();
-                    rl_goods_info.setVisibility(View.VISIBLE);
-                }
+                rl_goods_info.setVisibility(View.VISIBLE);
+
                 if (dataSnapshot.getValue() == null) {
                     Toast.makeText(getContext(), "Please register this barcode.", Toast.LENGTH_LONG).show();
                     final String itemCheckResult = "You don't have this item in your inventory.";
@@ -271,9 +264,7 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
                 frag.setArguments(cate);
                 FragmentHandler f = new FragmentHandler();
                 f.loadFragment(frag, getContext());
-                if (view instanceof ContentLoadingProgressBar) {
-                    ((ContentLoadingProgressBar) view).hide();
-                }
+
             }
         });
     }
@@ -361,22 +352,13 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
         switch (view.getId()) {
             case R.id.button_add_to_shop_list:
                 if (barcodeExist) {
-                    view = getActivity().findViewById(R.id.pb_main);
+                    saveIntoList();
 
-                    if (view instanceof ContentLoadingProgressBar) {
-                        ((ContentLoadingProgressBar) view).show();
-                        saveIntoList();
 
-                    }
                 } else {
+                    saveBarcode();
 
-                    view = getActivity().findViewById(R.id.pb_main);
 
-                    if (view instanceof ContentLoadingProgressBar) {
-                        ((ContentLoadingProgressBar) view).show();
-                        saveBarcode();
-
-                    }
 
                 }
 

@@ -1,5 +1,6 @@
 package fyp.chewtsyrming.smartgrocery.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -80,7 +81,7 @@ public class GoodsListAdapter extends ArrayAdapter<GoodsList> implements View.On
 
         switch (v.getId()) {
             case R.id.editBtn:
-                // editDialog();
+                show_dialog(goodsList);
                 break;
             case R.id.deleteBtn:
                 //Toast.makeText(getContext(), goodsList.getBuyDate(), Toast.LENGTH_SHORT).show();
@@ -96,4 +97,15 @@ public class GoodsListAdapter extends ArrayAdapter<GoodsList> implements View.On
         }
     }
 
+    private void show_dialog(GoodsList goodsList) {
+
+        final AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View mView = inflater.inflate(R.layout.dialog_edit_goods, null);
+
+        alert.setView(mView);
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
+    }
 }

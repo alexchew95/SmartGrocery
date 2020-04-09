@@ -4,10 +4,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/clpb_home"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"
+        android:indeterminate="true"
+        android:indeterminateTint="#2F13D7"
+
+        />
+
+
+    <TextView
+        android:id="@+id/tv_emptyInventory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Your inventory is empty!"
+        android:textColor="@color/black"
+        android:textSize="30sp"
+        android:visibility="gone" />
     <ScrollView
+        android:id="@+id/scrollview_home"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbarAlwaysDrawVerticalTrack="true">
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:visibility="gone">
 
         <RelativeLayout
             android:layout_width="match_parent"

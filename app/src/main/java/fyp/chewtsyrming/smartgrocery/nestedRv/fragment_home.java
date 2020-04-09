@@ -1,12 +1,15 @@
 package fyp.chewtsyrming.smartgrocery.nestedRv;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,13 +36,13 @@ import fyp.chewtsyrming.smartgrocery.fragment.BarcodeReaderFragment;
 import fyp.chewtsyrming.smartgrocery.fragment.GoodsFromSameCategoryFragment;
 
 public class fragment_home extends Fragment implements View.OnClickListener {
-    String name, imageUrl;
-    Goods goods;
     int i = 0;
-    FirebaseDatabase database;
-    FragmentHandler h = new FragmentHandler();
-    View view;
-    ContentLoadingProgressBar pb_main;
+    private String name, imageUrl;
+    private Goods goods;
+    private FirebaseDatabase database;
+    private FragmentHandler h = new FragmentHandler();
+    private TextView tv_emptyInventory;
+    private ContentLoadingProgressBar clpb_home;
     private List<Category> dataList;
     private List<Goods> goodsList;
     private RecyclerView recyclerView;
@@ -47,8 +50,8 @@ public class fragment_home extends Fragment implements View.OnClickListener {
     private RecyclerView.LayoutManager layoutManager;
     private FirebaseUser user;
     private String userId;
-    private Button ib_scan_barcode, ib_search_goods, ib_add_goods;
-    private Button ib_all_item, ib_category;
+    private Button ib_scan_barcode, ib_search_goods, ib_add_goods, ib_all_item, ib_category;
+    private ScrollView scrollview_home;
 
     @Nullable
     @Override
@@ -69,17 +72,16 @@ public class fragment_home extends Fragment implements View.OnClickListener {
         int resId = R.anim.layout_animation_fall_down;
         LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getContext(), resId);
         recyclerView.setLayoutAnimation(animation);
-        view = getActivity().findViewById(R.id.pb_main);
-        if (view instanceof ContentLoadingProgressBar) {
-            pb_main = (ContentLoadingProgressBar) view;
-            //Do your stuff
-        }
 
+        tv_emptyInventory = v.findViewById(R.id.tv_emptyInventory);
         ib_scan_barcode = v.findViewById(R.id.ib_scan_barcode);
         ib_search_goods = v.findViewById(R.id.ib_search_goods);
         ib_add_goods = v.findViewById(R.id.ib_add_goods);
         ib_all_item = v.findViewById(R.id.ib_all_item);
+        clpb_home = v.findViewById(R.id.clpb_home);
         ib_category = v.findViewById(R.id.ib_category);
+        scrollview_home = v.findViewById(R.id.scrollview_home);
+
         imageUrl = "https://firebasestorage.googleapis.com/v0/b/smart-grocery-f41a7.appspot.com/o/goods%2FUntitled.png?alt=media&token=0acec7a9-c70f-49d0-94fe-b3666b9df7f9";
         ib_all_item.setOnClickListener(this);
         ib_category.setOnClickListener(this);
@@ -95,42 +97,60 @@ public class fragment_home extends Fragment implements View.OnClickListener {
         //consist of fifo, expiring soon, and reminder alert
         //fifo
         dataList.clear();
+        clpb_home.show();
+        scrollview_home.setVisibility(View.GONE);
+        tv_emptyInventory.setVisibility(View.GONE);
 
         adapter.notifyDataSetChanged();
 
         DatabaseReference databaseReference = database.getReference().child("user").child(userId).child("goods");
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                goodsList = new ArrayList<>();
+                clpb_home.hide();
+                scrollview_home.setVisibility(View.VISIBLE);
+                if (dataSnapshot.getValue() != null) {
+                    tv_emptyInventory.setVisibility(View.GONE);
 
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    goodsList = new ArrayList<>();
 
-                    // Toast.makeText(getContext(), snapshot2.getKey(), Toast.LENGTH_SHORT).show();
-                    String ParentKey = snapshot.getKey();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
-                    if (ParentKey != null && !ParentKey.equals("fav")) {
+                        // Toast.makeText(getContext(), snapshot2.getKey(), Toast.LENGTH_SHORT).show();
+                        String ParentKey = snapshot.getKey();
 
-                        if (ParentKey != null && !ParentKey.equals("recent")) {
+                        if (ParentKey != null && !ParentKey.equals("fav")) {
 
-                            for (DataSnapshot snapshot2 : snapshot.getChildren()) {
-                                final String barcode = snapshot2.getKey();
-                                //Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
-                                goods = new Goods(barcode);
-                                goodsList.add(goods);
+                            if (ParentKey != null && !ParentKey.equals("recent")) {
 
+                                for (DataSnapshot snapshot2 : snapshot.getChildren()) {
+                                    final String barcode = snapshot2.getKey();
+                                    //Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
+                                    goods = new Goods(barcode);
+                                    goodsList.add(goods);
+
+
+                                }
 
                             }
-
                         }
                     }
+                    if (!goodsList.isEmpty()) {
+                        Category category = new Category(goodsList, "All Goods", "tat");
+                        dataList.add(category);
+
+                        //Toast.makeText(getContext(), dataList.get(0).getGenre(), Toast.LENGTH_SHORT).show();
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        tv_emptyInventory.setVisibility(View.VISIBLE);
+
+                    }
+
+
+                } else {
+                    tv_emptyInventory.setVisibility(View.VISIBLE);
+
                 }
-                Category category = new Category(goodsList, "All Goods", "tat");
-                dataList.add(category);
-                //Toast.makeText(getContext(), dataList.get(0).getGenre(), Toast.LENGTH_SHORT).show();
-                adapter.notifyDataSetChanged();
-
-
             }
 
             @Override
@@ -139,162 +159,124 @@ public class fragment_home extends Fragment implements View.OnClickListener {
             }
         });
     }
-
-
-    public void getHomeData() {
-
-        //consist of fifo, expiring soon, and reminder alert
-        //fifo
-        DatabaseReference databaseReference = database.getReference().child("user").child(userId).child("goods");
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                goodsList = new ArrayList<>();
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-
-                    // Toast.makeText(getContext(), snapshot2.getKey(), Toast.LENGTH_SHORT).show();
-                    String ParentKey = snapshot.getKey();
-
-                    if (ParentKey != null && !ParentKey.equals("fav")) {
-
-                        if (ParentKey != null && !ParentKey.equals("recent")) {
-
-                            for (DataSnapshot snapshot2 : snapshot.getChildren()) {
-                                String barcode = snapshot2.getKey();
-                                //Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
-
-
-                                goods = new Goods(barcode, barcode, "as", barcode, imageUrl, "Unknown", "0");
-
-                                goodsList.add(goods);
-                            }
-
-                        }
-                    }
-                }
-                Category category = new Category(goodsList, "All Goods", "tat");
-                dataList.add(category);
-                //Toast.makeText(getContext(), dataList.get(0).getGenre(), Toast.LENGTH_SHORT).show();
-                adapter.notifyDataSetChanged();
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
 
     public void getInventoryData() {
+        clpb_home.show();
+        scrollview_home.setVisibility(View.GONE);
+        tv_emptyInventory.setVisibility(View.GONE);
 
         dataList.clear();
         adapter.notifyDataSetChanged();
 
-        DatabaseReference databaseReference = database.getReference().child("user").child(userId).child("goods");
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference databaseReference = database.getReference().child("user").
+                child(userId).child("goods");
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                pb_main.hide();
-                if (dataSnapshot.hasChild("fav")) {
-                    //Toast.makeText(getContext(), dataSnapshot.child("fav").getKey(), Toast.LENGTH_SHORT).show();
+                clpb_home.hide();
+                scrollview_home.setVisibility(View.VISIBLE);
 
-                    String ParentKey = dataSnapshot.child("fav").getKey();
-                    goodsList = new ArrayList<>();
+                if (dataSnapshot.getValue() != null) {
+                    tv_emptyInventory.setVisibility(View.GONE);
+
+                    if (dataSnapshot.hasChild("fav")) {
+                        //Toast.makeText(getContext(), dataSnapshot.child("fav").getKey(), Toast.LENGTH_SHORT).show();
+
+                        String ParentKey = dataSnapshot.child("fav").getKey();
+                        goodsList = new ArrayList<>();
 
 
-                    for (DataSnapshot snapshot2 : dataSnapshot.child("fav").getChildren()) {
-                        String barcode = snapshot2.getKey();
-                        String category = snapshot2.getValue().toString();
-                        //Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
+                        for (DataSnapshot snapshot2 : dataSnapshot.child("fav").getChildren()) {
+                            String barcode = snapshot2.getKey();
+                            String category = snapshot2.getValue().toString();
+                            //Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
 
-                        if (dataSnapshot.hasChild(category)) {
-                            if (dataSnapshot.child(category).hasChild(barcode)) {
-                                goods = new Goods(barcode);
-                                goodsList.add(goods);
-                            }
+
+                            goods = new Goods(barcode);
+                            goodsList.add(goods);
+
+                            // Toast.makeText(getContext(), snapshot2.getKey(), Toast.LENGTH_SHORT).show();
                         }
-
-                        // Toast.makeText(getContext(), snapshot2.getKey(), Toast.LENGTH_SHORT).show();
-                    }
-                    if (!goodsList.isEmpty()) {
-                        Category category = new Category(goodsList, ParentKey, "tat");
-                        dataList.add(category);
-                        //Toast.makeText(getContext(), dataList.get(0).getGenre(), Toast.LENGTH_SHORT).show();
-                        adapter.notifyDataSetChanged();
-                    }
-
-
-                }
-                if (dataSnapshot.hasChild("recent")) {
-                    //Toast.makeText(getContext(), dataSnapshot.child("fav").getKey(), Toast.LENGTH_SHORT).show();
-
-                    String ParentKey = dataSnapshot.child("recent").getKey();
-                    goodsList = new ArrayList<>();
-
-
-                    for (DataSnapshot snapshot2 : dataSnapshot.child("recent").getChildren()) {
-                        String barcode = snapshot2.getKey();
-                        String category = snapshot2.child("goodsCategory").getValue(String.class);
-
-                        String timeStamp = snapshot2.child("timeStamp").getValue(String.class);
-                        //Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
-                        if (dataSnapshot.hasChild(category)) {
-                            if (dataSnapshot.child(category).hasChild(barcode)) {
-                                goods = new Goods(barcode, timeStamp);
-
-                                goodsList.add(goods);
-                            }
-                        }
-
-                        // Toast.makeText(getContext(), snapshot2.getKey(), Toast.LENGTH_SHORT).show();
-
-
-                    }
-                    //  Toast.makeText(getContext(), String.valueOf(goodsList.size()), Toast.LENGTH_SHORT).show();
-
-                    if (goodsList.size() > 1) {
-                        Collections.sort(goodsList, Goods.sortRecentItem);
-
-                    }
-                    Category category = new Category(goodsList, ParentKey, "tat");
-                    dataList.add(category);
-                    //Toast.makeText(getContext(), dataList.get(0).getGenre(), Toast.LENGTH_SHORT).show();
-                    adapter.notifyDataSetChanged();
-
-                }
-                for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {//loop all category
-                    //Toast.makeText(getContext(), snapshot.getKey(), Toast.LENGTH_SHORT).show();
-
-                    String ParentKey = snapshot.getKey();
-                    goodsList = new ArrayList<>();
-
-                    if (ParentKey != null && !ParentKey.equals("fav")) {
-
-                        if (ParentKey != null && !ParentKey.equals("recent")) {
-                            for (DataSnapshot snapshot2 : snapshot.getChildren()) {
-                                String barcode = snapshot2.getKey();
-
-                                //Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
-
-                                goods = new Goods(barcode);
-
-                                goodsList.add(goods);
-                                // Toast.makeText(getContext(), snapshot2.getKey(), Toast.LENGTH_SHORT).show();
-
-
-                            }
+                        if (!goodsList.isEmpty()) {
                             Category category = new Category(goodsList, ParentKey, "tat");
                             dataList.add(category);
                             //Toast.makeText(getContext(), dataList.get(0).getGenre(), Toast.LENGTH_SHORT).show();
                             adapter.notifyDataSetChanged();
                         }
+
+
+                    }
+                    if (dataSnapshot.hasChild("recent")) {
+                        //Toast.makeText(getContext(), dataSnapshot.child("fav").getKey(), Toast.LENGTH_SHORT).show();
+
+                        String ParentKey = dataSnapshot.child("recent").getKey();
+                        goodsList = new ArrayList<>();
+
+
+                        for (DataSnapshot snapshot2 : dataSnapshot.child("recent").getChildren()) {
+                            String barcode = snapshot2.getKey();
+                            String category = snapshot2.child("goodsCategory").getValue(String.class);
+
+                            String timeStamp = snapshot2.child("timeStamp").getValue(String.class);
+                            Log.e("Barcode:", barcode);
+                            Log.e("category:", category);
+
+                            goods = new Goods(barcode, timeStamp);
+
+                            goodsList.add(goods);
+
+
+                            // Toast.makeText(getContext(), snapshot2.getKey(), Toast.LENGTH_SHORT).show();
+
+
+                        }
+                        //  Toast.makeText(getContext(), String.valueOf(goodsList.size()), Toast.LENGTH_SHORT).show();
+
+                        if (goodsList.size() > 1) {
+                            Collections.sort(goodsList, Goods.sortRecentItem);
+
+                        }
+                        if (!goodsList.isEmpty()) {
+                            Category category = new Category(goodsList, ParentKey, "tat");
+                            dataList.add(category);
+                            //Toast.makeText(getContext(), dataList.get(0).getGenre(), Toast.LENGTH_SHORT).show();
+                            adapter.notifyDataSetChanged();
+                        }
+
+                    }
+                    for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {//loop all category
+                        //Toast.makeText(getContext(), snapshot.getKey(), Toast.LENGTH_SHORT).show();
+
+                        String ParentKey = snapshot.getKey();
+                        goodsList = new ArrayList<>();
+
+                        if (ParentKey != null && !ParentKey.equals("fav")) {
+
+                            if (ParentKey != null && !ParentKey.equals("recent")) {
+                                for (DataSnapshot snapshot2 : snapshot.getChildren()) {
+                                    String barcode = snapshot2.getKey();
+
+                                    //Toast.makeText(getContext(), barcode, Toast.LENGTH_SHORT).show();
+
+                                    goods = new Goods(barcode);
+
+                                    goodsList.add(goods);
+                                    // Toast.makeText(getContext(), snapshot2.getKey(), Toast.LENGTH_SHORT).show();
+
+
+                                }
+                                Category category = new Category(goodsList, ParentKey, "tat");
+                                dataList.add(category);
+                                //Toast.makeText(getContext(), dataList.get(0).getGenre(), Toast.LENGTH_SHORT).show();
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+
                     }
 
+                } else {
+                    tv_emptyInventory.setVisibility(View.VISIBLE);
                 }
-
             }
 
             @Override

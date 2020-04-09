@@ -150,4 +150,5 @@ public class GoodsListGridAdapter extends BaseAdapter {
         }
     }
 
+
 }

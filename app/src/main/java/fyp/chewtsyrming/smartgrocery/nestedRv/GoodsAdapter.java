@@ -82,87 +82,100 @@ public class GoodsAdapter extends RecyclerView.Adapter<GoodsAdapter.GoodsViewHol
                 expStatusRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        boolean expiredGoods = false;
+                        if (dataSnapshot.getValue() != null) {
 
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-                        boolean earlieastExpDateExist = false;
-                        String earliestexpirationDate = "asdsa  ";
-                        int x = 0;
-                        List<Date> arrayListDate = new ArrayList<>();
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            x++;
-                            String expirationDate = snapshot.child("expirationDate").getValue(String.class);
 
-                            if (dataSnapshot.getChildrenCount() == 1) {
-                                earliestexpirationDate = expirationDate;
+                            boolean expiredGoods = false;
 
-                            } else {
-                                try {
-                                    // add all expiration date into list
-                                    arrayListDate.add(sdf.parse(expirationDate));
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+                            boolean earlieastExpDateExist = false;
+                            String earliestexpirationDate = "asdsa  ";
+                            int x = 0;
+                            List<Date> arrayListDate = new ArrayList<>();
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                x++;
+                                String expirationDate = snapshot.child("expirationDate").getValue(String.class);
+
+                                if (dataSnapshot.getChildrenCount() == 1) {
+                                    earliestexpirationDate = expirationDate;
+
+                                } else {
+                                    try {
+                                        // add all expiration date into list
+                                        arrayListDate.add(sdf.parse(expirationDate));
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
+                                // sort the list into asc
+
                             }
-                            // sort the list into asc
 
-                        }
+                            Collections.sort(arrayListDate);
+                            Date current_Date = null;
+                            try {
+                                current_Date = dateFormat.parse(currentDate);
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
 
-                        Collections.sort(arrayListDate);
-                        Date current_Date = null;
-                        try {
-                            current_Date = dateFormat.parse(currentDate);
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
+                            //getEarliest exp date
+                            for (Date d : arrayListDate) {
+                                if (current_Date.compareTo(d) < 0) {
+                                    Log.e("Current Date", dateFormat.format(current_Date));
+                                    Log.e("Test date", dateFormat.format(d));
+                                    earliestexpirationDate = dateFormat.format(d);
+                                    break;
+                                } else {
+                                    expiredGoods = true;
+                                }
 
-                        //getEarliest exp date
-                        for (Date d : arrayListDate) {
-                            if (current_Date.compareTo(d) < 0) {
-                                Log.e("Current Date", dateFormat.format(current_Date));
-                                Log.e("Test date", dateFormat.format(d));
-                                earliestexpirationDate = dateFormat.format(d);
-                                break;
+                            }
+
+                            Date date1 = null;
+                            Date date2 = null;
+                            try {
+                                date1 = dateFormat.parse(currentDate);
+                                date2 = dateFormat.parse(earliestexpirationDate);
+
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            long diff = date2.getTime() - date1.getTime();
+                            float daysF = (diff / (1000 * 60 * 60 * 24));
+                            int days = Math.round(daysF);
+                            String d = String.valueOf(days);
+                            goodsList.get(position).setRemainingDays(d);
+                            String statusMessage = "";
+                            if (days < 0) {
+                                days = Math.abs(days);
+                                String sDays = String.valueOf(days);
+                                statusMessage = "Expired " + sDays + " days ago.";
+                                holder.tv_earliestExpDate.setText(statusMessage);
+                                holder.tv_earliestExpDate.setTextColor(Color.RED);
+                            } else if (days == 0) {
+                                days = Math.abs(days);
+                                String sDays = String.valueOf(days);
+                                statusMessage = "Expired  today";
+                                holder.tv_earliestExpDate.setText(statusMessage);
+                                holder.tv_earliestExpDate.setTextColor(Color.RED);
                             } else {
-                                expiredGoods = true;
+                                String sDays = String.valueOf(days);
+                                statusMessage = "Expiring in " + sDays + " days.";
+                                holder.tv_earliestExpDate.setText(statusMessage);
+                                holder.tv_earliestExpDate.setTextColor(Color.BLUE);
                             }
 
-                        }
 
-                        Date date1 = null;
-                        Date date2 = null;
-                        try {
-                            date1 = dateFormat.parse(currentDate);
-                            date2 = dateFormat.parse(earliestexpirationDate);
-
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                        long diff = date2.getTime() - date1.getTime();
-                        float daysF = (diff / (1000 * 60 * 60 * 24));
-                        int days = Math.round(daysF);
-                        String d = String.valueOf(days);
-                        goodsList.get(position).setRemainingDays(d);
-                        String statusMessage = "";
-                        if (days < 0) {
-                            days = Math.abs(days);
-                            String sDays = String.valueOf(days);
-                            statusMessage = "Expired " + sDays + " days ago.";
-                            holder.tv_earliestExpDate.setText(statusMessage);
-                            holder.tv_earliestExpDate.setTextColor(Color.RED);
-                        } else if (days == 0) {
-                            days = Math.abs(days);
-                            String sDays = String.valueOf(days);
-                            statusMessage = "Expired  today";
-                            holder.tv_earliestExpDate.setText(statusMessage);
-                            holder.tv_earliestExpDate.setTextColor(Color.RED);
+                            if (expiredGoods) {
+                                holder.view_goodsStatus.setVisibility(View.VISIBLE);
+                                holder.tv_goodsStatus.setVisibility(View.VISIBLE);
+                            }
+                            holder.clpb_item.hide();
                         } else {
-                            String sDays = String.valueOf(days);
-                            statusMessage = "Expiring in " + sDays + " days.";
-                            holder.tv_earliestExpDate.setText(statusMessage);
-                            holder.tv_earliestExpDate.setTextColor(Color.BLUE);
-                        }
+                            holder.tv_earliestExpDate.setText("Empty");
 
+                        }
                         holder.textViewTitle.setText(name);
                         Glide.with(context)
                                 .load(imageUrl)
@@ -170,11 +183,7 @@ public class GoodsAdapter extends RecyclerView.Adapter<GoodsAdapter.GoodsViewHol
                                 .placeholder(R.drawable.ic_loading_static)
                                 .dontAnimate()
                                 .into(holder.imageViewMovie);
-                        if (expiredGoods) {
-                            holder.view_goodsStatus.setVisibility(View.VISIBLE);
-                            holder.tv_goodsStatus.setVisibility(View.VISIBLE);
-                        }
-                        holder.clpb_item.hide();
+
                     }
 
                     @Override

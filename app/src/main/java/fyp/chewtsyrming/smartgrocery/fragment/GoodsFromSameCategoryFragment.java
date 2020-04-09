@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.TextView;
 
@@ -38,6 +39,8 @@ public class GoodsFromSameCategoryFragment extends Fragment {
     private String userId, goodsCategory, imageURL, goodsName, category, processType;
     private SearchView searchView1;
     private TextView tvCategoryTitle;
+    private ImageButton ib_back;
+    private FragmentHandler fragmentHandler;
 
     @Nullable
     @Override
@@ -46,8 +49,10 @@ public class GoodsFromSameCategoryFragment extends Fragment {
         gridView = fragmentView.findViewById(R.id.gridviewGoodsList);
         user = FirebaseAuth.getInstance().getCurrentUser();
         userId = user.getUid();
+        fragmentHandler = new FragmentHandler();
         tvCategoryTitle = fragmentView.findViewById(R.id.tvCategoryTitle);
         searchView1 = fragmentView.findViewById(R.id.searchView1);
+        ib_back = fragmentView.findViewById(R.id.ib_back);
         goodsCategoryList = new ArrayList<>();
         goodsListGridAdapter = new GoodsListGridAdapter(getActivity(), goodsCategoryList);
         gridView.setAdapter(goodsListGridAdapter);
@@ -56,14 +61,12 @@ public class GoodsFromSameCategoryFragment extends Fragment {
         processType = "view";
         if (cate.getString("processType") != null) processType = cate.getString("processType");
         //  Toast.makeText(getContext(), processType, Toast.LENGTH_LONG).show();
-
         tvCategoryTitle.setText(goodsCategory);
         //reference to db
         if (goodsCategory.equals("All Goods")) {
             getAllGoods();
         } else {
             listGoods();
-
         }
 
 
@@ -81,6 +84,12 @@ public class GoodsFromSameCategoryFragment extends Fragment {
                 goodsListGridAdapter.filter(s);
 
                 return false;
+            }
+        });
+        ib_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fragmentHandler.prevFragment(getContext());
             }
         });
 

@@ -9,17 +9,7 @@
     android:backgroundTint="#A1FFFFFF"
     android:backgroundTintMode="src_atop"
     tools:context=".home">
-<androidx.core.widget.ContentLoadingProgressBar
-    android:id="@+id/pb_main"
-    android:layout_width="100dp"
-    android:layout_height="100dp"
-    android:indeterminate="true"
-    android:indeterminateTintMode="src_atop"
-    android:indeterminateTint="#2F13D7"
-    style="?android:attr/progressBarStyleLarge"
-android:layout_centerInParent="true"
 
-    />
     <FrameLayout
         android:fitsSystemWindows="true"
         android:id="@+id/fragment_container"

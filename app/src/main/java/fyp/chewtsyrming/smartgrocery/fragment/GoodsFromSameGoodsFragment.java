@@ -35,8 +35,8 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
 
     private ArrayList<GoodsList> goodsListArrayList;
 
-    private ListView listView;
-    private TextView tvGoodsName;
+    private ListView listGoods;
+    private TextView tvGoodsName, tv_itemStatus;
     private String barcode, goodsCategory, goodsID, imageURL, goodsName;
     private UserModel um;
     private ImageView ivGoods;
@@ -47,9 +47,11 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.fragment_goods_from_same_goods, null);
-        listView = fragmentView.findViewById(R.id.listGoods);
+        listGoods = fragmentView.findViewById(R.id.listGoods);
         ivGoods = fragmentView.findViewById(R.id.ivGoods);
         tvGoodsName = fragmentView.findViewById(R.id.tvGoodsName);
+        tv_itemStatus = fragmentView.findViewById(R.id.tv_itemStatus);
+
         database = FirebaseDatabase.getInstance();
         fragmentHandler = new FragmentHandler();
         Bundle cate = this.getArguments();
@@ -83,11 +85,19 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
     private void listAllGoods() {
         um = new UserModel();
         String userID = um.getUserIDFromDataBase();
-        DatabaseReference goodsReference = database.getReference().child("user").child(um.getUserIDFromDataBase()).
+        DatabaseReference goodsReference = database.getReference().child("user").child(userID).
                 child("goods").child(goodsCategory).child(barcode);
         goodsReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+                    tv_itemStatus.setVisibility(View.GONE);
+                    listGoods.setVisibility(View.VISIBLE);
+                } else {
+                    tv_itemStatus.setVisibility(View.VISIBLE);
+                    listGoods.setVisibility(View.GONE);
+
+                }
                 goodsListArrayList.clear();
 
                 for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
@@ -100,7 +110,7 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
                     goodsListArrayList.add(goodsList);
                     Collections.sort(goodsListArrayList, GoodsList.sortExpDateAsc);
                     adapter = new GoodsListAdapter(goodsListArrayList, getContext());
-                    listView.setAdapter(adapter);
+                    listGoods.setAdapter(adapter);
 
                 }
             }
@@ -139,7 +149,7 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
     private void changeFavStatus() {
         DatabaseReference goodsFavReff = database.getReference().child("user").child(um.getUserIDFromDataBase()).
                 child("goods").child("fav");
-        Toast.makeText(getContext(), goodsCategory, Toast.LENGTH_LONG).show();
+        // Toast.makeText(getContext(), goodsCategory, Toast.LENGTH_LONG).show();
         if (goodsFav) {//task to do:remove from fav list
             goodsFavReff.child(barcode).removeValue();
             favBtn.setImageResource(R.drawable.ic_favorite_white_24dp);
