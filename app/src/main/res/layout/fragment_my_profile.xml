@@ -247,7 +247,7 @@
                 android:padding="20dp"
                 android:text="@string/log_out"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                android:textColor="@color/colorNavIcon"
+                android:textColor="@color/white"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 app:cornerRadius="20dp"

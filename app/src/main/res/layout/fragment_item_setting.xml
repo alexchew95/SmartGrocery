@@ -62,7 +62,7 @@
                     android:padding="10dp"
                     android:text="Item Name :"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="15sp" />
 
                 <TextView
                     android:id="@+id/tv_itemName"
@@ -71,7 +71,7 @@
                     android:padding="10dp"
                     android:text="name"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="15sp" />
             </LinearLayout>
 
 
@@ -86,7 +86,7 @@
                     android:padding="10dp"
                     android:text="Category :"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="15sp" />
 
                 <TextView
                     android:id="@+id/tv_itemCategory"
@@ -95,7 +95,7 @@
                     android:padding="10dp"
                     android:text="cat"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="15sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -107,53 +107,74 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
-                    android:text="Reminder Status :"
+                    android:text="Consumed Rate Reminder : "
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="15sp" />
 
                 <Switch
-
                     android:id="@+id/switch_reminderStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="20dp"
-                    android:textSize="20sp" />
+
+                    android:textOff="disabled"
+                    android:textOn="enabled" />
+
+                <ImageButton
+                    android:id="@+id/buttonHelp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:background="@null"
+                    android:src="@drawable/ic_question" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/ll_alertData"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="5dp"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="170dp"
-                    android:layout_height="wrap_content"
-                    android:maxLines="2"
-                    android:padding="10dp"
-                    android:text="Days to remind before expired "
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
-
-                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
                     android:maxLines="2"
                     android:padding="10dp"
-                    android:text=":"
-                    android:textSize="20sp" />
+                    android:text="Days to remind before expired:"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
 
+
+                <Switch
+                    android:id="@+id/switch_daysToRemindStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textOff="disabled"
+                    android:layout_gravity="center_vertical"
+                    android:textOn="enabled" />
                 <EditText
                     android:id="@+id/et_daysToRemind"
                     android:layout_width="wrap_content"
-                    android:layout_height="63dp"
-                    android:layout_gravity="center_vertical"
-                    android:padding="10dp"
-                    android:text="cat"
-                    android:textSize="20sp" />
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:ems="3"
+                    android:inputType="number"
+                    android:text="1"
+                    android:textAlignment="center"
+                    android:textSize="15sp"
+                    android:visibility="gone" />
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/ll_alert_cr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="7dp">
+
+
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -165,7 +186,7 @@
                     android:padding="10dp"
                     android:text="Storage Location :"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="15sp" />
 
                 <Spinner
                     android:id="@+id/spinner_goodsLocation"

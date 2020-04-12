@@ -88,6 +88,7 @@ public class GoodsAdapter extends RecyclerView.Adapter<GoodsAdapter.GoodsViewHol
                             boolean expiredGoods = false;
 
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+
                             boolean earlieastExpDateExist = false;
                             String earliestexpirationDate = "asdsa  ";
                             int x = 0;
@@ -145,6 +146,7 @@ public class GoodsAdapter extends RecyclerView.Adapter<GoodsAdapter.GoodsViewHol
                             float daysF = (diff / (1000 * 60 * 60 * 24));
                             int days = Math.round(daysF);
                             String d = String.valueOf(days);
+
                             goodsList.get(position).setRemainingDays(d);
                             String statusMessage = "";
                             if (days < 0) {
@@ -163,7 +165,8 @@ public class GoodsAdapter extends RecyclerView.Adapter<GoodsAdapter.GoodsViewHol
                                 String sDays = String.valueOf(days);
                                 statusMessage = "Expiring in " + sDays + " days.";
                                 holder.tv_earliestExpDate.setText(statusMessage);
-                                holder.tv_earliestExpDate.setTextColor(Color.BLUE);
+                                holder.tv_earliestExpDate.setTextColor(Color.parseColor("#36b422"));
+
                             }
 
 

@@ -3,6 +3,8 @@ package fyp.chewtsyrming.smartgrocery.fragment;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,9 +27,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.core.content.FileProvider;
 import androidx.core.widget.ContentLoadingProgressBar;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -66,7 +68,7 @@ import fyp.chewtsyrming.smartgrocery.nestedRv.fragment_home;
 public class AddGoodsFragment extends Fragment {
     private static final int RC_OCR_CAPTURE = 9003;
     private static final int REQUEST_CODE = 11;
-    private Switch switch_reminderStatus;
+    private Switch switch_reminderStatus, switch_daysToRemindStatus;
     private LinearLayout ll_alert_day;
     private String currentDate, imageFilePath;
     /* public Uri getImageUri(Context inContext, Bitmap inImage) {
@@ -123,9 +125,12 @@ public class AddGoodsFragment extends Fragment {
         spinnerGoodsLocation = fragmentView.findViewById(R.id.spinnerGoodsLocation);
         imgGoods = fragmentView.findViewById(R.id.imgGoods);
         switch_reminderStatus = fragmentView.findViewById(R.id.switch_reminderStatus);
+        switch_daysToRemindStatus = fragmentView.findViewById(R.id.switch_daysToRemindStatus);
         ImageButton ibGallery = fragmentView.findViewById(R.id.ibGallery);
         ImageButton ibCamera = fragmentView.findViewById(R.id.ibCamera);
         ImageButton ib_add_storage_location = fragmentView.findViewById(R.id.ib_add_storage_location);
+        ImageButton buttonHelp = fragmentView.findViewById(R.id.buttonHelp);
+
         progress_bar_add_goods = fragmentView.findViewById(R.id.progress_bar_add_goods);
         mainReff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods");
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, goodsCategory);
@@ -142,20 +147,25 @@ public class AddGoodsFragment extends Fragment {
             getBarcodeData();
         }
 
-        switch_reminderStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        switch_daysToRemindStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
-                    ll_alert_day.setVisibility(View.VISIBLE);
+                    editAlertTextQuantity.setVisibility(View.VISIBLE);
                 } else {
-                    ll_alert_day.setVisibility(View.GONE);
+                    editAlertTextQuantity.setVisibility(View.GONE);
 
                 }
             }
         });
         //call datepicker
         datePicker();
-
+        buttonHelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                shoeHelpMessageDialog();
+            }
+        });
         ibGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -228,6 +238,30 @@ public class AddGoodsFragment extends Fragment {
         });
     }
 
+    private void shoeHelpMessageDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+        // set title
+        alertDialogBuilder.setTitle("What is consumed rated reminder?");
+        String message = "By enabling this function, Home Grocery will monitor this item consumption rate " +
+                "and provide advise to the user. For example, user will be reminded when the items is predicted" +
+                " to not be able to finish by the time it expired.";
+        alertDialogBuilder
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // if this button is clicked, close
+                        // current activity
+                        dialog.cancel();
+                    }
+                });
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+    }
+
     private void getBarcodeData() {
 
         final String scanned_barcode;
@@ -263,21 +297,26 @@ public class AddGoodsFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.getValue() != null) {
                                 String alertData = dataSnapshot.child("alertData").getValue(String.class);
-                                String alertStatus = dataSnapshot.child("alertStatus").getValue(String.class);
+                                String consumedRateStatus = dataSnapshot.child("consumedRateStatus").getValue(String.class);
+                                String alertDaysStatus = dataSnapshot.child("alertDaysStatus").getValue(String.class);
                                 String goodsLocation = dataSnapshot.child("goodsLocation").getValue(String.class);
                                 //Toast.makeText(getContext(), goodsLocation, Toast.LENGTH_LONG).show();
 
                                 int spinnerPosition = adapter2.getPosition(goodsLocation);
                                 spinnerGoodsLocation.setSelection(spinnerPosition);
-                                if (alertStatus.contains("enabled")) {
-                                    editAlertTextQuantity.setText(alertData);
+                                editAlertTextQuantity.setText(alertData);
+                                if (consumedRateStatus.contains("enabled")) {
                                     switch_reminderStatus.setChecked(true);
-                                    ll_alert_day.setVisibility(View.VISIBLE);
                                 } else {
-                                    editAlertTextQuantity.setText(" ");
                                     switch_reminderStatus.setChecked(false);
-                                    ll_alert_day.setVisibility(View.GONE);
                                 }
+                                if (alertDaysStatus.contains("enabled")) {
+                                    switch_daysToRemindStatus.setChecked(true);
+                                } else {
+                                    switch_daysToRemindStatus.setChecked(false);
+                                }
+
+
                             }
                         }
 
@@ -341,7 +380,7 @@ public class AddGoodsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // create the datePickerFragment
-                AppCompatDialogFragment newFragment = new DatePickerFragment();
+                DialogFragment newFragment = new DatePickerFragment();
                 // set the targetFragment to receive the results, specifying the request code
                 newFragment.setTargetFragment(AddGoodsFragment.this, REQUEST_CODE);
                 // show the datePicker
@@ -485,7 +524,7 @@ public class AddGoodsFragment extends Fragment {
 
     private void add_existingGoods(String downloadURL) {
         final String barcode, goodsId, goodsName, imageURL, goodsCategory, expirationDate,
-                quantity, goodsLocation, alertData, alertStatus, insertDate;
+                quantity, goodsLocation, alertData, alertDaysStatus, consumedRateStatus, insertDate;
 
 
         barcode = barcodeBundle.getString("barcode");
@@ -501,13 +540,18 @@ public class AddGoodsFragment extends Fragment {
         insertDate = currentDate;
         goodsLocation = spinnerGoodsLocation.getSelectedItem().toString();
         if (switch_reminderStatus.isChecked()) {
-            alertStatus = switch_reminderStatus.getTextOn().toString();
-            alertData = editAlertTextQuantity.getText().toString();
+            consumedRateStatus = switch_reminderStatus.getTextOn().toString();
 
         } else {
-            alertStatus = switch_reminderStatus.getTextOff().toString();
-            alertData = switch_reminderStatus.getTextOff().toString();
+            consumedRateStatus = switch_reminderStatus.getTextOff().toString();
         }
+        if (switch_daysToRemindStatus.isChecked()) {
+            alertDaysStatus = switch_reminderStatus.getTextOn().toString();
+
+        } else {
+            alertDaysStatus = switch_reminderStatus.getTextOff().toString();
+        }
+        alertData = editAlertTextQuantity.getText().toString();
 
 
         reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
@@ -517,10 +561,11 @@ public class AddGoodsFragment extends Fragment {
         reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
                 .child(goodsCategory).child(barcode).child(goodsId);
         Goods good = new Goods(barcode, goodsId, goodsName, imageURL, goodsCategory, expirationDate,
-                quantity, goodsLocation, alertData, alertStatus, insertDate);
+                quantity, goodsLocation, alertData, consumedRateStatus, alertDaysStatus, insertDate);
 
         good.addGoods(good);
-        checkGoodsDataExist(barcode, goodsCategory, goodsLocation, alertData, alertStatus);
+        checkGoodsDataExist(barcode, goodsCategory, goodsLocation,
+                alertData, consumedRateStatus, alertDaysStatus, getContext(), "addGoods");
 
         progress_bar_add_goods.hide();
 
@@ -529,32 +574,30 @@ public class AddGoodsFragment extends Fragment {
 
     //create new goods data when new product is addded
     public void checkGoodsDataExist(final String barcode, final String goodsCategory,
-                                     final String goodsLocation, final String alertData,
-                                     final String alertStatus) {
+                                    final String goodsLocation, final String alertData, final String consumedRateStatus,
+                                    final String alertDaysStatus, final Context context,
+                                    final String sourceFragment) {
+        final FragmentHandler h = new FragmentHandler();
         final DatabaseReference goodsDataRef = FirebaseDatabase.getInstance().getReference().child("user").
                 child(userId).child("goodsData").child(barcode);
         goodsDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() == null) {
-                    String activeDays = "0";
+                    String activeDays = "1";
 
                     String rate = "0.00";
                     String status = "ACTIVE";
                     String totalUsed = "0";
-                    Goods goods = new Goods(goodsCategory, goodsLocation, alertData, alertStatus,
+                    Goods goods = new Goods(goodsCategory, goodsLocation, alertData, consumedRateStatus, alertDaysStatus,
                             activeDays, status, totalUsed, rate);
 
                     goodsDataRef.setValue(goods);
-                    fragment_home frag = new fragment_home();
-                    FragmentHandler h = new FragmentHandler();
-                    h.loadFragment(frag, getContext());
-                } else {
-                    fragment_home frag = new fragment_home();
-                    FragmentHandler h = new FragmentHandler();
-                    h.loadFragment(frag, getContext());
                 }
-
+                if (sourceFragment.contains("addGoods")) {
+                    fragment_home frag = new fragment_home();
+                    h.loadFragment(frag, context);
+                }
             }
 
             @Override

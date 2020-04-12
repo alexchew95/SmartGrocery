@@ -26,6 +26,12 @@ public class ShoppingPlan {
         this.noOfItem = noOfItem;
     }
 
+    public ShoppingPlan(String shoppingId, String shoppingPlanName, String dateCreated) {
+        this.shoppingId = shoppingId;
+        this.shoppingPlanName = shoppingPlanName;
+        this.dateCreated = dateCreated;
+    }
+
     public ShoppingPlan(String shoppingPlanName, String dateCreated) {
         this.shoppingPlanName = shoppingPlanName;
         this.dateCreated = dateCreated;
@@ -48,5 +54,14 @@ public class ShoppingPlan {
     }
 
     public ShoppingPlan() {
+    }
+
+    @Override
+    public String toString() {
+        return shoppingPlanName;
+    }
+
+    public String getID() {
+        return shoppingId;
     }
 }

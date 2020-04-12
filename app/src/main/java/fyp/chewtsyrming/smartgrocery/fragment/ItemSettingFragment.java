@@ -40,7 +40,7 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
     private String barcode;
     private TextView tv_itemName, tv_itemCategory;
     private Spinner spinner_goodsLocation;
-    private Switch switch_reminderStatus;
+    private Switch switch_reminderStatus, switch_daysToRemindStatus;
     private EditText et_daysToRemind;
     private LinearLayout ll_alertData, ll_main;
     private ImageButton ib_back;
@@ -66,6 +66,7 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
         tv_itemCategory = view.findViewById(R.id.tv_itemCategory);
         spinner_goodsLocation = view.findViewById(R.id.spinner_goodsLocation);
         switch_reminderStatus = view.findViewById(R.id.switch_reminderStatus);
+        switch_daysToRemindStatus = view.findViewById(R.id.switch_daysToRemindStatus);
         et_daysToRemind = view.findViewById(R.id.et_daysToRemind);
         ll_alertData = view.findViewById(R.id.ll_alertData);
         pb_itemSettings = view.findViewById(R.id.pb_itemSettings);
@@ -73,18 +74,17 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
         ll_main = view.findViewById(R.id.ll_main);
         ib_back = view.findViewById(R.id.ib_back);
 
-
         button_saveSetting.setOnClickListener(this);
         ib_back.setOnClickListener(this);
         getGoodsLocation();
         getItemSetting();
 
-        switch_reminderStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        switch_daysToRemindStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
-                    ll_alertData.setVisibility(View.VISIBLE);
-                } else ll_alertData.setVisibility(View.GONE);
+                    et_daysToRemind.setVisibility(View.VISIBLE);
+                } else et_daysToRemind.setVisibility(View.GONE);
             }
         });
         return view;
@@ -99,18 +99,26 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
         itemSettingRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String category = dataSnapshot.child("goodsCategory").getValue(String.class);
-                String alertStatus = dataSnapshot.child("alertStatus").getValue(String.class);
-                String alertData = dataSnapshot.child("alertData").getValue(String.class);
-                String goodsLocation = dataSnapshot.child("goodsLocation").getValue(String.class);
+                Goods goods = dataSnapshot.getValue(Goods.class);
+                String category = goods.getGoodsCategory();
+                String consumedRateStatus = goods.getConsumedRateStatus();
+                String alertDaysStatus = goods.getAlertDaysStatus();
+                String alertData = goods.getAlertData();
+                String goodsLocation = goods.getGoodsLocation();
                 int spinnerPosition = adapter2.getPosition(goodsLocation);
                 spinner_goodsLocation.setSelection(spinnerPosition);
 
                 tv_itemCategory.setText(category);
-                if (alertStatus.contains("enabled")) {
+                if (consumedRateStatus.contains("enabled")) {
                     switch_reminderStatus.setChecked(true);
                 } else {
                     switch_reminderStatus.setChecked(false);
+
+                }
+                if (alertDaysStatus.contains("enabled")) {
+                    switch_daysToRemindStatus.setChecked(true);
+                } else {
+                    switch_daysToRemindStatus.setChecked(false);
 
                 }
                 tv_itemCategory.setText(category);
@@ -174,19 +182,27 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
         saveSettingRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String alertStatus = "";
-                String alertData = "";
+                String alertDaysStatus = "", consumedRateStatus = "", alertData = "";
+
                 alertData = et_daysToRemind.getText().toString();
                 String goodsLocation = spinner_goodsLocation.getSelectedItem().toString();
                 if (switch_reminderStatus.isChecked()) {
-                    alertStatus = "enabled";
+                    consumedRateStatus = switch_reminderStatus.getTextOn().toString();
                 } else {
-                    alertStatus = "disabled";
+                    consumedRateStatus = switch_reminderStatus.getTextOff().toString();
+
+                }
+                if (switch_daysToRemindStatus.isChecked()) {
+                    alertDaysStatus = switch_daysToRemindStatus.getTextOn().toString();
+                } else {
+                    alertDaysStatus = switch_daysToRemindStatus.getTextOff().toString();
+
                 }
 
                 Goods goods = dataSnapshot.getValue(Goods.class);
                 goods.setAlertData(alertData);
-                goods.setAlertStatus(alertStatus);
+                goods.setConsumedRateStatus(consumedRateStatus);
+                goods.setAlertDaysStatus(alertDaysStatus);
                 goods.setGoodsLocation(goodsLocation);
                 //Toast.makeText(getContext(), goods.getAlertData(), Toast.LENGTH_SHORT).show();
                 saveSettingRef.setValue(goods).addOnSuccessListener(new OnSuccessListener<Void>() {

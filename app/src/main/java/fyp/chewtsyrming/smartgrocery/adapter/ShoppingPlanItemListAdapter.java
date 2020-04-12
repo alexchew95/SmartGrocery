@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -97,11 +98,12 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
                 Button button_add_to_inventory_list = mView.findViewById(R.id.button_add_to_inventory_list);
                 Button button_delete = mView.findViewById(R.id.button_delete);
 
-                final Switch switch_reminderStatus= mView.findViewById(R.id.switch_reminderStatus);
-                final LinearLayout ll_alert_day= mView.findViewById(R.id.ll_alert_day);
+                final Switch switch_reminderStatus = mView.findViewById(R.id.switch_reminderStatus),
+                        switch_daysToRemindStatus = mView.findViewById(R.id.switch_daysToRemindStatus);
+                final LinearLayout ll_alert_day = mView.findViewById(R.id.ll_alert_day);
 
-                final EditText editTextQuantity= mView.findViewById(R.id.editTextQuantity);
-                final EditText editAlertTextQuantity= mView.findViewById(R.id.editAlertTextQuantity);
+                final EditText editTextQuantity = mView.findViewById(R.id.editTextQuantity);
+                final EditText editAlertTextQuantity = mView.findViewById(R.id.editAlertTextQuantity);
                 final ImageButton ib_selectExpDate = mView.findViewById(R.id.ib_selectExpDate);
                 ImageView imgGoods = mView.findViewById(R.id.imgGoods);
                 spinnerGoodsLocation = mView.findViewById(R.id.spinnerGoodsLocation);
@@ -112,17 +114,30 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.getValue() != null) {
+                            String alertDaysStatus = dataSnapshot.child("alertDaysStatus").getValue(String.class);
                             String alertData = dataSnapshot.child("alertData").getValue(String.class);
-                            String alertStatus = dataSnapshot.child("alertStatus").getValue(String.class);
-                            if (alertStatus.contains("enabled")) {
-                                editAlertTextQuantity.setText(alertData);
-                                switch_reminderStatus.setChecked(true);
-                                ll_alert_day.setVisibility(View.VISIBLE);
+                            String consumedRateStatus = dataSnapshot.child("consumedRateStatus").getValue(String.class);
+                            editAlertTextQuantity.setText(alertData);
+
+                            if (alertDaysStatus.contains("enabled")) {
+
+                                switch_daysToRemindStatus.setChecked(true);
+                                editAlertTextQuantity.setVisibility(View.VISIBLE);
                             } else {
-                                editAlertTextQuantity.setText(" ");
-                                switch_reminderStatus.setChecked(false);
-                                ll_alert_day.setVisibility(View.GONE);
+
+                                switch_daysToRemindStatus.setChecked(false);
+                                editAlertTextQuantity.setVisibility(View.GONE);
                             }
+                            if (consumedRateStatus.contains("enabled")) {
+
+                                switch_reminderStatus.setChecked(true);
+                                editAlertTextQuantity.setVisibility(View.VISIBLE);
+                            } else {
+
+                                switch_reminderStatus.setChecked(false);
+                                editAlertTextQuantity.setVisibility(View.GONE);
+                            }
+
                         }
                     }
 
@@ -137,15 +152,14 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
                         .placeholder(R.drawable.ic_loading_static)
                         .dontAnimate()
                         .into(imgGoods);
-
-                switch_reminderStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                editTextQuantity.setText(shoppingPlanItem.getQuantity());
+                switch_daysToRemindStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                        if(b){
-                            ll_alert_day.setVisibility(View.VISIBLE);
-                        }
-                        else{
-                            ll_alert_day.setVisibility(View.GONE);
+                        if (b) {
+                            editAlertTextQuantity.setVisibility(View.VISIBLE);
+                        } else {
+                            editAlertTextQuantity.setVisibility(View.GONE);
 
                         }
                     }
@@ -195,7 +209,7 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
 
                         final AlertDialog.Builder alert = new AlertDialog.Builder(context);
                         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                        View mView = inflater.inflate(R.layout.shopping_plan_delete_dialog, null);
+                        View mView = inflater.inflate(R.layout.dialog_delete, null);
 
                         Button btn_yes = mView.findViewById(R.id.btn_yes);
                         Button btn_no = mView.findViewById(R.id.btn_no);
@@ -242,7 +256,7 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
                     @Override
                     public void onClick(View view) {
                         String barcode, goodsId, goodsName, imageURL, goodsCategory, expirationDate,
-                                quantity, goodsLocation, alertData, alertStatus, insertDate;
+                                quantity, goodsLocation, alertData, alertDaysStatus, consumedRateStatus, insertDate;
                         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
                         Date date = new Date();
 
@@ -252,25 +266,32 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
                         imageURL = shoppingPlanItem.getImageURL();
                         goodsCategory = shoppingPlanItem.getGoodsCategory();
                         expirationDate = tv_expirationDate.getText().toString();//
-                        quantity =editTextQuantity.getText().toString();
+                        quantity = editTextQuantity.getText().toString();
                         goodsLocation = spinnerGoodsLocation.getSelectedItem().toString();
+                        alertData = editAlertTextQuantity.getText().toString();
+
                         if (switch_reminderStatus.isChecked()) {
-                            alertStatus = switch_reminderStatus.getTextOn().toString();
-                            alertData = editAlertTextQuantity.getText().toString();
+                            alertDaysStatus = switch_reminderStatus.getTextOn().toString();
 
                         } else {
-                            alertStatus = switch_reminderStatus.getTextOff().toString();
-                            alertData = switch_reminderStatus.getTextOff().toString();
+                            alertDaysStatus = switch_reminderStatus.getTextOff().toString();
+                        }
+                        if (switch_reminderStatus.isChecked()) {
+                            consumedRateStatus = switch_reminderStatus.getTextOn().toString();
+
+                        } else {
+                            consumedRateStatus = switch_reminderStatus.getTextOff().toString();
                         }
                         insertDate = dateFormat.format(date);
 
 
                         Goods good = new Goods(barcode, goodsId, goodsName, imageURL, goodsCategory, expirationDate,
-                                quantity, goodsLocation, alertData, alertStatus, insertDate);
+                                quantity, goodsLocation, alertData, alertDaysStatus, consumedRateStatus, insertDate);
                         good.addGoods(good);
-                        AddGoodsFragment addGoodsFragment=new AddGoodsFragment();
-                        addGoodsFragment.checkGoodsDataExist(barcode, goodsCategory, goodsLocation, alertData, alertStatus);
-
+                        AddGoodsFragment addGoodsFragment = new AddGoodsFragment();
+                        addGoodsFragment.checkGoodsDataExist(barcode, goodsCategory, goodsLocation,
+                                alertData, alertDaysStatus, consumedRateStatus, context, "shoppingPlan");
+                        Toast.makeText(context, "Items added to your inventory", Toast.LENGTH_SHORT).show();
                         mainDialog.dismiss();
                     }
                 });

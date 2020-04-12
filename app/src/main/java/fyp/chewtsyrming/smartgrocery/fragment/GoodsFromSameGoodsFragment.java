@@ -27,6 +27,7 @@ import java.util.Collections;
 import fyp.chewtsyrming.smartgrocery.FragmentHandler;
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.adapter.GoodsListAdapter;
+import fyp.chewtsyrming.smartgrocery.nestedRv.Goods;
 import fyp.chewtsyrming.smartgrocery.object.GoodsList;
 import fyp.chewtsyrming.smartgrocery.object.UserModel;
 
@@ -34,6 +35,7 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
     private static GoodsListAdapter adapter;
 
     private ArrayList<GoodsList> goodsListArrayList;
+    private ArrayList<Goods> goodsArrayList;
 
     private ListView listGoods;
     private TextView tvGoodsName, tv_itemStatus;
@@ -59,7 +61,7 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
         goodsCategory = cate.getString("goodsCategory");
         imageURL = cate.getString("imageURL");
         goodsName = cate.getString("goodsName");
-        goodsListArrayList = new ArrayList<>();
+        goodsArrayList = new ArrayList<>();
         tvGoodsName.setText(goodsName);
         listAllGoods();
         checkFavStatus();
@@ -98,18 +100,19 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
                     listGoods.setVisibility(View.GONE);
 
                 }
-                goodsListArrayList.clear();
+                goodsArrayList.clear();
 
                 for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String goodsID = snapshot.getKey();
                     String buyDate = (String) snapshot.child("insertDate").getValue();
                     String expirationDate = (String) snapshot.child("expirationDate").getValue();
                     String quantity = (String) snapshot.child("quantity").getValue();
-                    final GoodsList goodsList = new GoodsList(goodsID, expirationDate, buyDate,
-                            quantity, goodsCategory, barcode);
-                    goodsListArrayList.add(goodsList);
-                    Collections.sort(goodsListArrayList, GoodsList.sortExpDateAsc);
-                    adapter = new GoodsListAdapter(goodsListArrayList, getContext());
+                    String goodsLocation = (String) snapshot.child("goodsLocation").getValue();
+                    Goods goods = snapshot.getValue(Goods.class);
+
+                    goodsArrayList.add(goods);
+                    Collections.sort(goodsArrayList, Goods.sortExpDateAsc);
+                    adapter = new GoodsListAdapter(goodsArrayList, getContext());
                     listGoods.setAdapter(adapter);
 
                 }

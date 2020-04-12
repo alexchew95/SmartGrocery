@@ -62,6 +62,8 @@ public class GoodsFromSameCategoryFragment extends Fragment {
         if (cate.getString("processType") != null) processType = cate.getString("processType");
         //  Toast.makeText(getContext(), processType, Toast.LENGTH_LONG).show();
         tvCategoryTitle.setText(goodsCategory);
+        if (goodsCategory.contains("fav")) tvCategoryTitle.setText("FAVORITE");
+        if (goodsCategory.contains("recent")) tvCategoryTitle.setText("RECENTLY ADDED");
         //reference to db
         if (goodsCategory.equals("All Goods")) {
             getAllGoods();

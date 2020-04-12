@@ -125,7 +125,7 @@ public class BarcodeReaderFragment extends Fragment {
                             goodsCategory = dataSnapshot.child("goodsCategory").getValue(String.class);
                             imageURL = dataSnapshot.child("imageURL").getValue(String.class);
                             goodsName = dataSnapshot.child("goodsName").getValue(String.class);
-                            Toast.makeText(getContext(), goodsCategory, Toast.LENGTH_LONG).show();
+                            // Toast.makeText(getContext(), goodsCategory, Toast.LENGTH_LONG).show();
                             barcodeBundle.putString("goodsCategory", goodsCategory);
                             barcodeBundle.putString("imageURL", imageURL);
                             barcodeBundle.putString("goodsName", goodsName);
@@ -136,6 +136,7 @@ public class BarcodeReaderFragment extends Fragment {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     if (dataSnapshot.getValue() == null) {
+                                        clpb_barcodeReader.hide();
                                         Toast.makeText(getContext(), "You don't have this item in your inventory!", Toast.LENGTH_LONG).show();
 
                                     } else {

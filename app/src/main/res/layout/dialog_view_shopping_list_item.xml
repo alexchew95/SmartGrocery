@@ -184,8 +184,10 @@
                         android:layout_height="40dp"
                         android:background="@drawable/ic_date_range_black_24dp" />
                 </LinearLayout>
+
+
                 <LinearLayout
-                    android:id="@+id/ll_alert"
+                    android:id="@+id/ll_alert_cr"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -195,9 +197,17 @@
                         android:id="@+id/switch_reminderStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Reminder : "
+                        android:text="Consumed Rate Reminder : "
                         android:textOff="disabled"
                         android:textOn="enabled"/>
+
+                    <ImageButton
+                        android:id="@+id/buttonHelp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:background="@null"
+                        android:src="@drawable/ic_question" />
 
                 </LinearLayout>
 
@@ -207,17 +217,15 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:padding="7dp"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
-                    <TextView
-
-                        android:layout_width="150dp"
+                    <Switch
+                        android:id="@+id/switch_daysToRemindStatus"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Days Before Expired: "
-                        android:textColor="@color/black"
-                        />
-
+                        android:text="Days to remind before Expired: "
+                        android:textOff="disabled"
+                        android:textOn="enabled" />
                     <EditText
                         android:id="@+id/editAlertTextQuantity"
                         android:layout_width="wrap_content"
@@ -225,7 +233,8 @@
                         android:layout_weight="3"
                         android:ems="2"
                         android:inputType="number"
-                        android:text="1" />
+                        android:text="1"
+                        android:visibility="gone" />
 
                 </LinearLayout>
                 <LinearLayout

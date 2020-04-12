@@ -5,47 +5,70 @@
     android:gravity="center"
     android:orientation="vertical">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/black" />
+
     <com.google.android.material.card.MaterialCardView
         style="@style/Widget.MaterialComponents.CardView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="wrap_content">
 
-        android:minHeight="200dp">
-
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/black" />
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/black">
 
                 <ImageView
                     android:id="@+id/imageview_goods_category"
                     android:layout_width="200dp"
                     android:layout_height="200dp"
-                    android:adjustViewBounds="true"
+                    android:scaleType="fitXY"
                     app:srcCompat="@drawable/ic_drawing" />
 
                 <ImageView
                     android:id="@+id/imageview_favorite"
-                    android:layout_width="24dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     app:srcCompat="@drawable/ic_favorite_white_24dp" />
 
+                <TextView
+                    android:id="@+id/textview_goods_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:background="#99FFFFFF"
+                    android:gravity="center"
+                    android:text="TextView"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="italic|bold" />
             </FrameLayout>
 
 
-            <TextView
-                android:id="@+id/textview_goods_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="TextView"
-                android:textSize="18sp"
-                android:textStyle="italic|bold" />
-
         </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:background="@color/black" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="bottom"
+            android:background="@color/black" />
     </com.google.android.material.card.MaterialCardView>
+
 </LinearLayout>

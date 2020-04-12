@@ -10,8 +10,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
+import java.util.Date;
 
 import fyp.chewtsyrming.smartgrocery.FirebaseHandler;
 import fyp.chewtsyrming.smartgrocery.object.UserModel;
@@ -21,6 +23,22 @@ public class Goods {
         @Override
         public int compare(Goods o1, Goods o2) {
             return o2.getTimeStamp().compareTo(o1.getTimeStamp());
+        }
+    };
+    public static Comparator<Goods> sortExpDateAsc = new Comparator<Goods>() {
+        @Override
+        public int compare(Goods o1, Goods o2) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            Date d1 = null;
+            Date d2 = null;
+            try {
+                d1 = sdf.parse(o1.getExpirationDate());
+                d2 = sdf.parse(o2.getExpirationDate());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return (d1.compareTo(d2));
         }
     };
     private String expiredSoon;
@@ -34,7 +52,8 @@ public class Goods {
     private String quantity;
     private String goodsLocation;
     private String alertData;
-    private String alertStatus;
+    private String consumedRateStatus;
+    private String alertDaysStatus;
     private String insertDate;
     private String timeStamp;
     private String activeDays;
@@ -47,11 +66,12 @@ public class Goods {
         this.timeStamp = timeStamp;
     }
 
-    public Goods(String goodsCategory, String goodsLocation, String alertData, String alertStatus, String activeDays, String status, String totalUsed, String rate) {
+    public Goods(String goodsCategory, String goodsLocation, String alertData, String consumedRateStatus, String alertDaysStatus, String activeDays, String status, String totalUsed, String rate) {
         this.goodsCategory = goodsCategory;
         this.goodsLocation = goodsLocation;
         this.alertData = alertData;
-        this.alertStatus = alertStatus;
+        this.consumedRateStatus = consumedRateStatus;
+        this.alertDaysStatus = alertDaysStatus;
         this.activeDays = activeDays;
         this.status = status;
         this.totalUsed = totalUsed;
@@ -97,7 +117,9 @@ public class Goods {
 
     }
 
-    public Goods(String barcode, String goodsId, String goodsName, String imageURL, String goodsCategory, String expirationDate, String quantity, String goodsLocation, String alertData, String alertStatus, String insertDate) {
+    public Goods(String barcode, String goodsId, String goodsName, String imageURL, String goodsCategory,
+                 String expirationDate, String quantity, String goodsLocation, String alertData, String consumedRateStatus,
+                 String alertDaysStatus, String insertDate) {
         this.barcode = barcode;
         this.goodsId = goodsId;
         this.goodsName = goodsName;
@@ -107,8 +129,25 @@ public class Goods {
         this.quantity = quantity;
         this.goodsLocation = goodsLocation;
         this.alertData = alertData;
-        this.alertStatus = alertStatus;
+        this.consumedRateStatus = consumedRateStatus;
+        this.alertDaysStatus = alertDaysStatus;
         this.insertDate = insertDate;
+    }
+
+    public String getAlertDaysStatus() {
+        return alertDaysStatus;
+    }
+
+    public void setAlertDaysStatus(String alertDaysStatus) {
+        this.alertDaysStatus = alertDaysStatus;
+    }
+
+    public String getConsumedRateStatus() {
+        return consumedRateStatus;
+    }
+
+    public void setConsumedRateStatus(String consumedRateStatus) {
+        this.consumedRateStatus = consumedRateStatus;
     }
 
     public String getActiveDays() {
@@ -167,13 +206,6 @@ public class Goods {
         this.alertData = alertData;
     }
 
-    public String getAlertStatus() {
-        return alertStatus;
-    }
-
-    public void setAlertStatus(String alertStatus) {
-        this.alertStatus = alertStatus;
-    }
 
     public String getBarcode() {
         return barcode;
