@@ -1,5 +1,7 @@
 package fyp.chewtsyrming.smartgrocery.fragment;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
@@ -32,8 +35,10 @@ import fyp.chewtsyrming.smartgrocery.object.GoodsList;
 import fyp.chewtsyrming.smartgrocery.object.UserModel;
 
 public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClickListener {
+    private static final int TARGET_FRAGMENT_REQUEST_CODE = 1;
+    private static final String DATA_TYPE = "DATA_TYPE";
+    private static final String ORDER_TYPE = "ORDER_TYPE";
     private static GoodsListAdapter adapter;
-
     private ArrayList<GoodsList> goodsListArrayList;
     private ArrayList<Goods> goodsArrayList;
 
@@ -42,46 +47,16 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
     private String barcode, goodsCategory, goodsID, imageURL, goodsName;
     private UserModel um;
     private ImageView ivGoods;
-    private ImageButton favBtn, settingButton, ib_back;
+    private ImageButton favBtn, settingButton, ib_back, sortBtn;
     private Boolean goodsFav;
     private FirebaseDatabase database;
     private FragmentHandler fragmentHandler;
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View fragmentView = inflater.inflate(R.layout.fragment_goods_from_same_goods, null);
-        listGoods = fragmentView.findViewById(R.id.listGoods);
-        ivGoods = fragmentView.findViewById(R.id.ivGoods);
-        tvGoodsName = fragmentView.findViewById(R.id.tvGoodsName);
-        tv_itemStatus = fragmentView.findViewById(R.id.tv_itemStatus);
 
-        database = FirebaseDatabase.getInstance();
-        fragmentHandler = new FragmentHandler();
-        Bundle cate = this.getArguments();
-        barcode = cate.getString("barcode");
-        goodsCategory = cate.getString("goodsCategory");
-        imageURL = cate.getString("imageURL");
-        goodsName = cate.getString("goodsName");
-        goodsArrayList = new ArrayList<>();
-        tvGoodsName.setText(goodsName);
-        listAllGoods();
-        checkFavStatus();
-        // Picasso.get().load(imageURL).fit().into(ivGoods);
-        Glide.with(getContext())
-                .load(imageURL)
-                .centerCrop()
-                .placeholder(R.drawable.ic_loading_static)
-                .dontAnimate()
-                .into(ivGoods);
-        favBtn = fragmentView.findViewById(R.id.favBtn);
-        settingButton = fragmentView.findViewById(R.id.settingButton);
-        ib_back = fragmentView.findViewById(R.id.ib_back);
-
-        settingButton.setOnClickListener(this);
-        ib_back.setOnClickListener(this);
-        favBtn.setOnClickListener(this);
-
-        goodsFav = false;
-        return fragmentView;
+    public static Intent newIntent(String dataType, String orderChoice) {
+        Intent intent = new Intent();
+        intent.putExtra(DATA_TYPE, dataType);
+        intent.putExtra(ORDER_TYPE, orderChoice);
+        return intent;
     }
 
     private void listAllGoods() {
@@ -149,6 +124,46 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
 
     }
 
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View fragmentView = inflater.inflate(R.layout.fragment_goods_from_same_goods, null);
+        listGoods = fragmentView.findViewById(R.id.listGoods);
+        ivGoods = fragmentView.findViewById(R.id.ivGoods);
+        tvGoodsName = fragmentView.findViewById(R.id.tvGoodsName);
+        tv_itemStatus = fragmentView.findViewById(R.id.tv_itemStatus);
+
+        database = FirebaseDatabase.getInstance();
+        fragmentHandler = new FragmentHandler();
+        Bundle cate = this.getArguments();
+        barcode = cate.getString("barcode");
+        goodsCategory = cate.getString("goodsCategory");
+        imageURL = cate.getString("imageURL");
+        goodsName = cate.getString("goodsName");
+        goodsArrayList = new ArrayList<>();
+        tvGoodsName.setText(goodsName);
+        listAllGoods();
+        checkFavStatus();
+        // Picasso.get().load(imageURL).fit().into(ivGoods);
+        Glide.with(getContext())
+                .load(imageURL)
+                .centerCrop()
+                .placeholder(R.drawable.ic_loading_static)
+                .dontAnimate()
+                .into(ivGoods);
+        favBtn = fragmentView.findViewById(R.id.favBtn);
+        settingButton = fragmentView.findViewById(R.id.settingButton);
+        ib_back = fragmentView.findViewById(R.id.ib_back);
+        sortBtn = fragmentView.findViewById(R.id.sortBtn);
+
+        settingButton.setOnClickListener(this);
+        ib_back.setOnClickListener(this);
+        favBtn.setOnClickListener(this);
+        sortBtn.setOnClickListener(this);
+
+        goodsFav = false;
+        return fragmentView;
+    }
+
     private void changeFavStatus() {
         DatabaseReference goodsFavReff = database.getReference().child("user").child(um.getUserIDFromDataBase()).
                 child("goods").child("fav");
@@ -167,23 +182,12 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.ib_back:
-                fragmentHandler.prevFragment(getContext());
-                break;
-            case R.id.favBtn:
-                changeFavStatus();
+    protected void showDialog() {
+        final FragmentManager fm = (getActivity()).getSupportFragmentManager();
 
-                break;
-            case R.id.settingButton:
-                openSetting();
-
-                break;
-
-
-        }
+        SortDialogFragment dialogFragment = SortDialogFragment.newInstance();
+        dialogFragment.setTargetFragment(GoodsFromSameGoodsFragment.this, TARGET_FRAGMENT_REQUEST_CODE);
+        dialogFragment.show(fm, "Sort");
     }
 
     private void openSetting() {
@@ -200,4 +204,81 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
         fh.loadFragment(itemSettingFragment, getContext());
     }
 
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ib_back:
+                fragmentHandler.prevFragment(getContext());
+                break;
+            case R.id.favBtn:
+                changeFavStatus();
+
+                break;
+            case R.id.settingButton:
+                openSetting();
+
+                break;
+            case R.id.sortBtn:
+                if (goodsArrayList.isEmpty()) {
+                    Toast.makeText(getContext(), "Nothing to filter", Toast.LENGTH_SHORT).show();
+                } else {
+                    showDialog();
+
+                }
+                break;
+
+
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+        if (requestCode == TARGET_FRAGMENT_REQUEST_CODE) {
+            String dataType = data.getStringExtra(DATA_TYPE);
+            String orderType = data.getStringExtra(ORDER_TYPE);
+            Toast.makeText(getContext(), dataType, Toast.LENGTH_SHORT).show();
+
+            if (dataType.contains("expirationDate")) {
+
+                if (orderType.contains("Ascending")) {
+                    Collections.sort(goodsArrayList, Goods.sortExpDateAsc);
+
+                } else {
+                    Collections.sort(goodsArrayList, Goods.sortExpDateDesc);
+
+                }
+                adapter.notifyDataSetChanged();
+            } else if (dataType.contains("insertDate")) {
+                if (orderType.contains("Ascending")) {
+                    Collections.sort(goodsArrayList, Goods.sortInsertDateAsc);
+
+                } else {
+                    Collections.sort(goodsArrayList, Goods.sortInsertDateDesc);
+
+                }
+                adapter.notifyDataSetChanged();
+
+            } else if (dataType.contains("quantity")) {
+
+                if (orderType.contains("Ascending")) {
+                    Collections.sort(goodsArrayList, Goods.sortQuantityAsc);
+
+                }
+
+            } else {
+                Collections.sort(goodsArrayList, Goods.sortQuantityDesc);
+
+
+            }
+            adapter.notifyDataSetChanged();
+
+            //  Toast.makeText(getContext(),orderType, Toast.LENGTH_SHORT).show();
+
+        }
+
+    }
 }

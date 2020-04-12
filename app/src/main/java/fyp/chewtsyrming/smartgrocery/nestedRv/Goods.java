@@ -41,6 +41,70 @@ public class Goods {
             return (d1.compareTo(d2));
         }
     };
+    public static Comparator<Goods> sortExpDateDesc = new Comparator<Goods>() {
+        @Override
+        public int compare(Goods o1, Goods o2) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            Date d1 = null;
+            Date d2 = null;
+            try {
+                d1 = sdf.parse(o1.getExpirationDate());
+                d2 = sdf.parse(o2.getExpirationDate());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return (d2.compareTo(d1));
+        }
+    };
+
+    public static Comparator<Goods> sortInsertDateAsc = new Comparator<Goods>() {
+        @Override
+        public int compare(Goods o1, Goods o2) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            Date d1 = null;
+            Date d2 = null;
+            try {
+                d1 = sdf.parse(o1.getInsertDate());
+                d2 = sdf.parse(o2.getInsertDate());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return (d1.compareTo(d2));
+        }
+    };
+    public static Comparator<Goods> sortInsertDateDesc = new Comparator<Goods>() {
+        @Override
+        public int compare(Goods o1, Goods o2) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            Date d1 = null;
+            Date d2 = null;
+            try {
+                d1 = sdf.parse(o1.getInsertDate());
+                d2 = sdf.parse(o2.getInsertDate());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return (d2.compareTo(d1));
+        }
+    };
+    public static Comparator<Goods> sortQuantityAsc = new Comparator<Goods>() {
+        @Override
+        public int compare(Goods o1, Goods o2) {
+
+            return Integer.valueOf(o1.getQuantity()).compareTo(Integer.valueOf(o2.getQuantity()));
+        }
+    };
+    public static Comparator<Goods> sortQuantityDesc = new Comparator<Goods>() {
+        @Override
+        public int compare(Goods o1, Goods o2) {
+
+            return Integer.valueOf(o2.getQuantity()).compareTo(Integer.valueOf(o1.getQuantity()));
+
+        }
+    };
     private String expiredSoon;
     private String barcode;
     private String goodsId;

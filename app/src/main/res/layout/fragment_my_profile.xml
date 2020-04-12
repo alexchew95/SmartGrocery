@@ -66,6 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
+                android:visibility="gone"
 
                 android:background="@color/white"
                 android:orientation="horizontal"
@@ -237,21 +238,21 @@
 
             <Button
                 android:id="@+id/btn_logout"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                app:backgroundTint="@color/red"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
-                android:backgroundTint="#C20C0C"
-                android:backgroundTintMode="src_over"
+                app:cornerRadius="25dp"
                 android:padding="20dp"
+                app:icon="@drawable/ic_power_settings_red_24dp"
                 android:text="@string/log_out"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+                app:iconTint="@color/white"
                 android:textColor="@color/white"
                 android:textSize="15sp"
                 android:textStyle="bold"
-                app:cornerRadius="20dp"
-                app:strokeColor="@color/darkBlue" />
+                app:strokeColor="@color/black" />
         </LinearLayout>
 
     </RelativeLayout>

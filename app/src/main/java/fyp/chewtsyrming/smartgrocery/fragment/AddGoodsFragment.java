@@ -77,7 +77,7 @@ public class AddGoodsFragment extends Fragment {
          String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
          return Uri.parse(path);
      }*/
-    private EditText tv_goodsName, editTextExpiryDate, editTextQuantity, editAlertTextQuantity, goodsLocation;
+    private EditText tv_goodsName, editTextExpiryDate, editTextQuantity, et_daysToRemind, goodsLocation;
     private Spinner spinnerCategory, spinnerGoodsLocation;
     private TextView tv_imageURL;
     private ImageView imgGoods;
@@ -138,7 +138,7 @@ public class AddGoodsFragment extends Fragment {
         getGoodsLocation();
         barcodeBundle = this.getArguments();
         ll_alert_day = fragmentView.findViewById(R.id.ll_alert_day);
-        editAlertTextQuantity = fragmentView.findViewById(R.id.editAlertTextQuantity);
+        et_daysToRemind = fragmentView.findViewById(R.id.et_daysToRemind);
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         Date date = new Date();
         currentDate = dateFormat.format(date);
@@ -151,9 +151,9 @@ public class AddGoodsFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
-                    editAlertTextQuantity.setVisibility(View.VISIBLE);
+                    et_daysToRemind.setVisibility(View.VISIBLE);
                 } else {
-                    editAlertTextQuantity.setVisibility(View.GONE);
+                    et_daysToRemind.setVisibility(View.GONE);
 
                 }
             }
@@ -304,7 +304,7 @@ public class AddGoodsFragment extends Fragment {
 
                                 int spinnerPosition = adapter2.getPosition(goodsLocation);
                                 spinnerGoodsLocation.setSelection(spinnerPosition);
-                                editAlertTextQuantity.setText(alertData);
+                                et_daysToRemind.setText(alertData);
                                 if (consumedRateStatus.contains("enabled")) {
                                     switch_reminderStatus.setChecked(true);
                                 } else {
@@ -551,7 +551,7 @@ public class AddGoodsFragment extends Fragment {
         } else {
             alertDaysStatus = switch_reminderStatus.getTextOff().toString();
         }
-        alertData = editAlertTextQuantity.getText().toString();
+        alertData = et_daysToRemind.getText().toString();
 
 
         reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
