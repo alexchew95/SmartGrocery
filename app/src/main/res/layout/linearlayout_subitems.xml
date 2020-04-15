@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="11">
+        android:weightSum="8">
 
         <ImageButton
             android:id="@+id/deleteBtn"
@@ -78,7 +78,7 @@
                 android:textColor="@color/black" />
 
             <TextView
-                android:id="@+id/tvExpDateEdit"
+                android:id="@+id/tv_ExpDate2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tvExpDate"
@@ -88,36 +88,6 @@
                 android:textColor="@color/black" />
         </RelativeLayout>
 
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="@color/white" />
-
-        <RelativeLayout
-            android:id="@+id/rlBuyDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_weight="3"
-            android:padding="5dp">
-
-            <TextView
-                android:id="@+id/tv_inserDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:text="Insert Date"
-                android:textColor="@color/black" />
-
-            <TextView
-                android:id="@+id/tvBuyDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/tv_inserDate"
-                android:layout_centerHorizontal="true"
-                android:text="0/0/0"
-                android:textColor="@color/black" />
-        </RelativeLayout>
 
         <View
             android:layout_width="1dp"
@@ -197,6 +167,37 @@
 
         </LinearLayout>
 
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/white" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Location :  "
+            android:textAlignment="textEnd"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tv_goodsLocation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Checking.."
+            android:textAlignment="textStart"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
     </LinearLayout>
 
     <View

@@ -105,6 +105,22 @@ public class Goods {
 
         }
     };
+
+    public static Comparator<Goods> sortGoodsLocationAsc = new Comparator<Goods>() {
+        @Override
+        public int compare(Goods o1, Goods o2) {
+
+            return o1.getGoodsLocation().compareTo(o2.getGoodsLocation());
+        }
+    };
+    public static Comparator<Goods> sortGoodsLocationDesc = new Comparator<Goods>() {
+        @Override
+        public int compare(Goods o1, Goods o2) {
+            return o2.getGoodsLocation().compareTo(o1.getGoodsLocation());
+
+
+        }
+    };
     private String expiredSoon;
     private String barcode;
     private String goodsId;
@@ -124,6 +140,10 @@ public class Goods {
     private String status;
     private String totalUsed;
     private String rate;
+    private String alertDaySnoozeStatus;
+    private String alertDaySnoozeDay;
+    private String consumeRateSnoozeStatus;
+    private String consumeRateSnoozeDay;
 
     public Goods(String barcode, String timeStamp) {
         this.barcode = barcode;
@@ -183,7 +203,8 @@ public class Goods {
 
     public Goods(String barcode, String goodsId, String goodsName, String imageURL, String goodsCategory,
                  String expirationDate, String quantity, String goodsLocation, String alertData, String consumedRateStatus,
-                 String alertDaysStatus, String insertDate) {
+                 String alertDaysStatus, String insertDate, String alertDaySnoozeStatus,
+                 String alertDaySnoozeDay, String consumeRateSnoozeStatus, String consumeRateSnoozeDay) {
         this.barcode = barcode;
         this.goodsId = goodsId;
         this.goodsName = goodsName;
@@ -196,6 +217,11 @@ public class Goods {
         this.consumedRateStatus = consumedRateStatus;
         this.alertDaysStatus = alertDaysStatus;
         this.insertDate = insertDate;
+        this.alertDaySnoozeStatus = alertDaySnoozeStatus;
+        this.alertDaySnoozeDay = alertDaySnoozeDay;
+        this.consumeRateSnoozeStatus = consumeRateSnoozeStatus;
+        this.consumeRateSnoozeDay = consumeRateSnoozeDay;
+
     }
 
     public String getAlertDaysStatus() {
@@ -351,6 +377,38 @@ public class Goods {
         this.goodsLocation = goodsLocation;
     }
 
+    public String getAlertDaySnoozeStatus() {
+        return alertDaySnoozeStatus;
+    }
+
+    public void setAlertDaySnoozeStatus(String alertDaySnoozeStatus) {
+        this.alertDaySnoozeStatus = alertDaySnoozeStatus;
+    }
+
+    public String getAlertDaySnoozeDay() {
+        return alertDaySnoozeDay;
+    }
+
+    public void setAlertDaySnoozeDay(String alertDaySnoozeDay) {
+        this.alertDaySnoozeDay = alertDaySnoozeDay;
+    }
+
+    public String getConsumeRateSnoozeStatus() {
+        return consumeRateSnoozeStatus;
+    }
+
+    public void setConsumeRateSnoozeStatus(String consumeRateSnoozeStatus) {
+        this.consumeRateSnoozeStatus = consumeRateSnoozeStatus;
+    }
+
+    public String getConsumeRateSnoozeDay() {
+        return consumeRateSnoozeDay;
+    }
+
+    public void setConsumeRateSnoozeDay(String consumeRateSnoozeDay) {
+        this.consumeRateSnoozeDay = consumeRateSnoozeDay;
+    }
+
     public void addGoods(Goods good) {
         UserModel um = new UserModel();
         String userId = um.getUserIDFromDataBase();
@@ -358,7 +416,7 @@ public class Goods {
                 .child(goodsCategory).child(barcode);
         goodsId = reff.push().getKey();
         final DatabaseReference mainReff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods");
-
+        //Log.i("sezai:",)
         reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
                 .child(goodsCategory).child(barcode).child(goodsId);
         reff.setValue(good).addOnSuccessListener(new OnSuccessListener<Void>() {

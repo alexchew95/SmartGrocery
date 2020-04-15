@@ -43,7 +43,7 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
     private Switch switch_reminderStatus, switch_daysToRemindStatus;
     private EditText et_daysToRemind;
     private LinearLayout ll_alertData, ll_main;
-    private ImageButton ib_back;
+    private ImageButton ib_back, buttonHelp;
     private FirebaseHandler firebaseHandler;
     private ArrayAdapter<String> adapter2;
     private Button button_saveSetting;
@@ -73,8 +73,10 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
         button_saveSetting = view.findViewById(R.id.button_saveSetting);
         ll_main = view.findViewById(R.id.ll_main);
         ib_back = view.findViewById(R.id.ib_back);
+        buttonHelp = view.findViewById(R.id.buttonHelp);
 
         button_saveSetting.setOnClickListener(this);
+        buttonHelp.setOnClickListener(this);
         ib_back.setOnClickListener(this);
         getGoodsLocation();
         getItemSetting();
@@ -234,7 +236,10 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
                 saveSetting();
                 break;
 
-
+            case R.id.buttonHelp:
+                AddGoodsFragment addGoodsFragment = new AddGoodsFragment();
+                addGoodsFragment.shoeHelpMessageDialog(getContext());
+                break;
         }
     }
 }

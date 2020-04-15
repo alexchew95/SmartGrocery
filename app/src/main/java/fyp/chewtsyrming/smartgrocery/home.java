@@ -1,6 +1,7 @@
 package fyp.chewtsyrming.smartgrocery;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -15,16 +16,16 @@ import com.google.firebase.database.DatabaseReference;
 
 import fyp.chewtsyrming.smartgrocery.fragment.MyProfileFragment;
 import fyp.chewtsyrming.smartgrocery.fragment.ShoppingPlanFragment;
+import fyp.chewtsyrming.smartgrocery.fragment.ViewAlertedItemFragment;
 import fyp.chewtsyrming.smartgrocery.nestedRv.fragment_home;
 
-public class home extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
+public class home extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     FirebaseAuth.AuthStateListener aSL;
     DatabaseReference reff;
-    FloatingActionButton fab,fab1,fab2,fab3;
-    Boolean isFABOpen= false;
-    private TextView mTextMessage;
+    FloatingActionButton fab, fab1, fab2, fab3;
+    Boolean isFABOpen = false;
     FragmentHandler h = new FragmentHandler();
-
+    private TextView mTextMessage;
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -46,19 +47,35 @@ public class home extends AppCompatActivity implements BottomNavigationView.OnNa
                 break;
 
 
-
         }
 
-        return h.loadFragment(fragment,this);
+        return h.loadFragment(fragment, this);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
+        Bundle extras = getIntent().getExtras();
         //loading the default fragment
-        h.loadFragment(new fragment_home(),this);
+        if (extras == null) {
+            h.loadFragment(new fragment_home(), this);
+
+        } else {
+            String actionType = extras.getString("actionType");
+            String itemId = extras.getString("itemId");
+            Log.i("notif data action:", actionType);
+            Log.i("notif data itemId:", itemId);
+            if (actionType.matches("all")) {
+
+
+            } else {
+                ViewAlertedItemFragment fragment = new ViewAlertedItemFragment();
+                fragment.setArguments(extras);
+                h.loadFragment(fragment, this);
+
+            }
+        }
 
         //getting bottom navigation view and attaching the listener
         BottomNavigationView navigation = findViewById(R.id.navigation);

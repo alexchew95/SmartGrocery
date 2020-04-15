@@ -24,12 +24,13 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
                 android:src="@drawable/camera" />
+
             <TextView
                 android:id="@+id/tv_imageURL"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -155,19 +156,23 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
                         android:ems="2"
+                        android:hint="adsdasdas"
                         android:inputType="number"
                         android:text="@string/_0"
                         android:textAlignment="center"
                         android:textColor="@color/black" />
 
-                    <ImageView
+                    <CheckBox
+                        android:id="@+id/cb_quantity"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_marginLeft="10dp" />
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:src="@drawable/ic_question"
-                        android:tooltipText="Leave it 0 if you are unsure how many to buy." />
-
-
+                        android:layout_marginLeft="5dp"
+                        android:text="Uncertain quantity" />
                 </LinearLayout>
 
                 <View

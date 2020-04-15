@@ -9,7 +9,6 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -24,6 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fyp.chewtsyrming.smartgrocery.R;
@@ -38,6 +38,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.HomeVi
     String goodsCategory;
     String imageUrl;
     String goodsName;
+    final ArrayList<String> categoryList = new ArrayList<String>();
+
 
     public CategoryAdapter(List<Category> data, Context context) {
         this.data = data;
@@ -125,10 +127,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.HomeVi
         holder.tv_show_all.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Bundle cate = new Bundle();
                 String category = data.get(position).getGenre();
 
                 cate.putString("goodsCategory", category);
+                cate.putString("type", "category");
 
                 GoodsFromSameCategoryFragment frag = new GoodsFromSameCategoryFragment();
                 frag.setArguments(cate);

@@ -12,8 +12,7 @@
         android:layout_centerInParent="true"
         android:indeterminate="true"
         android:indeterminateTint="#2F13D7"
-
-        />
+        android:visibility="visible" />
 
 
     <TextView
@@ -25,12 +24,13 @@
         android:textColor="@color/black"
         android:textSize="30sp"
         android:visibility="gone" />
+
     <ScrollView
         android:id="@+id/scrollview_home"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbarAlwaysDrawVerticalTrack="true"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -124,13 +124,13 @@
 
                 <Button
                     android:id="@+id/ib_all_item"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="All Item"
+                    android:text="All"
                     android:textAllCaps="false"
                     android:textColor="#002755"
                     android:textSize="20sp"
@@ -142,7 +142,7 @@
 
                 <Button
                     android:id="@+id/ib_category"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="5dp"
@@ -155,6 +155,7 @@
                     app:backgroundTint="@color/white"
                     app:rippleColor="#00FF88"
                     app:strokeWidth="3dp" />
+
 
             </LinearLayout>
 

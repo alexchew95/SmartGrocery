@@ -15,7 +15,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+
         tools:ignore="GoogleAppIndexingWarning">
+        <meta-data
+            android:name="com.onesignal.NotificationOpened.DEFAULT"
+            android:value="DISABLE" />
+
         <activity
             android:name=".SplashActivity"
             android:theme="@style/Splash">
@@ -44,9 +49,9 @@
         <activity
             android:name=".barcode.BarcodeCaptureActivity"
             android:label="Read Barcode" />
-        <activity
-            android:name=".ocr.OcrCaptureActivity"
-            android:label="Read Barcode" />
+        <!-- <activity
+             android:name=".ocr.OcrCaptureActivity"
+             android:label="Read Barcode" />-->
         <activity
             android:name=".home"
             android:label="@string/title_activity_home"

@@ -20,11 +20,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import fyp.chewtsyrming.smartgrocery.FirebaseHandler;
 import fyp.chewtsyrming.smartgrocery.FragmentHandler;
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.adapter.GoodsListGridAdapter;
@@ -33,10 +33,11 @@ import fyp.chewtsyrming.smartgrocery.object.GoodsGrid;
 public class GoodsFromSameCategoryFragment extends Fragment {
 
     GoodsListGridAdapter goodsListGridAdapter;
+    FirebaseHandler firebaseHandler = new FirebaseHandler();
     private ArrayList<GoodsGrid> goodsCategoryList;
     private GridView gridView;
     private FirebaseUser user;
-    private String userId, goodsCategory, imageURL, goodsName, category, processType;
+    private String userId, goodsCategory, imageURL, goodsName, category, processType, barcode;
     private SearchView searchView1;
     private TextView tvCategoryTitle;
     private ImageButton ib_back;
@@ -66,10 +67,13 @@ public class GoodsFromSameCategoryFragment extends Fragment {
         if (goodsCategory.contains("recent")) tvCategoryTitle.setText("RECENTLY ADDED");
         //reference to db
         if (goodsCategory.equals("All Goods")) {
-            getAllGoods();
+            if (processType.contains("view")) getAllGoods();
+            else getAllBarcodeGoods();
+
         } else {
             listGoods();
         }
+
 
 
         searchView1.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -99,10 +103,7 @@ public class GoodsFromSameCategoryFragment extends Fragment {
     }
 
     public void listGoods() {
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference parentReference = database.getReference().child("user").child(userId).
-                child("goods").child(goodsCategory);
-        /*TODO change icon to image retrieve from firebase storage*/
+        DatabaseReference parentReference = firebaseHandler.getUserRef().child("goods").child(goodsCategory);
 
         parentReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -111,8 +112,8 @@ public class GoodsFromSameCategoryFragment extends Fragment {
                 for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     final String barcode = snapshot.getKey();
 
+                    DatabaseReference goodDetailsReference = firebaseHandler.getRef().child("barcode").child(barcode);
 
-                    DatabaseReference goodDetailsReference = database.getReference().child("barcode").child(barcode);
                     goodDetailsReference.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshotChild) {
@@ -164,9 +165,7 @@ public class GoodsFromSameCategoryFragment extends Fragment {
 
     private void getAllGoods() {
 
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference parentReference = database.getReference().child("user").child(userId).
-                child("goods");
+        DatabaseReference parentReference = firebaseHandler.getUserRef().child("goods");
         /*TODO change icon to image retrieve from firebase storage*/
 
         parentReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -184,7 +183,7 @@ public class GoodsFromSameCategoryFragment extends Fragment {
                                 final String barcode = snapshot.getKey();
 
 
-                                DatabaseReference goodDetailsReference = database.getReference().child("barcode").child(barcode);
+                                DatabaseReference goodDetailsReference = firebaseHandler.getRef().child("barcode").child(barcode);
                                 goodDetailsReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshotChild) {
@@ -196,47 +195,26 @@ public class GoodsFromSameCategoryFragment extends Fragment {
                                         GoodsGrid goodsGrid = new GoodsGrid(goodsName, imageURL, barcode, category);
                                         goodsCategoryList.add(goodsGrid);
 
-                                        if (processType.equals("view")) {
-                                            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                                @Override
-                                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                                    GoodsGrid goodsGrid1 = goodsCategoryList.get(position);
-                                                    Bundle cate = new Bundle();
-                                                    cate.putString("barcode", goodsGrid1.getBarcode());
-                                                    cate.putString("goodsCategory", goodsGrid1.getCategory());
-                                                    cate.putString("imageURL", imageURL);
-                                                    cate.putString("goodsName", goodsName);
-                                                    GoodsFromSameGoodsFragment frag = new GoodsFromSameGoodsFragment();
-                                                    frag.setArguments(cate);
-                                                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                                                    transaction.replace(R.id.fragment_container, frag);
-                                                    transaction.addToBackStack(null);
-                                                    transaction.commit();
-                                                }
-                                            });
-                                        } else if (processType.equals("shoppinglist")) {
 
-                                            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                                @Override
-                                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                                    GoodsGrid goodsGrid1 = goodsCategoryList.get(position);
-                                                    String shoppingPlanID = getArguments().getString("shoppingPlanID");
-                                                    String shoppingPlanName = getArguments().getString("shoppingPlanName");
-
-                                                    Bundle cate = new Bundle();
-                                                    cate.putString("barcode", goodsGrid1.getBarcode());
-                                                    cate.putString("shoppingPlanID", shoppingPlanID);
-                                                    cate.putString("shoppingPlanName", shoppingPlanName);
+                                        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                            @Override
+                                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                                GoodsGrid goodsGrid1 = goodsCategoryList.get(position);
+                                                Bundle cate = new Bundle();
+                                                cate.putString("barcode", goodsGrid1.getBarcode());
+                                                cate.putString("goodsCategory", goodsGrid1.getCategory());
+                                                cate.putString("imageURL", imageURL);
+                                                cate.putString("goodsName", goodsName);
+                                                GoodsFromSameGoodsFragment frag = new GoodsFromSameGoodsFragment();
+                                                frag.setArguments(cate);
+                                                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                                                transaction.replace(R.id.fragment_container, frag);
+                                                transaction.addToBackStack(null);
+                                                transaction.commit();
+                                            }
+                                        });
 
 
-                                                    ViewItemsShoppingListFragment frag = new ViewItemsShoppingListFragment();
-                                                    frag.setArguments(cate);
-                                                    FragmentHandler h = new FragmentHandler();
-                                                    h.loadFragment(frag, getContext());
-
-                                                }
-                                            });
-                                        }
                                         goodsListGridAdapter.notifyDataSetChanged();
 
                                     }
@@ -255,6 +233,59 @@ public class GoodsFromSameCategoryFragment extends Fragment {
 
                 }
 
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getAllBarcodeGoods() {
+
+
+        DatabaseReference parentReference = firebaseHandler.getRef().child("barcode");
+        /*TODO change icon to image retrieve from firebase storage*/
+
+        parentReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot ds) {
+                for (DataSnapshot data : ds.getChildren()) {
+
+
+                    goodsName = data.child("goodsName").getValue().toString();
+                    imageURL = data.child("imageURL").getValue().toString();
+                    category = data.child("goodsCategory").getValue().toString();
+                    barcode = data.child("barcode").getValue().toString();
+
+                    GoodsGrid goodsGrid = new GoodsGrid(goodsName, imageURL, barcode, category);
+                    goodsCategoryList.add(goodsGrid);
+                    gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            GoodsGrid goodsGrid1 = goodsCategoryList.get(position);
+                            String shoppingPlanID = getArguments().getString("shoppingPlanID");
+                            String shoppingPlanName = getArguments().getString("shoppingPlanName");
+
+                            Bundle cate = new Bundle();
+                            cate.putString("barcode", goodsGrid1.getBarcode());
+                            cate.putString("shoppingPlanID", shoppingPlanID);
+                            cate.putString("shoppingPlanName", shoppingPlanName);
+
+
+                            ViewItemsShoppingListFragment frag = new ViewItemsShoppingListFragment();
+                            frag.setArguments(cate);
+                            FragmentHandler h = new FragmentHandler();
+                            h.loadFragment(frag, getContext());
+
+                        }
+                    });
+                    goodsListGridAdapter.notifyDataSetChanged();
+
+
+                }
 
             }
 

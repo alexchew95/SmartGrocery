@@ -101,6 +101,16 @@
             android:textColor="@color/black"
             android:textSize="15sp" />
 
+        <TextView
+            android:id="@+id/tv_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Location"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
     </LinearLayout>
 
 </RelativeLayout>

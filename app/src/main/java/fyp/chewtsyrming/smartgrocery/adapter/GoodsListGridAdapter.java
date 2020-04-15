@@ -29,7 +29,6 @@ public class GoodsListGridAdapter extends BaseAdapter {
     UserModel um;
     private List<GoodsGrid> goodsList;
     private List<GoodsGrid> tempList;
-    ;
     private List<GoodsGrid> originalList = new ArrayList<>();
 
     public GoodsListGridAdapter(Context mContext, List<GoodsGrid> goodsList) {
@@ -96,7 +95,11 @@ public class GoodsListGridAdapter extends BaseAdapter {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild(book.getBarcode())) {
+                    // Toast.makeText(mContext,book.getBarcode(),Toast.LENGTH_SHORT).show();
                     viewHolder.imageview_favorite.setImageResource(R.drawable.ic_favorite_red_24dp);
+                } else {
+                    viewHolder.imageview_favorite.setImageResource(R.drawable.ic_favorite_white_24dp);
+
                 }
             }
 

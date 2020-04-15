@@ -3,12 +3,14 @@ package fyp.chewtsyrming.smartgrocery.adapter;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -21,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -48,6 +51,9 @@ import fyp.chewtsyrming.smartgrocery.object.ShoppingPlanItem;
 
 public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPlanItemListAdapter.HomeViewHolder> {
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    final FirebaseHandler fh;
+    Boolean showCB = false;
+    private SparseBooleanArray mSelectedItems, cbArray;
     private Context context;
     private List<ShoppingPlanItem> shoppingPlanItems;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -58,8 +64,9 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
     public ShoppingPlanItemListAdapter(List<ShoppingPlanItem> shoppingPlanItems, Context context) {
         this.shoppingPlanItems = shoppingPlanItems;
         this.context = context;
-
-
+        mSelectedItems = new SparseBooleanArray();
+        fh = new FirebaseHandler();
+        cbArray = new SparseBooleanArray();
     }
 
 
@@ -74,7 +81,8 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HomeViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final HomeViewHolder holder, final int position) {
+
         final ShoppingPlanItem shoppingPlanItem = shoppingPlanItems.get(position);
         final String goodsName = shoppingPlanItem.getGoodsName();
         final String shoppingPlanID = shoppingPlanItem.getShoppingPlanID();
@@ -85,6 +93,31 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
         String goodsQuantity = shoppingPlanItem.getQuantity();
         final String barcode = shoppingPlanItem.getGoodsBarcode();
         holder.tv_item_title.setText(goodsName);
+        boolean visible = mSelectedItems.get(position);
+        boolean cbChecked = cbArray.get(position);
+        holder.cb_row.setVisibility(visible ? View.VISIBLE : View.GONE);
+        holder.cb_row.setChecked(cbChecked);
+
+        holder.ll_main.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                int itemCount = getItemCount();
+
+                showCB = !showCB;
+                for (int i = 0; i <= itemCount; i++) {
+                    setItemVisibilityByPosition(i, showCB);
+                }
+                return true;
+            }
+        });
+        holder.cb_row.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                cbArray.put(position, b);
+
+            }
+        });
         holder.tv_item_quantity.setText(goodsQuantity);
         holder.ib_edit_item_list.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,10 +127,12 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
                 View mView = inflater.inflate(R.layout.dialog_view_shopping_list_item, null);
                 TextView tv_textGoodsName = mView.findViewById(R.id.tv_textGoodsName);
                 TextView tv_category = mView.findViewById(R.id.tv_category);
+                final TextView tv_item_inventory_status = mView.findViewById(R.id.tv_item_inventory_status);
                 Button button_cancel = mView.findViewById(R.id.button_cancel);
                 Button button_add_to_inventory_list = mView.findViewById(R.id.button_add_to_inventory_list);
                 Button button_delete = mView.findViewById(R.id.button_delete);
-
+                ImageButton buttonHelp = mView.findViewById(R.id.buttonHelp);
+                ContentLoadingProgressBar pb_item_status = mView.findViewById(R.id.pb_item_status);
                 final Switch switch_reminderStatus = mView.findViewById(R.id.switch_reminderStatus),
                         switch_daysToRemindStatus = mView.findViewById(R.id.switch_daysToRemindStatus);
                 final LinearLayout ll_alert_day = mView.findViewById(R.id.ll_alert_day);
@@ -108,7 +143,13 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
                 ImageView imgGoods = mView.findViewById(R.id.imgGoods);
                 spinnerGoodsLocation = mView.findViewById(R.id.spinnerGoodsLocation);
                 getGoodsLocation();
-                final FirebaseHandler fh = new FirebaseHandler();
+                buttonHelp.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        AddGoodsFragment addGoodsFragment = new AddGoodsFragment();
+                        addGoodsFragment.shoeHelpMessageDialog(context);
+                    }
+                });
                 DatabaseReference userPrefRef = fh.getUserRef().child("goodsData").child(shoppingPlanItem.getGoodsBarcode());
                 userPrefRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -146,6 +187,39 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
 
                     }
                 });
+
+                pb_item_status.hide();
+
+                FirebaseHandler fb = new FirebaseHandler();
+                final String itemCheckResult = "You don't have this item in your inventory.";
+                DatabaseReference checkItemRef = fb.getUserRef().child("goods").child(goodsCategory).child(barcode);
+                checkItemRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.getValue() == null) {
+                            tv_item_inventory_status.setText(itemCheckResult);
+                        } else {
+                            int fullQuantity = 0;
+
+                            for (DataSnapshot snapShot : dataSnapshot.getChildren()
+                            ) {
+                                int quantity = Integer.parseInt(snapShot.child("quantity").getValue().toString());
+                                fullQuantity = fullQuantity + quantity;
+                            }
+                            String fullQuantityS = String.valueOf(fullQuantity);
+
+                            String itemCheckResult = "You have " + fullQuantityS + " " + shoppingPlanItem.getGoodsName() + " in your inventory";
+                            tv_item_inventory_status.setText(itemCheckResult);
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
                 Glide.with(context)
                         .load(imageURL)
                         .centerCrop()
@@ -190,9 +264,7 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
                         datePickerDialog.show();
                     }
                 });
-
                 alert.setView(mView);
-
                 final AlertDialog mainDialog = alert.create();
                 mainDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 mainDialog.show();
@@ -209,7 +281,7 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
 
                         final AlertDialog.Builder alert = new AlertDialog.Builder(context);
                         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                        View mView = inflater.inflate(R.layout.dialog_delete, null);
+                        View mView = inflater.inflate(R.layout.dialog_delete_shopping_plan, null);
 
                         Button btn_yes = mView.findViewById(R.id.btn_yes);
                         Button btn_no = mView.findViewById(R.id.btn_no);
@@ -286,7 +358,8 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
 
 
                         Goods good = new Goods(barcode, goodsId, goodsName, imageURL, goodsCategory, expirationDate,
-                                quantity, goodsLocation, alertData, alertDaysStatus, consumedRateStatus, insertDate);
+                                quantity, goodsLocation, alertData, alertDaysStatus, consumedRateStatus, insertDate
+                                , "disabled", "0", "disabled", "0");
                         good.addGoods(good);
                         AddGoodsFragment addGoodsFragment = new AddGoodsFragment();
                         addGoodsFragment.checkGoodsDataExist(barcode, goodsCategory, goodsLocation,
@@ -300,7 +373,7 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
             }
         });
 
-        holder.tv_item_title.setOnClickListener(new View.OnClickListener() {
+        holder.ll_main.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DatabaseReference updateBuyStatusRef = database.getReference().child("user").child(userId).
@@ -386,10 +459,42 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
         });
     }
 
+    public void setItemVisibilityByPosition(int position, boolean visible) {
+        mSelectedItems.put(position, visible);
+        notifyItemChanged(position);
+    }
+
+    public void deleteCheckedBox() {
+
+        int itemCount = getItemCount();
+        for (int i = 0; i <= itemCount; i++) {
+
+            if (cbArray.get(i)) {
+                final ShoppingPlanItem shoppingPlanItem = shoppingPlanItems.get(i);
+                DatabaseReference deletCBRef = fh.getUserRef().child("shoppingPlan").
+                        child(shoppingPlanItem.getShoppingPlanID()).child("itemList")
+                        .child(shoppingPlanItem.getItemID());
+                final int finalI = i;
+                deletCBRef.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        cbArray.put(finalI, false);
+                        notifyItemChanged(finalI);
+
+                    }
+                });
+            }
+        }
+
+
+    }
+
     public static class HomeViewHolder extends RecyclerView.ViewHolder {
         ImageView iv_category;
         TextView tv_item_title, tv_item_quantity;
         ImageButton ib_edit_item_list;
+        LinearLayout ll_main;
+        CheckBox cb_row;
 
         public HomeViewHolder(View itemView) {
             super(itemView);
@@ -397,8 +502,11 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
             tv_item_title = itemView.findViewById(R.id.tv_item_title);
             tv_item_quantity = itemView.findViewById(R.id.tv_item_quantity);
             ib_edit_item_list = itemView.findViewById(R.id.ib_edit_item_list);
+            ll_main = itemView.findViewById(R.id.ll_main);
+            cb_row = itemView.findViewById(R.id.cb_row);
         }
 
 
     }
+
 }

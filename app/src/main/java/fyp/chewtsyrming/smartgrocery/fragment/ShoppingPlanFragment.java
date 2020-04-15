@@ -90,6 +90,7 @@ public class ShoppingPlanFragment extends Fragment implements View.OnClickListen
                 if (dataSnapshot.getValue() == null) {
                     tv_rv_empty.setVisibility(View.VISIBLE);
                 } else {
+                    tv_rv_empty.setVisibility(View.GONE);
                     rvShoppingPlan.setVisibility(View.VISIBLE);
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         String shoppingId= snapshot.getKey();

@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -68,9 +70,10 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
     private RelativeLayout rl_goods_info;
     private Uri imageURI;
     private StorageReference storageRef, imagesRef;
-    private TextView tv_item_inventory_status,tv_imageURL;
+    private TextView tv_item_inventory_status, tv_imageURL;
     private int REQUEST_IMAGE_CAPTURE = 1;
     private ImageButton ibGallery, ibCamera;
+    private CheckBox cb_quantity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -103,6 +106,7 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
         rl_goods_info = fragmentView.findViewById(R.id.rl_goods_info);
         tv_item_inventory_status = fragmentView.findViewById(R.id.tv_item_inventory_status);
         button_add_to_shop_list = fragmentView.findViewById(R.id.button_add_to_shop_list);
+        cb_quantity = fragmentView.findViewById(R.id.cb_quantity);
         tv_imageURL = fragmentView.findViewById(R.id.tv_imageURL);
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, goodsCategory);
         spinnerCategory.setAdapter(adapter);
@@ -110,7 +114,23 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
         button_add_to_shop_list.setOnClickListener(this);
         ibGallery.setOnClickListener(this);
         ibCamera.setOnClickListener(this);
+        cb_quantity.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    editTextQuantity.setText("?");
+                    editTextQuantity.setFocusable(false);
+                    editTextQuantity.setClickable(false);
+                    editTextQuantity.setFocusableInTouchMode(false);
 
+                } else {
+                    editTextQuantity.setText("0");
+                    editTextQuantity.setFocusableInTouchMode(true);
+                    editTextQuantity.setFocusable(true);
+                    editTextQuantity.setClickable(true);
+                }
+            }
+        });
         return fragmentView;
 
     }
@@ -136,7 +156,7 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
             imgGoods.setImageURI(data.getData());
             imageURI = data.getData();
 
-            Toast.makeText(getContext(), String.valueOf(imageURI), Toast.LENGTH_LONG).show();
+            //  Toast.makeText(getContext(), String.valueOf(imageURI), Toast.LENGTH_LONG).show();
 
         }
 
@@ -156,6 +176,8 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
         );
 
         imageFilePath = image.getAbsolutePath();
+        imageURI = Uri.fromFile(new File(imageFilePath));
+
         return image;
     }
 
@@ -234,7 +256,7 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
 
     private void saveIntoList() {
         final String category = spinnerCategory.getSelectedItem().toString();
-        String imageURL=tv_imageURL.getText().toString();
+        String imageURL = tv_imageURL.getText().toString();
         name = editTextGoodsName.getText().toString();
         quantity = editTextQuantity.getText().toString();
         String shoppingPlanID = getArguments().getString("shoppingPlanID");
@@ -274,7 +296,6 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
         storageRef = storage.getReference();
         String barcode = getArguments().getString("barcode");
 
-        imageURI = Uri.fromFile(new File(imageFilePath));
         imagesRef = storageRef.child("goods").child(barcode);
 
         imagesRef.putFile(imageURI).
@@ -326,15 +347,16 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
                     tv_item_inventory_status.setText(itemCheckResult);
                 } else {
                     int fullQuantity = 0;
-
+                    String goodsName = "";
                     for (DataSnapshot snapShot : dataSnapshot.getChildren()
                     ) {
+                        goodsName = snapShot.child("goodsName").getValue(String.class);
                         int quantity = Integer.parseInt(snapShot.child("quantity").getValue().toString());
                         fullQuantity = fullQuantity + quantity;
                     }
                     String fullQuantityS = String.valueOf(fullQuantity);
 
-                    String itemCheckResult = "You have " + fullQuantityS + " in your inventory";
+                    String itemCheckResult = "You have " + fullQuantityS + " " + goodsName + " in your inventory";
                     tv_item_inventory_status.setText(itemCheckResult);
 
                 }
@@ -357,7 +379,6 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
 
                 } else {
                     saveBarcode();
-
 
 
                 }

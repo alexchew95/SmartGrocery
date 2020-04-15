@@ -26,7 +26,7 @@ public class SortDialogFragment extends DialogFragment implements View.OnClickLi
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    TextView tv_expDate, tv_insertDate, tv_quantity;
+    TextView tv_expDate, tv_insertDate, tv_quantity, tv_location;
     ImageButton button_closeDialog;
     RadioGroup radioGroup;
     RadioButton radioButton;
@@ -74,11 +74,13 @@ public class SortDialogFragment extends DialogFragment implements View.OnClickLi
         tv_expDate = view.findViewById(R.id.tv_expDate);
         tv_insertDate = view.findViewById(R.id.tv_insertDate);
         tv_quantity = view.findViewById(R.id.tv_quantity);
+        tv_location = view.findViewById(R.id.tv_location);
         button_closeDialog = view.findViewById(R.id.button_closeDialog);
 
         tv_expDate.setOnClickListener(this);
         tv_insertDate.setOnClickListener(this);
         tv_quantity.setOnClickListener(this);
+        tv_location.setOnClickListener(this);
         button_closeDialog.setOnClickListener(this);
         radioGroup = view.findViewById(R.id.radioGroup);
         int selectedId = radioGroup.getCheckedRadioButtonId();
@@ -127,6 +129,10 @@ public class SortDialogFragment extends DialogFragment implements View.OnClickLi
             case R.id.button_closeDialog:
                 dismiss();
                 break;
+            case R.id.tv_location:
+                sendResult("location", orderChoice);
+                break;
+
 
         }
     }

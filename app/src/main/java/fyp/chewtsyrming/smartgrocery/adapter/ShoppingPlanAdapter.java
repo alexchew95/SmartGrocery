@@ -86,7 +86,7 @@ public class ShoppingPlanAdapter extends RecyclerView.Adapter<ShoppingPlanAdapte
             public void onClick(View view) {
                 final AlertDialog.Builder alert = new AlertDialog.Builder(context);
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                View mView = inflater.inflate(R.layout.dialog_delete, null);
+                View mView = inflater.inflate(R.layout.dialog_delete_shopping_plan, null);
 
                 Button btn_yes = mView.findViewById(R.id.btn_yes);
                 Button btn_no = mView.findViewById(R.id.btn_no);

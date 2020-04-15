@@ -143,13 +143,6 @@
                         android:textAlignment="center"
                         android:textColor="@color/black" />
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:src="@drawable/ic_question"
-                        android:tooltipText="Leave it 0 if you are unsure how many to buy." />
-
 
                 </LinearLayout>
 
@@ -199,7 +192,7 @@
                         android:layout_height="wrap_content"
                         android:text="Consumed Rate Reminder : "
                         android:textOff="disabled"
-                        android:textOn="enabled"/>
+                        android:textOn="enabled" />
 
                     <ImageButton
                         android:id="@+id/buttonHelp"
@@ -226,6 +219,7 @@
                         android:text="Days to remind before Expired: "
                         android:textOff="disabled"
                         android:textOn="enabled" />
+
                     <EditText
                         android:id="@+id/editAlertTextQuantity"
                         android:layout_width="wrap_content"
@@ -237,6 +231,7 @@
                         android:visibility="gone" />
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/ll_location"
                     android:layout_width="wrap_content"
@@ -307,37 +302,40 @@
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_gravity="center_horizontal"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
 
                     <Button
                         android:id="@+id/button_add_to_inventory_list"
-
-                        android:layout_marginRight="10dp"
-                        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
                         android:layout_gravity="center"
-                        app:icon="@drawable/ic_add_goods"
+                        android:text="Add to inventory"
+                        android:textColor="@color/black"
+                        app:cornerRadius="20dp"
                         app:iconGravity="textStart"
-                        app:iconSize="75dp"
-                        app:iconTint="@null" />
+                        app:icon="@drawable/ic_add_black_24dp"
+                        app:iconTint="@null"
+                        app:strokeColor="@color/black" />
 
                     <Button
                         android:id="@+id/button_delete"
-
-                        android:layout_marginLeft="10dp"
-                        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center"
+                        android:layout_marginTop="5dp"
+                        android:text="Delete items"
+                        android:textColor="@color/red"
+                        app:cornerRadius="20dp"
+                        app:iconTint="@color/red"
                         app:icon="@drawable/ic_delete_black_24dp"
                         app:iconGravity="textStart"
-                        app:iconSize="75dp"
-                        app:iconTint="@null"/>
+                        app:strokeColor="@color/red" />
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>

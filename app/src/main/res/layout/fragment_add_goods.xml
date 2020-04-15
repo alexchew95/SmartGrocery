@@ -29,11 +29,12 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
                 android:src="@drawable/camera" />
+
             <TextView
                 android:id="@+id/tv_imageURL"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="invisible"/>
+                android:visibility="invisible" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -162,6 +163,7 @@
                         android:layout_weight="3"
                         android:ems="5"
                         android:focusable="false"
+                        android:hint="Select date"
                         android:text="" />
 
                 </LinearLayout>
@@ -171,9 +173,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="7dp"
-
-                    >
+                    android:padding="7dp">
 
                     <TextView
 
@@ -189,9 +189,63 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
                         android:ems="2"
+                        android:hint="#"
                         android:inputType="number"
-                        android:text="" />
+                        android:text="0"
+                        android:textAlignment="center" />
 
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:paddingLeft="5dp"
+                    android:paddingEnd="5dp"
+                    android:weightSum="4">
+
+                    <Button
+                        android:id="@+id/button_one"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="+1"
+
+                        app:rippleColor="@color/colorAccent"
+                        app:strokeColor="@color/black" />
+
+                    <Button
+                        android:id="@+id/button_two"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="+2"
+                        app:rippleColor="@color/colorAccent"
+                        app:strokeColor="@color/black" />
+
+                    <Button
+                        android:id="@+id/button_five"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="+5"
+                        app:rippleColor="@color/colorAccent"
+                        app:strokeColor="@color/black" />
+
+
+                    <Button
+                        android:id="@+id/button_ten"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="+10"
+                        app:rippleColor="@color/colorAccent"
+                        app:strokeColor="@color/black" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -207,7 +261,7 @@
                         android:layout_height="wrap_content"
                         android:text="Consumed Rate Reminder : "
                         android:textOff="disabled"
-                        android:textOn="enabled"/>
+                        android:textOn="enabled" />
 
                     <ImageButton
                         android:id="@+id/buttonHelp"
@@ -234,6 +288,7 @@
                         android:text="Days to remind before Expired: "
                         android:textOff="disabled"
                         android:textOn="enabled" />
+
                     <EditText
                         android:id="@+id/et_daysToRemind"
                         android:layout_width="wrap_content"
@@ -244,6 +299,60 @@
                         android:text="1"
                         android:visibility="gone" />
 
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_numberPicker"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:paddingLeft="5dp"
+                    android:paddingEnd="5dp"
+                    android:visibility="gone"
+                    android:weightSum="4">
+
+                    <Button
+                        android:id="@+id/button_oneD"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="+1"
+
+                        app:rippleColor="@color/colorAccent"
+                        app:strokeColor="@color/black" />
+
+                    <Button
+                        android:id="@+id/button_twoD"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="+2"
+                        app:rippleColor="@color/colorAccent"
+                        app:strokeColor="@color/black" />
+
+                    <Button
+                        android:id="@+id/button_fiveD"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="+5"
+                        app:rippleColor="@color/colorAccent"
+                        app:strokeColor="@color/black" />
+
+
+                    <Button
+                        android:id="@+id/button_tenD"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="+10"
+                        app:rippleColor="@color/colorAccent"
+                        app:strokeColor="@color/black" />
                 </LinearLayout>
 
                 <LinearLayout

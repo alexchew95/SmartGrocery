@@ -349,7 +349,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="1"
+                    android:text="+1"
 
                     app:rippleColor="@color/colorAccent"
                     app:strokeColor="@color/black" />
@@ -360,7 +360,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="2"
+                    android:text="+2"
                     app:rippleColor="@color/colorAccent"
                     app:strokeColor="@color/black" />
 
@@ -370,7 +370,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="5"
+                    android:text="+5"
                     app:rippleColor="@color/colorAccent"
                     app:strokeColor="@color/black" />
 

@@ -69,8 +69,10 @@ public class AddGoodsFragment extends Fragment {
     private static final int RC_OCR_CAPTURE = 9003;
     private static final int REQUEST_CODE = 11;
     private Switch switch_reminderStatus, switch_daysToRemindStatus;
-    private LinearLayout ll_alert_day;
+    private LinearLayout ll_alert_day, ll_numberPicker;
     private String currentDate, imageFilePath;
+    private Button button_one, button_two, button_five,
+            button_ten, button_oneD, button_twoD, button_fiveD, button_tenD;
     /* public Uri getImageUri(Context inContext, Bitmap inImage) {
          ByteArrayOutputStream bytes = new ByteArrayOutputStream();
          inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
@@ -130,6 +132,15 @@ public class AddGoodsFragment extends Fragment {
         ImageButton ibCamera = fragmentView.findViewById(R.id.ibCamera);
         ImageButton ib_add_storage_location = fragmentView.findViewById(R.id.ib_add_storage_location);
         ImageButton buttonHelp = fragmentView.findViewById(R.id.buttonHelp);
+        button_one = fragmentView.findViewById(R.id.button_one);
+        button_two = fragmentView.findViewById(R.id.button_two);
+        button_five = fragmentView.findViewById(R.id.button_five);
+        button_ten = fragmentView.findViewById(R.id.button_ten);
+        button_oneD = fragmentView.findViewById(R.id.button_oneD);
+        button_twoD = fragmentView.findViewById(R.id.button_twoD);
+        button_fiveD = fragmentView.findViewById(R.id.button_fiveD);
+        button_tenD = fragmentView.findViewById(R.id.button_tenD);
+        ll_numberPicker = fragmentView.findViewById(R.id.ll_numberPicker);
 
         progress_bar_add_goods = fragmentView.findViewById(R.id.progress_bar_add_goods);
         mainReff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods");
@@ -147,13 +158,110 @@ public class AddGoodsFragment extends Fragment {
             getBarcodeData();
         }
 
+        button_one.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                int currentQuantity = 0;
+                if (!editTextQuantity.getText().toString().matches("")) {
+                    currentQuantity = Integer.parseInt(editTextQuantity.getText().toString());
+                }
+                int newQuantity = returnQuantity(1, currentQuantity);
+                editTextQuantity.setText(String.valueOf(newQuantity));
+            }
+        });
+        button_two.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int currentQuantity = 0;
+                if (!editTextQuantity.getText().toString().matches("")) {
+                    currentQuantity = Integer.parseInt(editTextQuantity.getText().toString());
+                }
+                int newQuantity = returnQuantity(2, currentQuantity);
+                editTextQuantity.setText(String.valueOf(newQuantity));
+
+            }
+        });
+        button_five.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int currentQuantity = 0;
+                if (!editTextQuantity.getText().toString().matches("")) {
+                    currentQuantity = Integer.parseInt(editTextQuantity.getText().toString());
+                }
+                int newQuantity = returnQuantity(5, currentQuantity);
+                editTextQuantity.setText(String.valueOf(newQuantity));
+
+            }
+        });
+        button_ten.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int currentQuantity = 0;
+                if (!editTextQuantity.getText().toString().matches("")) {
+                    currentQuantity = Integer.parseInt(editTextQuantity.getText().toString());
+                }
+                int newQuantity = returnQuantity(10, currentQuantity);
+                editTextQuantity.setText(String.valueOf(newQuantity));
+            }
+        });
+        button_oneD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int currentQuantity = 0;
+                if (!et_daysToRemind.getText().toString().matches("")) {
+                    currentQuantity = Integer.parseInt(et_daysToRemind.getText().toString());
+                }
+                int newQuantity = returnQuantity(1, currentQuantity);
+                et_daysToRemind.setText(String.valueOf(newQuantity));
+
+            }
+        });
+        button_twoD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int currentQuantity = 0;
+                if (!et_daysToRemind.getText().toString().matches("")) {
+                    currentQuantity = Integer.parseInt(et_daysToRemind.getText().toString());
+                }
+                int newQuantity = returnQuantity(2, currentQuantity);
+                et_daysToRemind.setText(String.valueOf(newQuantity));
+
+            }
+        });
+        button_fiveD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int currentQuantity = 0;
+                if (!et_daysToRemind.getText().toString().matches("")) {
+                    currentQuantity = Integer.parseInt(et_daysToRemind.getText().toString());
+                }
+                int newQuantity = returnQuantity(5, currentQuantity);
+                et_daysToRemind.setText(String.valueOf(newQuantity));
+
+            }
+        });
+        button_tenD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int currentQuantity = 0;
+                if (!et_daysToRemind.getText().toString().matches("")) {
+                    currentQuantity = Integer.parseInt(et_daysToRemind.getText().toString());
+                }
+                int newQuantity = returnQuantity(10, currentQuantity);
+                et_daysToRemind.setText(String.valueOf(newQuantity));
+
+            }
+        });
         switch_daysToRemindStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
                     et_daysToRemind.setVisibility(View.VISIBLE);
+                    ll_numberPicker.setVisibility(View.VISIBLE);
                 } else {
                     et_daysToRemind.setVisibility(View.GONE);
+                    ll_numberPicker.setVisibility(View.GONE);
 
                 }
             }
@@ -163,7 +271,7 @@ public class AddGoodsFragment extends Fragment {
         buttonHelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                shoeHelpMessageDialog();
+                shoeHelpMessageDialog(getContext());
             }
         });
         ibGallery.setOnClickListener(new View.OnClickListener() {
@@ -238,8 +346,8 @@ public class AddGoodsFragment extends Fragment {
         });
     }
 
-    private void shoeHelpMessageDialog() {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+    public void shoeHelpMessageDialog(Context c) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(c);
         // set title
         alertDialogBuilder.setTitle("What is consumed rated reminder?");
         String message = "By enabling this function, Home Grocery will monitor this item consumption rate " +
@@ -561,7 +669,8 @@ public class AddGoodsFragment extends Fragment {
         reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
                 .child(goodsCategory).child(barcode).child(goodsId);
         Goods good = new Goods(barcode, goodsId, goodsName, imageURL, goodsCategory, expirationDate,
-                quantity, goodsLocation, alertData, consumedRateStatus, alertDaysStatus, insertDate);
+                quantity, goodsLocation, alertData, consumedRateStatus, alertDaysStatus, insertDate
+                , "disabled", "0", "disabled", "0");
 
         good.addGoods(good);
         checkGoodsDataExist(barcode, goodsCategory, goodsLocation,
@@ -608,4 +717,7 @@ public class AddGoodsFragment extends Fragment {
 
     }
 
+    public int returnQuantity(int toAddQuantity, int currentQuantity) {
+        return toAddQuantity + currentQuantity;
+    }
 }

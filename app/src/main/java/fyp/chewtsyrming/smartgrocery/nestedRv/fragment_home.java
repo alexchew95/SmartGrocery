@@ -37,7 +37,7 @@ import fyp.chewtsyrming.smartgrocery.fragment.GoodsFromSameCategoryFragment;
 
 public class fragment_home extends Fragment implements View.OnClickListener {
     int i = 0;
-    private String name, imageUrl;
+    private String name;
     private Goods goods;
     private FirebaseDatabase database;
     private FragmentHandler h = new FragmentHandler();
@@ -50,7 +50,7 @@ public class fragment_home extends Fragment implements View.OnClickListener {
     private RecyclerView.LayoutManager layoutManager;
     private FirebaseUser user;
     private String userId;
-    private Button ib_scan_barcode, ib_search_goods, ib_add_goods, ib_all_item, ib_category;
+    private Button ib_storageLocation, ib_scan_barcode, ib_search_goods, ib_add_goods, ib_all_item, ib_category;
     private ScrollView scrollview_home;
 
     @Nullable
@@ -62,7 +62,9 @@ public class fragment_home extends Fragment implements View.OnClickListener {
         user = FirebaseAuth.getInstance().getCurrentUser();
         userId = user.getUid();
         dataList = new ArrayList<>();
-        adapter = new CategoryAdapter(dataList, v.getContext());
+        if (v.getContext() != null) {
+            adapter = new CategoryAdapter(dataList, v.getContext());
+        }
         layoutManager = new LinearLayoutManager(v.getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView = v.findViewById(R.id.rv_main);
         recyclerView.setNestedScrollingEnabled(false);
@@ -81,8 +83,6 @@ public class fragment_home extends Fragment implements View.OnClickListener {
         clpb_home = v.findViewById(R.id.clpb_home);
         ib_category = v.findViewById(R.id.ib_category);
         scrollview_home = v.findViewById(R.id.scrollview_home);
-
-        imageUrl = "https://firebasestorage.googleapis.com/v0/b/smart-grocery-f41a7.appspot.com/o/goods%2FUntitled.png?alt=media&token=0acec7a9-c70f-49d0-94fe-b3666b9df7f9";
         ib_all_item.setOnClickListener(this);
         ib_category.setOnClickListener(this);
         ib_scan_barcode.setOnClickListener(this);
@@ -314,7 +314,12 @@ public class fragment_home extends Fragment implements View.OnClickListener {
 
                 getAllData();
                 break;
+
         }
+    }
+
+    private void getInventoryGoods() {
+
     }
 
     public void addGoods() {

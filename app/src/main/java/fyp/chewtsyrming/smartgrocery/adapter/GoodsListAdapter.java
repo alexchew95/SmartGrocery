@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -41,6 +42,7 @@ import java.util.List;
 
 import fyp.chewtsyrming.smartgrocery.FirebaseHandler;
 import fyp.chewtsyrming.smartgrocery.R;
+import fyp.chewtsyrming.smartgrocery.fragment.AddGoodsFragment;
 import fyp.chewtsyrming.smartgrocery.nestedRv.Goods;
 import fyp.chewtsyrming.smartgrocery.object.ShoppingPlan;
 import fyp.chewtsyrming.smartgrocery.object.ShoppingPlanItem;
@@ -51,6 +53,7 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
     Context mContext;
     UserModel um = new UserModel();
     FirebaseHandler fh = new FirebaseHandler();
+    String dateType = "exp";
     private int lastPosition = -1;
     private ArrayAdapter<String> adapter;
 
@@ -62,6 +65,7 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
         final Goods goods = getItem(position);
         final ViewHolder viewHolder;
         final View view;
@@ -70,8 +74,9 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.linearlayout_subitems, parent, false);
             viewHolder.tvQuantity = convertView.findViewById(R.id.tvQuantityEdit);
-            viewHolder.tvExpDate = convertView.findViewById(R.id.tvExpDateEdit);
-            viewHolder.tvBuyDate = convertView.findViewById(R.id.tvBuyDate);
+            viewHolder.tv_ExpDate2 = convertView.findViewById(R.id.tv_ExpDate2);
+            viewHolder.tvExpDate = convertView.findViewById(R.id.tvExpDate);
+            viewHolder.rlExpDate = convertView.findViewById(R.id.rlExpDate);
             viewHolder.editBtn = convertView.findViewById(R.id.editBtn);
             viewHolder.deleteBtn = convertView.findViewById(R.id.deleteBtn);
             viewHolder.tv_remainingDaysStatus = convertView.findViewById(R.id.tv_remainingDaysStatus);
@@ -79,6 +84,7 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
             viewHolder.ll_remainingDays = convertView.findViewById(R.id.ll_remainingDays);
             viewHolder.ll_consumedRate = convertView.findViewById(R.id.ll_consumedRate);
             viewHolder.iv_consumeRate = convertView.findViewById(R.id.iv_consumeRate);
+            viewHolder.tv_goodsLocation = convertView.findViewById(R.id.tv_goodsLocation);
 
             view = convertView;
             convertView.setTag(viewHolder);
@@ -90,13 +96,15 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
         Animation animation = AnimationUtils.loadAnimation(mContext, (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
         view.startAnimation(animation);
         lastPosition = position;
-        viewHolder.tvExpDate.setText(goods.getExpirationDate());
+        viewHolder.tv_ExpDate2.setText(goods.getExpirationDate());
         viewHolder.tvQuantity.setText(goods.getQuantity());
+        viewHolder.tv_goodsLocation.setText(goods.getGoodsLocation());
         viewHolder.editBtn.setOnClickListener(this);
         viewHolder.editBtn.setTag(position);
         viewHolder.deleteBtn.setOnClickListener(this);
         viewHolder.deleteBtn.setTag(position);
-        viewHolder.tvBuyDate.setText(goods.getInsertDate());
+        viewHolder.rlExpDate.setOnClickListener(this);
+        viewHolder.rlExpDate.setTag(position);
 
         //calculate remaining days with alertData
         final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -171,12 +179,25 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
 
     @Override
     public void onClick(View v) {
-
         int position = (Integer) v.getTag();
         Object object = getItem(position);
         final Goods goods = (Goods) object;
 
         switch (v.getId()) {
+
+            case R.id.rlExpDate:
+                TextView tvExpDate = v.findViewById(R.id.tvExpDate);
+                TextView tv_ExpDate2 = v.findViewById(R.id.tv_ExpDate2);
+                if (dateType.contains("exp")) {
+                    dateType = "insert";
+                    tvExpDate.setText("Insert Date");
+                    tv_ExpDate2.setText(((Goods) object).getInsertDate());
+                } else if (dateType.contains("insert")) {
+                    dateType = "exp";
+                    tvExpDate.setText("Expiry Date");
+                    tv_ExpDate2.setText(((Goods) object).getExpirationDate());
+                }
+                break;
             case R.id.editBtn:
                 show_dialog(goods);
                 break;
@@ -185,7 +206,7 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
                 final String userID = um.getUserIDFromDataBase();
                 final AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
                 LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                View mView = inflater.inflate(R.layout.dialog_delete, null);
+                View mView = inflater.inflate(R.layout.dialog_delete_item, null);
                 TextView dialog_message = mView.findViewById(R.id.dialog_message),
                         tv_quantity = mView.findViewById(R.id.tv_quantity),
                         tv_insertDate = mView.findViewById(R.id.tv_insertDate), tv_expDate = mView.findViewById(R.id.tv_expDate);
@@ -260,7 +281,9 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
         final Switch switch_reminderStatus = mView.findViewById(R.id.switch_reminderStatus), switch_daysToRemindStatus = mView.findViewById(R.id.switch_daysToRemindStatus);
         final ImageButton ib_closeDialog = mView.findViewById(R.id.ib_closeDialog),
                 ib_back = mView.findViewById(R.id.ib_back),
-                ib_calenderPicker = mView.findViewById(R.id.ib_calenderPicker);
+                ib_calenderPicker = mView.findViewById(R.id.ib_calenderPicker),
+                buttonHelp = mView.findViewById(R.id.buttonHelp);
+
         Button button_editDetails = mView.findViewById(R.id.button_editDetails),
                 button_consumedDetails = mView.findViewById(R.id.button_consumedDetails),
                 button_saveEdit = mView.findViewById(R.id.button_saveEdit),
@@ -292,7 +315,13 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
         tv_currentQuantity.setText(goods.getQuantity());
         et_daysToRemind.setText(goods.getAlertData());
 
-
+        buttonHelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AddGoodsFragment addGoodsFragment = new AddGoodsFragment();
+                addGoodsFragment.shoeHelpMessageDialog(mContext);
+            }
+        });
         switch_addToSP.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -404,32 +433,47 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
         button_one.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String str_consumedQuantity = String.valueOf(et_consumedQuantity.getText());
-                Integer int_consumedQuantity = Integer.parseInt(str_consumedQuantity);
-                int_consumedQuantity = int_consumedQuantity + 1;
+                int str_consumedQuantity = 0;
 
-                et_consumedQuantity.setText(String.valueOf(int_consumedQuantity));
+                if (!String.valueOf(et_consumedQuantity.getText()).matches("")) {
+                    str_consumedQuantity = Integer.parseInt(String.valueOf(et_consumedQuantity.getText()));
+
+                }
+                int max_quantity = Integer.parseInt(String.valueOf(goods.getQuantity()));
+                int newQuantity = updateQuantity(1, str_consumedQuantity, max_quantity);
+
+                et_consumedQuantity.setText(String.valueOf(newQuantity));
 
             }
         });
         button_two.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String str_consumedQuantity = String.valueOf(et_consumedQuantity.getText());
-                Integer int_consumedQuantity = Integer.parseInt(str_consumedQuantity);
-                int_consumedQuantity = int_consumedQuantity + 2;
+                int str_consumedQuantity = 0;
 
-                et_consumedQuantity.setText(String.valueOf(int_consumedQuantity));
+                if (!String.valueOf(et_consumedQuantity.getText()).matches("")) {
+                    str_consumedQuantity = Integer.parseInt(String.valueOf(et_consumedQuantity.getText()));
+
+                }
+                int max_quantity = Integer.parseInt(String.valueOf(goods.getQuantity()));
+                int newQuantity = updateQuantity(2, str_consumedQuantity, max_quantity);
+
+                et_consumedQuantity.setText(String.valueOf(newQuantity));
             }
         });
         button_five.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String str_consumedQuantity = String.valueOf(et_consumedQuantity.getText());
-                Integer int_consumedQuantity = Integer.parseInt(str_consumedQuantity);
-                int_consumedQuantity = int_consumedQuantity + 5;
+                int str_consumedQuantity = 0;
 
-                et_consumedQuantity.setText(String.valueOf(int_consumedQuantity));
+                if (!String.valueOf(et_consumedQuantity.getText()).matches("")) {
+                    str_consumedQuantity = Integer.parseInt(String.valueOf(et_consumedQuantity.getText()));
+
+                }
+                int max_quantity = Integer.parseInt(String.valueOf(goods.getQuantity()));
+                int newQuantity = updateQuantity(5, str_consumedQuantity, max_quantity);
+
+                et_consumedQuantity.setText(String.valueOf(newQuantity));
 
             }
         });
@@ -578,11 +622,22 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
         alertDialog.show();
     }
 
+    public int updateQuantity(int toAddQuantity, int currentQuantity, int maxQuantity) {
+        int newQuantity = toAddQuantity + currentQuantity;
+        if (newQuantity > maxQuantity) {
+            newQuantity = maxQuantity;
+
+        }
+        return newQuantity;
+
+    }
+
     public static class ViewHolder {
-        TextView tvQuantity, tvExpDate, tvBuyDate, tv_remainingDaysStatus, tv_consumedRateStatus;
+        TextView tvExpDate, tvQuantity, tv_ExpDate2, tv_remainingDaysStatus, tv_consumedRateStatus, tv_goodsLocation;
         ImageButton editBtn, deleteBtn;
         LinearLayout ll_remainingDays, ll_consumedRate;
         ImageView iv_consumeRate;
+        RelativeLayout rlExpDate;
     }
 
 

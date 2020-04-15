@@ -52,18 +52,16 @@ import static org.junit.Assert.assertTrue;
 @LargeTest
 public abstract class GeneralItemAnimatorTest {
 
-    GeneralItemAnimator mAnimator;
-    Adapter mAdapter;
-    ViewGroup mDummyParent;
-    CountDownLatch mExpectedItems;
-
     final Set<RecyclerView.ViewHolder> mRemoveFinished = new HashSet<>();
     final Set<RecyclerView.ViewHolder> mAddFinished = new HashSet<>();
     final Set<RecyclerView.ViewHolder> mMoveFinished = new HashSet<>();
     final Set<RecyclerView.ViewHolder> mChangeFinished = new HashSet<>();
-
     @Rule
     public ActivityTestRule<TestActivity> mActivityRule = new ActivityTestRule(TestActivity.class);
+    GeneralItemAnimator mAnimator;
+    Adapter mAdapter;
+    ViewGroup mDummyParent;
+    CountDownLatch mExpectedItems;
 
     @Before
     public void setUp() {
@@ -185,7 +183,7 @@ public abstract class GeneralItemAnimatorTest {
     }
 
     private boolean animateMove(final RecyclerView.ViewHolder vh, final int fromX, final int fromY,
-                        final int toX, final int toY) throws Throwable {
+                                final int toX, final int toY) throws Throwable {
         final boolean[] result = new boolean[1];
         runOnMainSync(new Runnable() {
             @Override
@@ -197,8 +195,8 @@ public abstract class GeneralItemAnimatorTest {
     }
 
     private boolean animateChange(final RecyclerView.ViewHolder oldHolder,
-                          final RecyclerView.ViewHolder newHolder,
-                          final int fromX, final int fromY, final int toX, final int toY) throws Throwable {
+                                  final RecyclerView.ViewHolder newHolder,
+                                  final int fromX, final int fromY, final int toX, final int toY) throws Throwable {
         final boolean[] result = new boolean[1];
         runOnMainSync(new Runnable() {
             @Override
@@ -244,7 +242,9 @@ public abstract class GeneralItemAnimatorTest {
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new ViewHolder(new TextView(parent.getContext()));
+            if (parent.getContext())!=null){
+                return new ViewHolder(new TextView(parent.getContext()));
+            }
         }
 
         @Override

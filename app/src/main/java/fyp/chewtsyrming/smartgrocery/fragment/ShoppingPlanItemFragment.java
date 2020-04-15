@@ -38,19 +38,20 @@ import fyp.chewtsyrming.smartgrocery.object.ShoppingPlanItem;
 
 public class ShoppingPlanItemFragment extends Fragment implements View.OnClickListener {
     TextView tv_fragment_title, tv_rv_empty;
-    Button btn_add_shopping_plan_item;
+    Button btn_add_shopping_plan_item, button_deleteItem;
     RelativeLayout rl_rv;
     FragmentHandler h = new FragmentHandler();
 
 
     List<ShoppingPlanItem> shoppingPlanItemList, shoppingPlanItemListCrossed;
+    ContentLoadingProgressBar pb;
+    Boolean checkboxStatus;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private String userId = Objects.requireNonNull(user).getUid();
     private DatabaseReference reference;
-    ContentLoadingProgressBar pb;
     private RecyclerView rvShoppingPlanItemPending, rvShoppingPlanItemCrossed;
-    private RecyclerView.Adapter adapterPending, adapterCrossed;
+    private ShoppingPlanItemListAdapter adapterPending, adapterCrossed;
     private RecyclerView.LayoutManager layoutManager, layoutManagerCrossed;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -58,6 +59,7 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
         View fragmentView = inflater.inflate(R.layout.fragment_item_list_shopping_plan, null);
         Bundle cate = this.getArguments();
         assert cate != null;
+        checkboxStatus = false;
         String shoppingPlanID = cate.getString("shoppingPlanID");
         String shoppingPlanName = cate.getString("shoppingPlanName");
         tv_fragment_title = fragmentView.findViewById(R.id.tv_fragment_title);
@@ -65,8 +67,10 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
         rl_rv = fragmentView.findViewById(R.id.rl_rv);
         pb = fragmentView.findViewById(R.id.pb);
         btn_add_shopping_plan_item = fragmentView.findViewById(R.id.btn_add_shopping_plan_item);
+        button_deleteItem = fragmentView.findViewById(R.id.button_deleteItem);
+
         tv_fragment_title.setText(shoppingPlanName);
-       //pending
+        //pending
         layoutManager = new LinearLayoutManager(fragmentView.getContext(), LinearLayoutManager.VERTICAL, false);
         shoppingPlanItemList = new ArrayList<>();
         adapterPending = new ShoppingPlanItemListAdapter(shoppingPlanItemList, fragmentView.getContext());
@@ -92,7 +96,7 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
         rvShoppingPlanItemCrossed.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         LayoutAnimationController animation2 = AnimationUtils.loadLayoutAnimation(getContext(), resId);
         rvShoppingPlanItemCrossed.setLayoutAnimation(animation2);
-
+        button_deleteItem.setOnClickListener(this);
         btn_add_shopping_plan_item.setOnClickListener(this);
         getItemList(shoppingPlanID);
         return fragmentView;
@@ -116,7 +120,7 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
                     shoppingPlanItemList.clear();
                     shoppingPlanItemListCrossed.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        String itemID, goodsBarcode, buyStatus, goodsCategory, goodsName, quantity,imageURL;
+                        String itemID, goodsBarcode, buyStatus, goodsCategory, goodsName, quantity, imageURL;
                         itemID = snapshot.getKey();
                         buyStatus = (String) snapshot.child("buyStatus").getValue();
                         goodsBarcode = (String) snapshot.child("goodsBarcode").getValue();
@@ -126,13 +130,15 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
                         imageURL = (String) snapshot.child("imageURL").getValue();
 
                         ShoppingPlanItem shoppingPlanItem = new ShoppingPlanItem(shoppingPlanID, itemID, buyStatus, goodsBarcode
-                                , goodsCategory, goodsName, quantity,imageURL);
+                                , goodsCategory, goodsName, quantity, imageURL);
                         if (buyStatus.equals("Pending")) {
                             shoppingPlanItemList.add(shoppingPlanItem);
                         } else {
                             shoppingPlanItemListCrossed.add(shoppingPlanItem);
                         }
                     }
+
+
                     adapterPending.notifyDataSetChanged();
                     adapterCrossed.notifyDataSetChanged();
 
@@ -153,6 +159,12 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
             case R.id.btn_add_shopping_plan_item:
                 show_add_item_dialog();
                 break;
+            case R.id.button_deleteItem:
+                adapterPending.deleteCheckedBox();
+                adapterCrossed.deleteCheckedBox();
+                break;
+
+
         }
 
     }

@@ -41,7 +41,6 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
     private static GoodsListAdapter adapter;
     private ArrayList<GoodsList> goodsListArrayList;
     private ArrayList<Goods> goodsArrayList;
-
     private ListView listGoods;
     private TextView tvGoodsName, tv_itemStatus;
     private String barcode, goodsCategory, goodsID, imageURL, goodsName;
@@ -87,8 +86,11 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
 
                     goodsArrayList.add(goods);
                     Collections.sort(goodsArrayList, Goods.sortExpDateAsc);
-                    adapter = new GoodsListAdapter(goodsArrayList, getContext());
-                    listGoods.setAdapter(adapter);
+                    if (getContext() != null) {
+                        adapter = new GoodsListAdapter(goodsArrayList, getContext());
+                        listGoods.setAdapter(adapter);
+                    }
+
 
                 }
             }
@@ -251,7 +253,6 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
                     Collections.sort(goodsArrayList, Goods.sortExpDateDesc);
 
                 }
-                adapter.notifyDataSetChanged();
             } else if (dataType.contains("insertDate")) {
                 if (orderType.contains("Ascending")) {
                     Collections.sort(goodsArrayList, Goods.sortInsertDateAsc);
@@ -260,19 +261,23 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
                     Collections.sort(goodsArrayList, Goods.sortInsertDateDesc);
 
                 }
-                adapter.notifyDataSetChanged();
 
             } else if (dataType.contains("quantity")) {
 
                 if (orderType.contains("Ascending")) {
                     Collections.sort(goodsArrayList, Goods.sortQuantityAsc);
+                } else {
+                    Collections.sort(goodsArrayList, Goods.sortQuantityDesc);
+                }
+            } else if (dataType.contains("location")) {
+
+                if (orderType.contains("Ascending")) {
+                    Collections.sort(goodsArrayList, Goods.sortGoodsLocationAsc);
+
+                } else {
+                    Collections.sort(goodsArrayList, Goods.sortGoodsLocationDesc);
 
                 }
-
-            } else {
-                Collections.sort(goodsArrayList, Goods.sortQuantityDesc);
-
-
             }
             adapter.notifyDataSetChanged();
 
