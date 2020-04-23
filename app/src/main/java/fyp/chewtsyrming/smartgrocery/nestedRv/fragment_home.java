@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -34,6 +35,7 @@ import fyp.chewtsyrming.smartgrocery.FragmentHandler;
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.fragment.BarcodeReaderFragment;
 import fyp.chewtsyrming.smartgrocery.fragment.GoodsFromSameCategoryFragment;
+import fyp.chewtsyrming.smartgrocery.fragment.NotificationFragment;
 
 public class fragment_home extends Fragment implements View.OnClickListener {
     int i = 0;
@@ -52,6 +54,7 @@ public class fragment_home extends Fragment implements View.OnClickListener {
     private String userId;
     private Button ib_storageLocation, ib_scan_barcode, ib_search_goods, ib_add_goods, ib_all_item, ib_category;
     private ScrollView scrollview_home;
+    private ImageButton ib_notification;
 
     @Nullable
     @Override
@@ -75,6 +78,7 @@ public class fragment_home extends Fragment implements View.OnClickListener {
         LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getContext(), resId);
         recyclerView.setLayoutAnimation(animation);
 
+        ib_notification = v.findViewById(R.id.ib_notification);
         tv_emptyInventory = v.findViewById(R.id.tv_emptyInventory);
         ib_scan_barcode = v.findViewById(R.id.ib_scan_barcode);
         ib_search_goods = v.findViewById(R.id.ib_search_goods);
@@ -88,7 +92,10 @@ public class fragment_home extends Fragment implements View.OnClickListener {
         ib_scan_barcode.setOnClickListener(this);
         ib_search_goods.setOnClickListener(this);
         ib_add_goods.setOnClickListener(this);
+        ib_notification.setOnClickListener(this);
+
         getInventoryData();
+
 
         return v;
     }
@@ -313,6 +320,11 @@ public class fragment_home extends Fragment implements View.OnClickListener {
             case R.id.ib_all_item:
 
                 getAllData();
+                break;
+            case R.id.ib_notification:
+                NotificationFragment nf = new NotificationFragment();
+
+                h.loadFragment(nf, getContext());
                 break;
 
         }

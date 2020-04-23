@@ -12,7 +12,7 @@ public class notification extends Application {
         OneSignal.startInit(this)
                 .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
                 .unsubscribeWhenNotificationsAreDisabled(true)
-                .setNotificationOpenedHandler(new NotificationOpenedHandler(this))
+                .setNotificationOpenedHandler(new NotificationOpenedHandler(getApplicationContext()))
                 .init();
     }
 }

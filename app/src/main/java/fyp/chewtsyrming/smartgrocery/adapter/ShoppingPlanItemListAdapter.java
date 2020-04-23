@@ -24,6 +24,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.widget.ContentLoadingProgressBar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -46,6 +48,7 @@ import java.util.List;
 import fyp.chewtsyrming.smartgrocery.FirebaseHandler;
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.fragment.AddGoodsFragment;
+import fyp.chewtsyrming.smartgrocery.fragment.ShoppingPlanItemFragment;
 import fyp.chewtsyrming.smartgrocery.nestedRv.Goods;
 import fyp.chewtsyrming.smartgrocery.object.ShoppingPlanItem;
 
@@ -64,8 +67,9 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
     public ShoppingPlanItemListAdapter(List<ShoppingPlanItem> shoppingPlanItems, Context context) {
         this.shoppingPlanItems = shoppingPlanItems;
         this.context = context;
-        mSelectedItems = new SparseBooleanArray();
         fh = new FirebaseHandler();
+
+        mSelectedItems = new SparseBooleanArray();
         cbArray = new SparseBooleanArray();
     }
 
@@ -101,12 +105,11 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
         holder.ll_main.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                int itemCount = getItemCount();
 
-                showCB = !showCB;
-                for (int i = 0; i <= itemCount; i++) {
-                    setItemVisibilityByPosition(i, showCB);
-                }
+                Fragment f = ((FragmentActivity) context).getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                if (f instanceof ShoppingPlanItemFragment)
+                    // do something with f
+                    ((ShoppingPlanItemFragment) f).showAllCheckBox();
                 return true;
             }
         });
@@ -131,7 +134,19 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
                 Button button_cancel = mView.findViewById(R.id.button_cancel);
                 Button button_add_to_inventory_list = mView.findViewById(R.id.button_add_to_inventory_list);
                 Button button_delete = mView.findViewById(R.id.button_delete);
+                Button button_resetQuantity = mView.findViewById(R.id.button_resetQuantity);
+                Button button_one = mView.findViewById(R.id.button_one);
+                Button button_two = mView.findViewById(R.id.button_two);
+                Button button_five = mView.findViewById(R.id.button_five);
+                Button button_ten = mView.findViewById(R.id.button_ten);
+                Button button_resetDR = mView.findViewById(R.id.button_resetDR);
+                Button button_oneDR = mView.findViewById(R.id.button_oneDR);
+                Button button_twoDR = mView.findViewById(R.id.button_twoDR);
+                Button button_fiveDR = mView.findViewById(R.id.button_fiveDR);
+                Button button_tenDR = mView.findViewById(R.id.button_tenDR);
                 ImageButton buttonHelp = mView.findViewById(R.id.buttonHelp);
+                final LinearLayout ll_button = mView.findViewById(R.id.ll_button);
+
                 ContentLoadingProgressBar pb_item_status = mView.findViewById(R.id.pb_item_status);
                 final Switch switch_reminderStatus = mView.findViewById(R.id.switch_reminderStatus),
                         switch_daysToRemindStatus = mView.findViewById(R.id.switch_daysToRemindStatus);
@@ -143,11 +158,126 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
                 ImageView imgGoods = mView.findViewById(R.id.imgGoods);
                 spinnerGoodsLocation = mView.findViewById(R.id.spinnerGoodsLocation);
                 getGoodsLocation();
+
+
+                button_one.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int currentQuantity = 0;
+                        int newQuantity = 1;
+                        if (!editTextQuantity.getText().toString().isEmpty()) {
+                            if (!editTextQuantity.getText().toString().contains("?")) {
+                                currentQuantity = Integer.parseInt(editTextQuantity.getText().toString());
+                            }
+                        }
+                        editTextQuantity.setText(addCount(currentQuantity, newQuantity));
+                    }
+                });
+                button_two.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int currentQuantity = 0;
+                        int newQuantity = 2;
+                        if (!editTextQuantity.getText().toString().isEmpty()) {
+                            if (!editTextQuantity.getText().toString().contains("?")) {
+                                currentQuantity = Integer.parseInt(editTextQuantity.getText().toString());
+                            }
+                        }
+
+                        editTextQuantity.setText(addCount(currentQuantity, newQuantity));
+                    }
+                });
+                button_five.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int currentQuantity = 0;
+                        int newQuantity = 5;
+                        if (!editTextQuantity.getText().toString().isEmpty()) {
+                            if (!editTextQuantity.getText().toString().contains("?")) {
+                                currentQuantity = Integer.parseInt(editTextQuantity.getText().toString());
+                            }
+                        }
+                        editTextQuantity.setText(addCount(currentQuantity, newQuantity));
+                    }
+                });
+                button_ten.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int currentQuantity = 0;
+                        int newQuantity = 10;
+                        if (!editTextQuantity.getText().toString().isEmpty()) {
+                            if (!editTextQuantity.getText().toString().contains("?")) {
+                                currentQuantity = Integer.parseInt(editTextQuantity.getText().toString());
+                            }
+                        }
+                        editTextQuantity.setText(addCount(currentQuantity, newQuantity));
+                    }
+                });
+                button_oneDR.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int currentQuantity = 0;
+                        int newQuantity = 1;
+                        if (!editAlertTextQuantity.getText().toString().isEmpty()) {
+                            currentQuantity = Integer.parseInt(editAlertTextQuantity.getText().toString());
+                        }
+                        editAlertTextQuantity.setText(addCount(currentQuantity, newQuantity));
+                    }
+                });
+                button_twoDR.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int currentQuantity = 0;
+                        int newQuantity = 2;
+                        if (!editAlertTextQuantity.getText().toString().isEmpty()) {
+                            currentQuantity = Integer.parseInt(editAlertTextQuantity.getText().toString());
+                        }
+
+                        editAlertTextQuantity.setText(addCount(currentQuantity, newQuantity));
+                    }
+                });
+                button_fiveDR.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int currentQuantity = 0;
+                        int newQuantity = 5;
+                        if (!editAlertTextQuantity.getText().toString().isEmpty()) {
+                            currentQuantity = Integer.parseInt(editAlertTextQuantity.getText().toString());
+                        }
+
+                        editAlertTextQuantity.setText(addCount(currentQuantity, newQuantity));
+                    }
+                });
+                button_tenDR.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int currentQuantity = 0;
+                        int newQuantity = 10;
+                        if (!editAlertTextQuantity.getText().toString().isEmpty()) {
+                            currentQuantity = Integer.parseInt(editAlertTextQuantity.getText().toString());
+                        }
+
+                        editAlertTextQuantity.setText(addCount(currentQuantity, newQuantity));
+                    }
+                });
+
                 buttonHelp.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         AddGoodsFragment addGoodsFragment = new AddGoodsFragment();
                         addGoodsFragment.shoeHelpMessageDialog(context);
+                    }
+                });
+                button_resetQuantity.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        editTextQuantity.setText("1");
+                    }
+                });
+                button_resetDR.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        editAlertTextQuantity.setText("1");
                     }
                 });
                 DatabaseReference userPrefRef = fh.getUserRef().child("goodsData").child(shoppingPlanItem.getGoodsBarcode());
@@ -158,8 +288,10 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
                             String alertDaysStatus = dataSnapshot.child("alertDaysStatus").getValue(String.class);
                             String alertData = dataSnapshot.child("alertData").getValue(String.class);
                             String consumedRateStatus = dataSnapshot.child("consumedRateStatus").getValue(String.class);
+                            String goodsLocation = dataSnapshot.child("goodsLocation").getValue(String.class);
                             editAlertTextQuantity.setText(alertData);
-
+                            int spinnerPosition = adapter2.getPosition(goodsLocation);
+                            spinnerGoodsLocation.setSelection(spinnerPosition);
                             if (alertDaysStatus.contains("enabled")) {
 
                                 switch_daysToRemindStatus.setChecked(true);
@@ -232,8 +364,11 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                         if (b) {
                             editAlertTextQuantity.setVisibility(View.VISIBLE);
+                            ll_button.setVisibility(View.VISIBLE);
+
                         } else {
                             editAlertTextQuantity.setVisibility(View.GONE);
+                            ll_button.setVisibility(View.GONE);
 
                         }
                     }
@@ -340,6 +475,9 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
                         expirationDate = tv_expirationDate.getText().toString();//
                         quantity = editTextQuantity.getText().toString();
                         goodsLocation = spinnerGoodsLocation.getSelectedItem().toString();
+                        int spinnerPosition = adapter2.getPosition(goodsLocation);
+                        spinnerGoodsLocation.setSelection(spinnerPosition);
+
                         alertData = editAlertTextQuantity.getText().toString();
 
                         if (switch_reminderStatus.isChecked()) {
@@ -359,7 +497,7 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
 
                         Goods good = new Goods(barcode, goodsId, goodsName, imageURL, goodsCategory, expirationDate,
                                 quantity, goodsLocation, alertData, alertDaysStatus, consumedRateStatus, insertDate
-                                , "disabled", "0", "disabled", "0");
+                                , "disabled", "1", "disabled", "1");
                         good.addGoods(good);
                         AddGoodsFragment addGoodsFragment = new AddGoodsFragment();
                         addGoodsFragment.checkGoodsDataExist(barcode, goodsCategory, goodsLocation,
@@ -391,26 +529,38 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
             }
         });
 
-        if (goodsCategory.equals("Beverages")) {
-            holder.iv_category.setImageResource(R.drawable.ic_category_beverage);
-        } else if (goodsCategory.equals("Canned or Jarred Goods")) {
-            holder.iv_category.setImageResource(R.drawable.ic_category_canned);
-        } else if (goodsCategory.equals("Dairy")) {
-            holder.iv_category.setImageResource(R.drawable.ic_category_dairy);
-        } else if (goodsCategory.equals("Bread or Bakery")) {
-            holder.iv_category.setImageResource(R.drawable.ic_category_bread_bakery);
-        } else if (goodsCategory.equals("Dry or Baking Goods")) {
-            holder.iv_category.setImageResource(R.drawable.ic_category_dry_baking);
-        } else if (goodsCategory.equals("Frozen Foods")) {
-            holder.iv_category.setImageResource(R.drawable.ic_category_frozen);
-        } else if (goodsCategory.equals("Fruit & Vegetables")) {
-            holder.iv_category.setImageResource(R.drawable.ic_category_vege_fruit);
-        } else if (goodsCategory.equals("Meat")) {
-            holder.iv_category.setImageResource(R.drawable.ic_category_meat);
-        } else if (goodsCategory.equals("Fish")) {
-            holder.iv_category.setImageResource(R.drawable.ic_category_fish);
-        } else if (goodsCategory.equals("Other")) {
-            holder.iv_category.setImageResource(R.drawable.ic_category_other);
+        switch (goodsCategory) {
+            case "Beverages":
+                holder.iv_category.setImageResource(R.drawable.ic_category_beverage);
+                break;
+            case "Canned or Jarred Goods":
+                holder.iv_category.setImageResource(R.drawable.ic_category_canned);
+                break;
+            case "Dairy":
+                holder.iv_category.setImageResource(R.drawable.ic_category_dairy);
+                break;
+            case "Bread or Bakery":
+                holder.iv_category.setImageResource(R.drawable.ic_category_bread_bakery);
+                break;
+            case "Dry or Baking Goods":
+                holder.iv_category.setImageResource(R.drawable.ic_category_dry_baking);
+                break;
+            case "Frozen Foods":
+                holder.iv_category.setImageResource(R.drawable.ic_category_frozen);
+                break;
+            case "Fruit & Vegetables":
+                holder.iv_category.setImageResource(R.drawable.ic_category_vege_fruit);
+                break;
+            case "Meat":
+                holder.iv_category.setImageResource(R.drawable.ic_category_meat);
+                break;
+            case "Fish":
+                holder.iv_category.setImageResource(R.drawable.ic_category_fish);
+                break;
+            case "Other":
+                holder.iv_category.setImageResource(R.drawable.ic_category_other);
+                break;
+
         }
     }
 
@@ -489,6 +639,10 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
 
     }
 
+    public String addCount(int currentQuantity, int newQuantity) {
+        return String.valueOf(currentQuantity + newQuantity);
+    }
+
     public static class HomeViewHolder extends RecyclerView.ViewHolder {
         ImageView iv_category;
         TextView tv_item_title, tv_item_quantity;
@@ -508,5 +662,6 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
 
 
     }
+
 
 }

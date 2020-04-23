@@ -43,7 +43,7 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
     private Switch switch_reminderStatus, switch_daysToRemindStatus;
     private EditText et_daysToRemind;
     private LinearLayout ll_alertData, ll_main;
-    private ImageButton ib_back, buttonHelp;
+    private ImageButton ib_back, buttonHelp, ib_add_storage_location;
     private FirebaseHandler firebaseHandler;
     private ArrayAdapter<String> adapter2;
     private Button button_saveSetting;
@@ -74,10 +74,12 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
         ll_main = view.findViewById(R.id.ll_main);
         ib_back = view.findViewById(R.id.ib_back);
         buttonHelp = view.findViewById(R.id.buttonHelp);
+        ib_add_storage_location = view.findViewById(R.id.ib_add_storage_location);
 
         button_saveSetting.setOnClickListener(this);
         buttonHelp.setOnClickListener(this);
         ib_back.setOnClickListener(this);
+        ib_add_storage_location.setOnClickListener(this);
         getGoodsLocation();
         getItemSetting();
 
@@ -98,7 +100,7 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
 
         DatabaseReference itemSettingRef = firebaseHandler.getUserRef().child("goodsData")
                 .child(barcode);
-        itemSettingRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        itemSettingRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Goods goods = dataSnapshot.getValue(Goods.class);
@@ -145,7 +147,7 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
         DatabaseReference storageLocationRef = FirebaseDatabase.getInstance().getReference().
                 child("user").child(userId).child("inventoryLocation");
 
-        storageLocationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        storageLocationRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
@@ -181,7 +183,7 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
         pb_itemSettings.show();
         ll_main.setVisibility(View.GONE);
         final DatabaseReference saveSettingRef = firebaseHandler.getUserRef().child("goodsData").child(barcode);
-        saveSettingRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        saveSettingRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String alertDaysStatus = "", consumedRateStatus = "", alertData = "";
@@ -226,7 +228,7 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onClick(View view) {
-
+        AddGoodsFragment addGoodsFragment = new AddGoodsFragment();
         switch (view.getId()) {
             case R.id.ib_back:
 
@@ -237,9 +239,12 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
                 break;
 
             case R.id.buttonHelp:
-                AddGoodsFragment addGoodsFragment = new AddGoodsFragment();
                 addGoodsFragment.shoeHelpMessageDialog(getContext());
                 break;
+            case R.id.ib_add_storage_location:
+                addGoodsFragment.btn_add_storage_location(getContext());
+                break;
+
         }
     }
 }

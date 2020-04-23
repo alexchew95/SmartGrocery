@@ -47,7 +47,7 @@
                 <ImageButton
                     android:id="@+id/ibCamera"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="30dp"
                     android:layout_weight="1"
                     app:srcCompat="@drawable/ic_menu_camera"
 
@@ -191,9 +191,18 @@
                         android:ems="2"
                         android:hint="#"
                         android:inputType="number"
-                        android:text="0"
+                        android:text="1"
                         android:textAlignment="center" />
 
+                    <Button
+                        android:id="@+id/button_reset"
+                        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="30dp"
+                        app:icon="@drawable/ic_reset_black_24dp"
+                        app:iconGravity="textStart"
+                        app:rippleColor="@color/colorAccent" />
                 </LinearLayout>
 
                 <LinearLayout

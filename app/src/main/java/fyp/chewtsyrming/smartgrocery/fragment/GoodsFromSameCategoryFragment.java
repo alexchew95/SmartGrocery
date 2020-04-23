@@ -39,7 +39,7 @@ public class GoodsFromSameCategoryFragment extends Fragment {
     private FirebaseUser user;
     private String userId, goodsCategory, imageURL, goodsName, category, processType, barcode;
     private SearchView searchView1;
-    private TextView tvCategoryTitle;
+    private TextView tvCategoryTitle, tv_empty;
     private ImageButton ib_back;
     private FragmentHandler fragmentHandler;
 
@@ -52,6 +52,7 @@ public class GoodsFromSameCategoryFragment extends Fragment {
         userId = user.getUid();
         fragmentHandler = new FragmentHandler();
         tvCategoryTitle = fragmentView.findViewById(R.id.tvCategoryTitle);
+        tv_empty = fragmentView.findViewById(R.id.tv_empty);
         searchView1 = fragmentView.findViewById(R.id.searchView1);
         ib_back = fragmentView.findViewById(R.id.ib_back);
         goodsCategoryList = new ArrayList<>();
@@ -108,7 +109,9 @@ public class GoodsFromSameCategoryFragment extends Fragment {
         parentReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
+                if (dataSnapshot.getValue() == null) {
+                    tv_empty.setVisibility(View.VISIBLE);
+                }
                 for (final DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     final String barcode = snapshot.getKey();
 
@@ -121,6 +124,7 @@ public class GoodsFromSameCategoryFragment extends Fragment {
                             goodsName = snapshotChild.child("goodsName").getValue().toString();
                             imageURL = snapshotChild.child("imageURL").getValue().toString();
                             category = snapshotChild.child("goodsCategory").getValue().toString();
+
                             GoodsGrid goodsGrid = new GoodsGrid(goodsName, imageURL, barcode, category);
                             goodsCategoryList.add(goodsGrid);
 
@@ -132,11 +136,12 @@ public class GoodsFromSameCategoryFragment extends Fragment {
                                     Bundle cate = new Bundle();
                                     cate.putString("barcode", goodsGrid1.getBarcode());
                                     cate.putString("goodsCategory", goodsGrid1.getCategory());
-                                    cate.putString("imageURL", imageURL);
-                                    cate.putString("goodsName", goodsName);
+                                    cate.putString("imageURL", goodsGrid1.getImageUrl());
+                                    cate.putString("goodsName", goodsGrid1.getName());
                                     GoodsFromSameGoodsFragment frag = new GoodsFromSameGoodsFragment();
                                     frag.setArguments(cate);
                                     FragmentHandler h = new FragmentHandler();
+
                                     h.loadFragment(frag, getContext());
 
                                 }
@@ -171,7 +176,9 @@ public class GoodsFromSameCategoryFragment extends Fragment {
         parentReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot ds) {
-
+                if (ds.getValue() == null) {
+                    tv_empty.setVisibility(View.VISIBLE);
+                }
                 for (final DataSnapshot dataSnapshot : ds.getChildren()) {
                     String cat = dataSnapshot.getKey();
 
@@ -203,8 +210,8 @@ public class GoodsFromSameCategoryFragment extends Fragment {
                                                 Bundle cate = new Bundle();
                                                 cate.putString("barcode", goodsGrid1.getBarcode());
                                                 cate.putString("goodsCategory", goodsGrid1.getCategory());
-                                                cate.putString("imageURL", imageURL);
-                                                cate.putString("goodsName", goodsName);
+                                                cate.putString("imageURL", goodsGrid1.getImageUrl());
+                                                cate.putString("goodsName", goodsGrid1.getName());
                                                 GoodsFromSameGoodsFragment frag = new GoodsFromSameGoodsFragment();
                                                 frag.setArguments(cate);
                                                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -252,6 +259,9 @@ public class GoodsFromSameCategoryFragment extends Fragment {
         parentReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot ds) {
+                if (ds.getValue() == null) {
+                    tv_empty.setVisibility(View.VISIBLE);
+                }
                 for (DataSnapshot data : ds.getChildren()) {
 
 

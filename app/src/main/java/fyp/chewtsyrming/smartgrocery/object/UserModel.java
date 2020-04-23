@@ -10,6 +10,7 @@ public class UserModel {
     public String name;
     public String email;
     public String imageurl;
+    public String playerId;
     FirebaseUser user;
 
     public UserModel() {
@@ -22,6 +23,14 @@ public class UserModel {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(String playerId) {
+        this.playerId = playerId;
     }
 
     public String getName() {

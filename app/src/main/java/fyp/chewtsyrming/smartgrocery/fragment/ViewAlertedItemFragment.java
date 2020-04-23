@@ -1,6 +1,9 @@
 package fyp.chewtsyrming.smartgrocery.fragment;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -23,6 +27,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import fyp.chewtsyrming.smartgrocery.FirebaseHandler;
 import fyp.chewtsyrming.smartgrocery.FragmentHandler;
@@ -35,17 +44,19 @@ public class ViewAlertedItemFragment extends Fragment implements View.OnClickLis
 
     FragmentHandler h = new FragmentHandler();
     FirebaseHandler firebaseHandler = new FirebaseHandler();
-    ImageView iv_showInfo, iv_item;
+    ImageView iv_showInfo, iv_item, iv_consumeRate;
     Boolean showInfo = false, snoozeChange = false;
-    LinearLayout ll_info, ll_snoozeChange;
+    LinearLayout ll_info, ll_snoozeChange, ll_main;
     RelativeLayout rl_infoButton;
-    TextView tv_insertDate, tv_expDate, tv_quantity, tv_status, tv_itemName, tv_location, tv_reminderType;
+    TextView tv_insertDate, tv_expDate, tv_quantity, tv_consumedRateStatus, tv_status, tv_itemName, tv_location, tv_reminderType;
     Context context;
-    Button button_zero, button_one, button_two, button_five, button_ten, button_offSnooze,
-            button_onSnooze, button_cancelSnoozeDay, button_acceptSnoozeDays;
+    Button button_reset, button_back, button_one, button_two, button_five, button_ten, button_offSnooze,
+            button_onSnooze, button_cancelSnoozeDay, button_acceptSnoozeDays, button_disable;
     EditText et_snoozeDays;
     MaterialButtonToggleGroup toggleButton;
     Goods goods;
+    ContentLoadingProgressBar clpb_alert;
+    FragmentHandler fh = new FragmentHandler();
     // TODO: Rename and change types of parameters
     private String actionType, itemId, reminderType;
 
@@ -58,7 +69,6 @@ public class ViewAlertedItemFragment extends Fragment implements View.OnClickLis
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            actionType = getArguments().getString("actionType");
             itemId = getArguments().getString("itemId");
             reminderType = getArguments().getString("alertType");
 
@@ -95,12 +105,19 @@ public class ViewAlertedItemFragment extends Fragment implements View.OnClickLis
         button_offSnooze = v.findViewById(R.id.button_offSnooze);
         button_onSnooze = v.findViewById(R.id.button_onSnooze);
         ll_snoozeChange = v.findViewById(R.id.ll_snoozeChange);
-        button_zero = v.findViewById(R.id.button_zero);
+        button_reset = v.findViewById(R.id.button_reset);
         button_cancelSnoozeDay = v.findViewById(R.id.button_cancelSnoozeDay);
         button_acceptSnoozeDays = v.findViewById(R.id.button_acceptSnoozeDays);
         tv_reminderType = v.findViewById(R.id.tv_reminderType);
+        button_disable = v.findViewById(R.id.button_disable);
+        iv_consumeRate = v.findViewById(R.id.iv_consumeRate);
+        ll_main = v.findViewById(R.id.ll_main);
+        clpb_alert = v.findViewById(R.id.clpb_alert);
+        tv_status = v.findViewById(R.id.tv_status);
+        tv_consumedRateStatus = v.findViewById(R.id.tv_consumedRateStatus);
+        button_back = v.findViewById(R.id.button_back);
 
-        button_zero.setOnClickListener(this);
+        button_reset.setOnClickListener(this);
         button_one.setOnClickListener(this);
         button_two.setOnClickListener(this);
         button_five.setOnClickListener(this);
@@ -108,6 +125,9 @@ public class ViewAlertedItemFragment extends Fragment implements View.OnClickLis
         rl_infoButton.setOnClickListener(this);
         button_cancelSnoozeDay.setOnClickListener(this);
         button_acceptSnoozeDays.setOnClickListener(this);
+        button_disable.setOnClickListener(this);
+        button_back.setOnClickListener(this);
+
 
         loadItemData();
 
@@ -127,7 +147,7 @@ public class ViewAlertedItemFragment extends Fragment implements View.OnClickLis
 
     private void loadItemData() {
         DatabaseReference itemRef = firebaseHandler.getUserRef().child("goods");
-        itemRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        itemRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot catSnapshot : dataSnapshot.getChildren()) {
@@ -136,6 +156,7 @@ public class ViewAlertedItemFragment extends Fragment implements View.OnClickLis
                             for (DataSnapshot barcodeSnapshot : catSnapshot.getChildren()) {
 
                                 if (barcodeSnapshot.hasChild(itemId)) {
+
                                     goods = barcodeSnapshot.child(itemId).getValue(Goods.class);
                                     tv_itemName.setText(goods.getGoodsName());
                                     tv_insertDate.setText(goods.getInsertDate());
@@ -153,12 +174,12 @@ public class ViewAlertedItemFragment extends Fragment implements View.OnClickLis
                                     if (reminderType.matches("rate")) {
                                         snoozeStatus = goods.getConsumeRateSnoozeStatus();
                                         snoozeDay = goods.getConsumeRateSnoozeDay();
-                                        tv_reminderType.setText("Consumed Rate reminder setting.");
+                                        tv_reminderType.setText("Consumed Rate reminder");
 
                                     } else if (reminderType.matches("days")) {
                                         snoozeStatus = goods.getAlertDaySnoozeStatus();
                                         snoozeDay = goods.getAlertDaySnoozeDay();
-                                        tv_reminderType.setText("Days reminder setting.");
+                                        tv_reminderType.setText("Days reminder");
 
                                     }
                                     et_snoozeDays.setText(snoozeDay);
@@ -172,8 +193,87 @@ public class ViewAlertedItemFragment extends Fragment implements View.OnClickLis
 
                                     }
 
+                                    final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                                    Date date = new Date();
+                                    final String currentDate = dateFormat.format(date);
+                                    String expirationDate = goods.getExpirationDate();
+                                    String alertData = goods.getAlertData();
+                                    Date date1 = null;
+                                    Date date2 = null;
+                                    try {
+                                        date1 = dateFormat.parse(currentDate);
+                                        date2 = dateFormat.parse(expirationDate);
 
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+                                    long diff = date2.getTime() - date1.getTime();
+                                    float daysF = (diff / (1000 * 60 * 60 * 24));
+                                    final Integer remainingDays = Math.round(daysF);
+                                    int userSetRemainingDays = Integer.parseInt(alertData);
+                                    String message = "";
+                                    if (remainingDays > 0) {
+                                        message = remainingDays + " days left!";
+                                        if (remainingDays > userSetRemainingDays) {
+                                            // viewHolder.ll_remainingDays.setBackgroundColor(Color.GREEN);
+                                            tv_status.setTextColor(Color.parseColor("#36b422"));
+                                            //  viewHolder.tv_remainingDaysStatus.setTextColor(Color.GREEN);
+
+                                            //goods in good condition set green bg
+                                        } else {
+                                            tv_status.setTextColor(Color.parseColor("#ffa812"));
+                                            //   viewHolder.ll_remainingDays.setBackgroundColor(Color.YELLOW);
+                                        }
+                                        tv_status.setText(message);
+
+                                    } else if (remainingDays.equals(0)) {
+                                        // set background red
+                                        message = "Expired today!";
+                                        //viewHolder.ll_remainingDays.setBackgroundColor(Color.RED);
+                                        tv_status.setTextColor(Color.RED);
+                                        tv_status.setText(message);
+                                    } else {
+                                        // set background red
+                                        message = "Expired " + remainingDays + "days ago";
+                                        //viewHolder.ll_remainingDays.setBackgroundColor(Color.RED);
+                                        tv_status.setTextColor(Color.RED);
+                                        tv_status.setText(message);
+                                    }
+
+                                    final DatabaseReference updateGoodsDataRef = firebaseHandler.getUserRef().child("goodsData")
+                                            .child(goods.getBarcode()).child("rate");
+                                    updateGoodsDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                            Integer currentQuantity = Integer.parseInt(goods.getQuantity());
+                                            double rate = Double.parseDouble(dataSnapshot.getValue(String.class)), expectedConsumedQuantity;
+                                            if (rate == 0) {
+                                                tv_consumedRateStatus.setText("Not enough data");
+                                                iv_consumeRate.setVisibility(View.GONE);
+                                                tv_consumedRateStatus.setVisibility(View.VISIBLE);
+                                            } else {
+                                                iv_consumeRate.setVisibility(View.VISIBLE);
+                                                tv_consumedRateStatus.setVisibility(View.GONE);
+                                                expectedConsumedQuantity = rate * remainingDays;
+                                                if (currentQuantity > expectedConsumedQuantity) {
+                                                    iv_consumeRate.setImageResource(R.drawable.ic_thumb_down_black_24dp);
+                                                } else {
+                                                    iv_consumeRate.setImageResource(R.drawable.ic_thumb_up_green_24dp);
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                    clpb_alert.hide();
+                                    ll_main.setVisibility(View.VISIBLE);
                                     break;
+                                } else {
+                                    fh.loadFragment(new NotificationFragment(), context);
                                 }
                             }
                         }
@@ -207,9 +307,9 @@ public class ViewAlertedItemFragment extends Fragment implements View.OnClickLis
                 }
 
                 break;
-            case R.id.button_zero:
+            case R.id.button_reset:
                 showLLsnooze(true);
-                et_snoozeDays.setText("0");
+                et_snoozeDays.setText("1");
                 break;
             case R.id.button_one:
 
@@ -247,16 +347,30 @@ public class ViewAlertedItemFragment extends Fragment implements View.OnClickLis
                 break;
             case R.id.button_cancelSnoozeDay:
 
-                et_snoozeDays.setText(goods.getAlertDaySnoozeDay());
-                String alertDaySnoozeStatus = goods.getAlertDaySnoozeStatus();
-                int onSnz = button_onSnooze.getId();
-                int ofSnz = button_offSnooze.getId();
-                if (alertDaySnoozeStatus.matches("enabled")) {
-                    toggleButton.check(onSnz);
+                if (reminderType.matches("rate")) {
+                    et_snoozeDays.setText(goods.getConsumeRateSnoozeDay());
+                    String snoozeStatus = goods.getConsumeRateSnoozeStatus();
+                    int onSnz = button_onSnooze.getId();
+                    int ofSnz = button_offSnooze.getId();
+                    if (snoozeStatus.matches("enabled")) {
+                        toggleButton.check(onSnz);
 
-                } else {
-                    toggleButton.check(ofSnz);
+                    } else {
+                        toggleButton.check(ofSnz);
 
+                    }
+                } else if (reminderType.matches("days")) {
+                    et_snoozeDays.setText(goods.getAlertDaySnoozeDay());
+                    String alertDaySnoozeStatus = goods.getAlertDaySnoozeStatus();
+                    int onSnz = button_onSnooze.getId();
+                    int ofSnz = button_offSnooze.getId();
+                    if (alertDaySnoozeStatus.matches("enabled")) {
+                        toggleButton.check(onSnz);
+
+                    } else {
+                        toggleButton.check(ofSnz);
+
+                    }
                 }
                 snoozeChange = false;
                 showLLsnooze(false);
@@ -265,7 +379,43 @@ public class ViewAlertedItemFragment extends Fragment implements View.OnClickLis
             case R.id.button_acceptSnoozeDays:
                 saveSnoozeChanges();
                 break;
+            case R.id.button_disable:
 
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                        context);
+
+                // set title
+                alertDialogBuilder.setTitle("Disable alert");
+
+                // set dialog message
+                alertDialogBuilder
+                        .setMessage("Please consider as you will not receive anymore notification for this item ")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // if this button is clicked, close
+                                // current activity
+                                disableAlert();
+
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // if this button is clicked, just close
+                                // the dialog box and do nothing
+                                dialog.cancel();
+                            }
+                        });
+
+                // create alert dialog
+                AlertDialog alertDialog = alertDialogBuilder.create();
+
+                // show it
+                alertDialog.show();
+                break;
+            case R.id.button_back:
+                h.loadFragment(new fragment_home(), context);
+                break;
 
         }
     }
@@ -313,5 +463,26 @@ public class ViewAlertedItemFragment extends Fragment implements View.OnClickLis
         });
     }
 
+    private void disableAlert() {
+        DatabaseReference disableAlertRef = firebaseHandler.getUserRef().child("goods").
+                child(goods.getGoodsCategory()).child(goods.getBarcode()).child(goods.getGoodsId());
+        String type = "";
+        if (reminderType.matches("days")) {
+            goods.setAlertDaysStatus("disabled");
+            type = "alert day reminder";
+
+        } else if (reminderType.matches("rate")) {
+            goods.setConsumedRateStatus("disabled");
+            type = "consumed rate reminder";
+
+        }
+        final String finalType = type;
+        disableAlertRef.setValue(goods).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(context, "Items " + finalType + " has been disabled", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
 }

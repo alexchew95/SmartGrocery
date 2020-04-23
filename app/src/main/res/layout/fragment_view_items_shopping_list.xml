@@ -155,8 +155,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
-                        android:ems="2"
-                        android:hint="adsdasdas"
+                        android:ems="3"
                         android:inputType="number"
                         android:text="@string/_0"
                         android:textAlignment="center"
@@ -173,6 +172,71 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:text="Uncertain quantity" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_button"
+                    android:layout_width="350dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:paddingLeft="5dp"
+                    android:paddingEnd="5dp"
+                    android:weightSum="5">
+
+                    <Button
+                        android:id="@+id/button_reset"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:icon="@drawable/ic_reset_black_24dp"
+                        app:iconGravity="textStart"
+
+                        app:rippleColor="@color/colorAccent"
+                        app:strokeColor="@color/black" />
+
+                    <Button
+                        android:id="@+id/button_one"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="+1"
+
+                        app:rippleColor="@color/colorAccent"
+                        app:strokeColor="@color/black" />
+
+                    <Button
+                        android:id="@+id/button_two"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="+2"
+                        app:rippleColor="@color/colorAccent"
+                        app:strokeColor="@color/black" />
+
+                    <Button
+                        android:id="@+id/button_five"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="+5"
+                        app:rippleColor="@color/colorAccent"
+                        app:strokeColor="@color/black" />
+
+
+                    <Button
+                        android:id="@+id/button_ten"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="+10"
+                        app:rippleColor="@color/colorAccent"
+                        app:strokeColor="@color/black" />
                 </LinearLayout>
 
                 <View

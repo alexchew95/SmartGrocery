@@ -2,13 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <TextView
 
+        android:id="@+id/tvCategoryTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tvCategoryTitle"
-        android:text="Category"
         android:layout_centerHorizontal="true"
+        android:text="Category"
         android:textSize="30sp" />
 
     <ImageButton
@@ -25,19 +26,30 @@
         android:id="@+id/searchView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:queryHint="Search Here"
-        android:layout_centerHorizontal="true"
         android:layout_below="@+id/tvCategoryTitle"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="10sp"
+        android:queryHint="Search Here"
 
         />
+
     <GridView
         android:id="@+id/gridviewGoodsList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/searchView1"
         android:layout_marginTop="10sp"
-        android:numColumns="2"
+        android:numColumns="2" />
+
+    <TextView
+        android:id="@+id/tv_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Empty inventory"
+        android:textColor="@color/black"
+        android:textSize="25sp"
+        android:visibility="gone"
         />
 
 

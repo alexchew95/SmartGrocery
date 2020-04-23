@@ -125,7 +125,7 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
         }
         long diff = date2.getTime() - date1.getTime();
         float daysF = (diff / (1000 * 60 * 60 * 24));
-        final int remainingDays = Math.round(daysF);
+        final Integer remainingDays = Math.round(daysF);
         int userSetRemainingDays = Integer.parseInt(alertData);
         String message = "";
         if (remainingDays > 0) {
@@ -142,12 +142,18 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
             }
             viewHolder.tv_remainingDaysStatus.setText(message);
 
-        } else {
+        } else if (remainingDays.equals(0)) {
             // set background red
-            message = "Expired " + remainingDays + " ago";
+            message = "Expired today!";
             //viewHolder.ll_remainingDays.setBackgroundColor(Color.RED);
             viewHolder.tv_remainingDaysStatus.setTextColor(Color.RED);
-            viewHolder.tv_remainingDaysStatus.setText("Expired");
+            viewHolder.tv_remainingDaysStatus.setText(message);
+        } else {
+            // set background red
+            message = "Expired " + remainingDays + "days ago";
+            //viewHolder.ll_remainingDays.setBackgroundColor(Color.RED);
+            viewHolder.tv_remainingDaysStatus.setTextColor(Color.RED);
+            viewHolder.tv_remainingDaysStatus.setText(message);
         }
 
 //calculate consumption rate
@@ -158,8 +164,14 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Integer currentQuantity = Integer.parseInt(goods.getQuantity());
                 double rate = Double.parseDouble(dataSnapshot.getValue(String.class)), expectedConsumedQuantity;
-                if (rate == 0) viewHolder.tv_consumedRateStatus.setText("Not enough data");
+                if (rate == 0) {
+                    viewHolder.tv_consumedRateStatus.setText("Not enough data");
+                    viewHolder.iv_consumeRate.setVisibility(View.GONE);
+
+                }
                 else {
+                    viewHolder.iv_consumeRate.setVisibility(View.VISIBLE);
+
                     expectedConsumedQuantity = rate * remainingDays;
                     if (currentQuantity > expectedConsumedQuantity) {
                         viewHolder.iv_consumeRate.setImageResource(R.drawable.ic_thumb_down_black_24dp);
@@ -282,7 +294,9 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
         final ImageButton ib_closeDialog = mView.findViewById(R.id.ib_closeDialog),
                 ib_back = mView.findViewById(R.id.ib_back),
                 ib_calenderPicker = mView.findViewById(R.id.ib_calenderPicker),
-                buttonHelp = mView.findViewById(R.id.buttonHelp);
+                buttonHelp = mView.findViewById(R.id.buttonHelp),
+                ib_add_shopping_plan = mView.findViewById(R.id.ib_add_shopping_plan),
+                ib_add_storage_location = mView.findViewById(R.id.ib_add_storage_location);
 
         Button button_editDetails = mView.findViewById(R.id.button_editDetails),
                 button_consumedDetails = mView.findViewById(R.id.button_consumedDetails),
@@ -293,10 +307,22 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
                 button_five = mView.findViewById(R.id.button_five),
                 button_max = mView.findViewById(R.id.button_max),
                 button_selectSP = mView.findViewById(R.id.button_selectSP),
-                button_resetQuantity = mView.findViewById(R.id.button_resetQuantity);
+                button_resetQuantity = mView.findViewById(R.id.button_resetQuantity),
+                button_oneQ = mView.findViewById(R.id.button_oneQ),
+                button_twoQ = mView.findViewById(R.id.button_twoQ),
+                button_fiveQ = mView.findViewById(R.id.button_fiveQ),
+                button_tenQ = mView.findViewById(R.id.button_tenQ),
+                button_resetQ = mView.findViewById(R.id.button_resetQ),
+                button_oneDR = mView.findViewById(R.id.button_oneDR),
+                button_twoDR = mView.findViewById(R.id.button_twoDR),
+                button_fiveDR = mView.findViewById(R.id.button_fiveDR),
+                button_tenDR = mView.findViewById(R.id.button_tenDR),
+                button_resetDR = mView.findViewById(R.id.button_resetDR);
+
         final LinearLayout ll_edit = mView.findViewById(R.id.ll_edit),
                 ll_consumed = mView.findViewById(R.id.ll_consumed),
                 ll_one = mView.findViewById(R.id.ll_one),
+                ll_but = mView.findViewById(R.id.ll_but),
                 ll_addShoppingPlan = mView.findViewById(R.id.ll_addShoppingPlan);
         final Spinner spinner_goodsLocation = mView.findViewById(R.id.spinner_goodsLocation),
                 spinner_shoppingList = mView.findViewById(R.id.spinner_shoppingList);
@@ -314,7 +340,139 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
         et_quantity.setText(goods.getQuantity());
         tv_currentQuantity.setText(goods.getQuantity());
         et_daysToRemind.setText(goods.getAlertData());
+        button_resetQ.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                et_quantity.setText("1");
+            }
+        });
+        button_oneQ.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                int currentQ;
+                int newQ = 1;
+                if (et_quantity.getText().toString().isEmpty()) {
+                    currentQ = 1;
+                } else {
+                    currentQ = Integer.parseInt(et_quantity.getText().toString());
+                }
+                currentQ = updateNewQuantity(currentQ, newQ);
+                et_quantity.setText(String.valueOf(currentQ));
+            }
+        });
+        button_twoQ.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                int currentQ;
+                int newQ = 2;
+                if (et_quantity.getText().toString().isEmpty()) {
+                    currentQ = 1;
+                } else {
+                    currentQ = Integer.parseInt(et_quantity.getText().toString());
+                }
+                currentQ = updateNewQuantity(currentQ, newQ);
+                et_quantity.setText(String.valueOf(currentQ));
+            }
+        });
+        button_fiveQ.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                int currentQ;
+                int newQ = 5;
+                if (et_quantity.getText().toString().isEmpty()) {
+                    currentQ = 1;
+                } else {
+                    currentQ = Integer.parseInt(et_quantity.getText().toString());
+                }
+                currentQ = updateNewQuantity(currentQ, newQ);
+                et_quantity.setText(String.valueOf(currentQ));
+            }
+        });
+        button_tenQ.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                int currentQ;
+                int newQ = 10;
+                if (et_quantity.getText().toString().isEmpty()) {
+                    currentQ = 10;
+                } else {
+                    currentQ = Integer.parseInt(et_quantity.getText().toString());
+                }
+                currentQ = updateNewQuantity(currentQ, newQ);
+                et_quantity.setText(String.valueOf(currentQ));
+            }
+        });
+
+        button_resetDR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                et_daysToRemind.setText("1");
+            }
+        });
+        button_oneDR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                int currentQ;
+                int newQ = 1;
+                if (et_daysToRemind.getText().toString().isEmpty()) {
+                    currentQ = 1;
+                } else {
+                    currentQ = Integer.parseInt(et_daysToRemind.getText().toString());
+                }
+                currentQ = updateNewQuantity(currentQ, newQ);
+                et_daysToRemind.setText(String.valueOf(currentQ));
+            }
+        });
+        button_twoDR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                int currentQ;
+                int newQ = 2;
+                if (et_daysToRemind.getText().toString().isEmpty()) {
+                    currentQ = 1;
+                } else {
+                    currentQ = Integer.parseInt(et_daysToRemind.getText().toString());
+                }
+                currentQ = updateNewQuantity(currentQ, newQ);
+                et_daysToRemind.setText(String.valueOf(currentQ));
+            }
+        });
+        button_fiveDR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                int currentQ;
+                int newQ = 5;
+                if (et_daysToRemind.getText().toString().isEmpty()) {
+                    currentQ = 1;
+                } else {
+                    currentQ = Integer.parseInt(et_daysToRemind.getText().toString());
+                }
+                currentQ = updateNewQuantity(currentQ, newQ);
+                et_daysToRemind.setText(String.valueOf(currentQ));
+            }
+        });
+        button_tenDR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                int currentQ;
+                int newQ = 10;
+                if (et_daysToRemind.getText().toString().isEmpty()) {
+                    currentQ = 1;
+                } else {
+                    currentQ = Integer.parseInt(et_daysToRemind.getText().toString());
+                }
+                currentQ = updateNewQuantity(currentQ, newQ);
+                et_daysToRemind.setText(String.valueOf(currentQ));
+            }
+        });
         buttonHelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -336,7 +494,26 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
                     et_daysToRemind.setVisibility(View.VISIBLE);
-                } else et_daysToRemind.setVisibility(View.GONE);
+                    ll_but.setVisibility(View.VISIBLE);
+
+                } else {
+                    et_daysToRemind.setVisibility(View.GONE);
+                    ll_but.setVisibility(View.GONE);
+                }
+            }
+        });
+        ib_add_storage_location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                btn_add_storage_location();
+
+            }
+        });
+        ib_add_shopping_plan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                btn_add_shoppingPlan();
+
             }
         });
         if (alertDaysStatus.contains("enabled")) switch_daysToRemindStatus.setChecked(true);
@@ -487,7 +664,7 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
         DatabaseReference storageLocationRef = FirebaseDatabase.getInstance().getReference().
                 child("user").child(um.getUserIDFromDataBase()).child("inventoryLocation");
 
-        storageLocationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        storageLocationRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
@@ -526,11 +703,13 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
                 String newQuantity = et_quantity.getText().toString();
                 String newExpDate = et_expDate.getText().toString();
                 String newLocation = spinner_goodsLocation.getSelectedItem().toString();
+                String newDaysToRemind = et_daysToRemind.getText().toString();
                 DatabaseReference updateItemRef = fh.getUserRef().child("goods").child(goods.getGoodsCategory())
                         .child(goods.getBarcode()).child(goods.getGoodsId());
                 goods.setQuantity(newQuantity);
                 goods.setExpirationDate(newExpDate);
                 goods.setGoodsLocation(newLocation);
+                goods.setAlertData(newDaysToRemind);
                 String daysToRemindStatus = "", reminderStatus = "";
                 if (switch_daysToRemindStatus.isChecked())
                     daysToRemindStatus = switch_daysToRemindStatus.getTextOn().toString();
@@ -632,6 +811,11 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
 
     }
 
+    public int updateNewQuantity(int currentQ, int newQ) {
+        return currentQ + newQ;
+
+    }
+
     public static class ViewHolder {
         TextView tvExpDate, tvQuantity, tv_ExpDate2, tv_remainingDaysStatus, tv_consumedRateStatus, tv_goodsLocation;
         ImageButton editBtn, deleteBtn;
@@ -640,5 +824,72 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
         RelativeLayout rlExpDate;
     }
 
+    public void btn_add_storage_location() {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
+
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View mView = inflater.inflate(R.layout.dialog_box_add_goods_location, null);
+        final EditText txt_input_new_storage_location = mView.findViewById(R.id.txt_input_new_storage_location);
+        Button btn_cancel = mView.findViewById(R.id.btn_cancel);
+        Button btn_okay = mView.findViewById(R.id.btn_okay);
+        alert.setView(mView);
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+        btn_okay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String newLocation = txt_input_new_storage_location.getText().toString();
+                DatabaseReference addStorageReff = fh.getUserRef().child("inventoryLocation");
+                addStorageReff.child(newLocation).setValue("true").addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        alertDialog.dismiss();
+
+                    }
+                });
+            }
+        });
+        alertDialog.show();
+    }
+
+    public void btn_add_shoppingPlan() {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
+
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View mView = inflater.inflate(R.layout.dialog_box_add_shopping_plan, null);
+        final EditText txt_input_new_storage_location = mView.findViewById(R.id.txt_input_new_storage_location);
+        Button btn_cancel = mView.findViewById(R.id.btn_cancel);
+        Button btn_okay = mView.findViewById(R.id.btn_okay);
+        alert.setView(mView);
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+        btn_okay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String newLocation = txt_input_new_storage_location.getText().toString();
+                final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                Date date = new Date();
+                final String currentDate = dateFormat.format(date);
+                ShoppingPlan sp = new ShoppingPlan(newLocation, currentDate);
+                DatabaseReference addStorageReff = fh.getUserRef().child("shoppingPlan");
+                addStorageReff.push().setValue(sp);
+                alertDialog.dismiss();
+
+            }
+        });
+        alertDialog.show();
+    }
 
 }

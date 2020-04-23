@@ -112,56 +112,60 @@ public class BarcodeReaderFragment extends Fragment {
 
             //Toast.makeText(getContext(), String.valueOf(requestCode), Toast.LENGTH_LONG).show();
             if (resultCode == CommonStatusCodes.SUCCESS) {
-                final FirebaseHandler firebaseHandler = new FirebaseHandler();
-                Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
-                barcodeString = barcode.displayValue;
-                final Bundle barcodeBundle = new Bundle();
-                barcodeBundle.putString("barcode", barcodeString);
-                DatabaseReference ref = firebaseHandler.getRef().child("barcode").child(barcodeString);
-                ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.getValue() != null) {
-                            goodsCategory = dataSnapshot.child("goodsCategory").getValue(String.class);
-                            imageURL = dataSnapshot.child("imageURL").getValue(String.class);
-                            goodsName = dataSnapshot.child("goodsName").getValue(String.class);
-                            // Toast.makeText(getContext(), goodsCategory, Toast.LENGTH_LONG).show();
-                            barcodeBundle.putString("goodsCategory", goodsCategory);
-                            barcodeBundle.putString("imageURL", imageURL);
-                            barcodeBundle.putString("goodsName", goodsName);
-                            final GoodsFromSameGoodsFragment goodsFromSameGoodsFragment = new GoodsFromSameGoodsFragment();
-                            goodsFromSameGoodsFragment.setArguments(barcodeBundle);
-                            DatabaseReference checkUserRef = firebaseHandler.getUserRef().child("goods").child(goodsCategory).child((barcodeString));
-                            checkUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.getValue() == null) {
-                                        clpb_barcodeReader.hide();
-                                        Toast.makeText(getContext(), "You don't have this item in your inventory!", Toast.LENGTH_LONG).show();
+                clpb_barcodeReader.hide();
 
-                                    } else {
-                                        h.loadFragment(goodsFromSameGoodsFragment, getContext());
+                if (data != null) {
+                    final FirebaseHandler firebaseHandler = new FirebaseHandler();
+                    Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
+                    barcodeString = barcode.displayValue;
+                    final Bundle barcodeBundle = new Bundle();
+                    barcodeBundle.putString("barcode", barcodeString);
+                    DatabaseReference ref = firebaseHandler.getRef().child("barcode").child(barcodeString);
+                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.getValue() != null) {
+                                goodsCategory = dataSnapshot.child("goodsCategory").getValue(String.class);
+                                imageURL = dataSnapshot.child("imageURL").getValue(String.class);
+                                goodsName = dataSnapshot.child("goodsName").getValue(String.class);
+                                // Toast.makeText(getContext(), goodsCategory, Toast.LENGTH_LONG).show();
+                                barcodeBundle.putString("goodsCategory", goodsCategory);
+                                barcodeBundle.putString("imageURL", imageURL);
+                                barcodeBundle.putString("goodsName", goodsName);
+                                final GoodsFromSameGoodsFragment goodsFromSameGoodsFragment = new GoodsFromSameGoodsFragment();
+                                goodsFromSameGoodsFragment.setArguments(barcodeBundle);
+                                DatabaseReference checkUserRef = firebaseHandler.getUserRef().child("goods").child(goodsCategory).child((barcodeString));
+                                checkUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if (dataSnapshot.getValue() == null) {
+                                            clpb_barcodeReader.hide();
+                                            Toast.makeText(getContext(), "You don't have this item in your inventory!", Toast.LENGTH_LONG).show();
+
+                                        } else {
+                                            h.loadFragment(goodsFromSameGoodsFragment, getContext());
+
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
                                     }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-                        } else {
-                            clpb_barcodeReader.hide();
-                            Toast.makeText(getContext(), "Barcode does not exist!", Toast.LENGTH_LONG).show();
+                                });
+                            } else {
+                                clpb_barcodeReader.hide();
+                                Toast.makeText(getContext(), "Barcode does not exist!", Toast.LENGTH_LONG).show();
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
+                } else {
+                    Toast.makeText(getContext(), "Barcode scan cancelled!", Toast.LENGTH_SHORT).show();
+                }
 
             }
 
@@ -183,6 +187,7 @@ public class BarcodeReaderFragment extends Fragment {
                     h.loadFragment(addGoodsFragStart, getContext());
                 } else {
 
+                    Toast.makeText(getContext(), "Barcode scan cancelled!", Toast.LENGTH_SHORT).show();
 
                 }
             } else {
@@ -217,6 +222,8 @@ public class BarcodeReaderFragment extends Fragment {
                     /*FragmentManager fm = getActivity().getSupportFragmentManager();
                     fm.popBackStack();*/
                 } else {
+                    Toast.makeText(getContext(), "Barcode scan cancelled!", Toast.LENGTH_SHORT).show();
+
                     // end of if code
                 }
             } else {

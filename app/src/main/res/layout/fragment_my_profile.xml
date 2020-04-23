@@ -2,7 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+
+    android:animateLayoutChanges="true">
 
     <ProgressBar
         android:id="@+id/progressBar_profile"
@@ -17,38 +19,223 @@
         android:id="@+id/rellay_profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:gravity="center_horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:visibility="visible">
 
-        <LinearLayout
-            android:id="@+id/ll1"
+        <RelativeLayout
+            android:id="@+id/rl1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-
-            android:padding="10dp">
-
-            <ImageView
-                android:id="@+id/ivUserProfile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_gravity="center"
-
-                android:background="@drawable/circle" />
+            android:layout_marginTop="10dp"
+            android:animateLayoutChanges="true"
+            android:background="@drawable/et_bg_2"
+            android:gravity="center_horizontal"
+            android:padding="10dp"
+            android:visibility="visible">
 
             <TextView
-                android:id="@+id/tvName"
-                android:layout_width="wrap_content"
+                android:id="@+id/tv_title"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-
-                android:layout_marginTop="15dp"
-                android:text="@string/name"
+                android:gravity="center"
+                android:text="My Profile"
                 android:textColor="@color/black"
-                android:textSize="21sp"
-                android:textStyle="bold" />
+                android:textSize="25sp" />
 
-        </LinearLayout>
+            <RelativeLayout
+                android:id="@+id/rlProfile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:animateLayoutChanges="true"
+
+                android:gravity="center_horizontal"
+
+                android:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/ivUserProfile"
+                    android:layout_width="125dp"
+                    android:layout_height="125dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="40dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/circle" />
+
+                <LinearLayout
+                    android:id="@+id/ll_camera"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ivUserProfile"
+                    android:layout_centerVertical="true"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <ImageButton
+                        android:id="@+id/ibCamera"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+
+                        android:background="@null"
+                        android:padding="20dp"
+                        app:srcCompat="@drawable/ic_menu_camera" />
+
+                    <ImageButton
+                        android:id="@+id/ibGallery"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+
+                        android:background="@null"
+                        android:padding="20dp"
+
+                        app:srcCompat="@drawable/ic_menu_gallery" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ivUserProfile"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="50dp"
+                    android:animateLayoutChanges="true"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/ic_person_24dp" />
+
+                    <EditText
+                        android:id="@+id/etName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:enabled="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:maxLines="1"
+                        android:text="User Name"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/ivName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_edit_24dp"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ll_name"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="5dp"
+                    android:animateLayoutChanges="true"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/ic_email" />
+
+                    <EditText
+                        android:id="@+id/etEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:animateLayoutChanges="true"
+                        android:enabled="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:paddingStart="30dp"
+                        android:text="@string/example_email_com"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/ivEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_edit_24dp"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/rl_resetPass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:animateLayoutChanges="true"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:visibility="gone">
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/etOldPasswordLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp"
+                    app:boxBackgroundColor="@color/paleblue"
+                    app:counterTextColor="@color/black"
+                    app:passwordToggleEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etOldPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:hint="Old password"
+                        android:inputType="textPassword" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/etznewPasswordLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:boxBackgroundColor="@color/paleblue"
+                    app:counterTextColor="@color/black"
+                    app:passwordToggleEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etNewPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="New password"
+                        android:inputType="textPassword" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <ProgressBar
+                    android:id="@+id/pb_resetPass"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="30dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </RelativeLayout>
 
 
         <com.google.android.material.card.MaterialCardView
@@ -56,9 +243,9 @@
             style="@style/Widget.MaterialComponents.CardView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/ll1"
-
+            android:layout_below="@+id/rl1"
             android:layout_centerHorizontal="true"
+            android:visibility="gone"
 
             >
 
@@ -66,10 +253,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:visibility="gone"
-
                 android:background="@color/white"
+
                 android:orientation="horizontal"
+                android:visibility="gone"
                 android:weightSum="3">
 
                 <LinearLayout
@@ -155,47 +342,74 @@
 
 
         </com.google.android.material.card.MaterialCardView>
-
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:id="@+id/ll_button"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/material"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:orientation="vertical">
+            android:animateLayoutChanges="true"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:paddingBottom="30dp"
+            android:visibility="gone">
 
-            <LinearLayout
+            <Button
+
+                android:id="@+id/btn_cancelProfile"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal"
-                android:padding="5dp">
+                android:layout_alignParentStart="true"
+                android:layout_gravity="start"
+                android:padding="10dp"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:icon="@drawable/ic_cancel_red_24dp"
+                app:iconGravity="textStart"
+                app:iconSize="70dp"
+                app:iconTint="@color/red"
+                app:strokeColor="@color/black" />
 
-                <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:src="@drawable/ic_email" />
+            <Button
+                android:id="@+id/btn_SaveProfile"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="end"
+                android:padding="10dp"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:icon="@drawable/ic_check_circle_24dp"
+                app:iconGravity="textStart"
+                app:iconSize="70dp"
+                app:iconTint="@color/green"
+                app:strokeColor="@color/black" />
+        </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tvEmail"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:paddingStart="30dp"
-                    android:text="@string/example_email_com"
-                    android:textColor="@color/black"
-
-                    android:textSize="20sp" />
-            </LinearLayout>
+        <LinearLayout
+            android:id="@+id/ll_mainButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical">
 
 
             <LinearLayout
                 android:id="@+id/ll_scanQrCode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal"
-                android:padding="5dp">
+                android:padding="5dp"
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="36dp"
@@ -219,7 +433,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal"
-                android:padding="5dp">
+                android:padding="5dp"
+
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="36dp"
@@ -237,21 +453,56 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/btn_logout"
+                android:id="@+id/btn_editProfile"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                app:backgroundTint="@color/red"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
-                app:cornerRadius="25dp"
-                android:padding="20dp"
-                app:icon="@drawable/ic_power_settings_red_24dp"
-                android:text="@string/log_out"
-                app:iconTint="@color/white"
+                android:padding="10dp"
+                android:text="Edit Profile"
                 android:textColor="@color/white"
                 android:textSize="15sp"
                 android:textStyle="bold"
+                app:backgroundTint="@color/darkBlue"
+                app:cornerRadius="25dp"
+                app:icon="@drawable/ic_edit_24dp"
+                app:iconTint="@color/white"
+                app:strokeColor="@color/black" />
+
+
+            <Button
+                android:id="@+id/btn_resetPw"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:padding="10dp"
+                android:text="Reset Password"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/darkBlue"
+                app:cornerRadius="25dp"
+                app:icon="@drawable/ic_lock_white_24dp"
+                app:iconTint="@color/white"
+                app:strokeColor="@color/black" />
+
+            <Button
+                android:id="@+id/btn_logout"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:padding="10dp"
+                android:text="@string/log_out"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/red"
+                app:cornerRadius="25dp"
+                app:icon="@drawable/ic_power_settings_red_24dp"
+                app:iconTint="@color/white"
                 app:strokeColor="@color/black" />
         </LinearLayout>
 

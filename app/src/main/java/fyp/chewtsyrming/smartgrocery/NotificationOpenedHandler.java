@@ -40,19 +40,19 @@ public class NotificationOpenedHandler implements OneSignal.NotificationOpenedHa
             String receivedId = result.action.actionID;
             String[] splitIdArr = receivedId.split("/", -2);
             String reminderType = splitIdArr[0];
-            String actionType2 = splitIdArr[1];
-            String itemId = splitIdArr[2];
+            String itemId = splitIdArr[1];
             Log.i("OneSignalExample", "reminderType: " + reminderType);
-            Log.i("OneSignalExample", "actionType2: " + actionType2);
             Log.i("OneSignalExample", "itemId: " + itemId);
             Intent intent = new Intent(context, home.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("actionType", actionType2);
             intent.putExtra("alertType", reminderType);
             intent.putExtra("itemId", itemId);
             context.startActivity(intent);
         } else {
+            String reminderType = "notif";
             Intent intent = new Intent(context, home.class);
+            intent.putExtra("alertType", reminderType);
+
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
         }

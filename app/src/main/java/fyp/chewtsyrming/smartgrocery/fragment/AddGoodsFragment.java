@@ -34,7 +34,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -71,7 +70,7 @@ public class AddGoodsFragment extends Fragment {
     private Switch switch_reminderStatus, switch_daysToRemindStatus;
     private LinearLayout ll_alert_day, ll_numberPicker;
     private String currentDate, imageFilePath;
-    private Button button_one, button_two, button_five,
+    private Button button_one, button_two, button_five, button_reset,
             button_ten, button_oneD, button_twoD, button_fiveD, button_tenD;
     /* public Uri getImageUri(Context inContext, Bitmap inImage) {
          ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -141,6 +140,7 @@ public class AddGoodsFragment extends Fragment {
         button_fiveD = fragmentView.findViewById(R.id.button_fiveD);
         button_tenD = fragmentView.findViewById(R.id.button_tenD);
         ll_numberPicker = fragmentView.findViewById(R.id.ll_numberPicker);
+        button_reset = fragmentView.findViewById(R.id.button_reset);
 
         progress_bar_add_goods = fragmentView.findViewById(R.id.progress_bar_add_goods);
         mainReff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods");
@@ -157,7 +157,12 @@ public class AddGoodsFragment extends Fragment {
         if (barcodeBundle != null) {
             getBarcodeData();
         }
-
+        button_reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editTextQuantity.setText("1");
+            }
+        });
         button_one.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -293,7 +298,7 @@ public class AddGoodsFragment extends Fragment {
         ib_add_storage_location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                btn_add_storage_location();
+                btn_add_storage_location(getContext());
 
             }
         });
@@ -314,7 +319,7 @@ public class AddGoodsFragment extends Fragment {
     private void getGoodsLocation() {
         DatabaseReference storageLocationRef = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("inventoryLocation");
 
-        storageLocationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        storageLocationRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
@@ -378,7 +383,7 @@ public class AddGoodsFragment extends Fragment {
         assert scanned_barcode != null;
         DatabaseReference barCodeRef = fh.getRef().child("barcode").child(scanned_barcode);
         //Query query = barCodeRef.orderByChild("barcode").equalTo(scanned_barcode);//4260109922085
-        barCodeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        barCodeRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.getValue() != null) {
@@ -400,7 +405,7 @@ public class AddGoodsFragment extends Fragment {
                     barcodeExist = true;
                     //checked user preference for this goods
                     DatabaseReference userPrefRef = fh.getUserRef().child("goodsData").child(scanned_barcode);
-                    userPrefRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    userPrefRef.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.getValue() != null) {
@@ -448,9 +453,11 @@ public class AddGoodsFragment extends Fragment {
         //  Toast.makeText(getContext(), test, Toast.LENGTH_LONG).show();
     }
 
-    public void btn_add_storage_location() {
-        final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-        View mView = getLayoutInflater().inflate(R.layout.dialog_box_add_goods_location, null);
+    public void btn_add_storage_location(Context context) {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(context);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View mView = inflater.inflate(R.layout.dialog_box_add_goods_location, null);
+
         final EditText txt_input_new_storage_location = mView.findViewById(R.id.txt_input_new_storage_location);
         Button btn_cancel = mView.findViewById(R.id.btn_cancel);
         Button btn_okay = mView.findViewById(R.id.btn_okay);
@@ -471,7 +478,6 @@ public class AddGoodsFragment extends Fragment {
                 addStorageReff.child(newLocation).setValue("true").addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        getGoodsLocation();
                         alertDialog.dismiss();
 
                     }
@@ -552,7 +558,7 @@ public class AddGoodsFragment extends Fragment {
         }
         if (requestCode == 10 && resultCode == Activity.RESULT_OK) {
             // Toast.makeText(getContext(), String.valueOf(resultCode), Toast.LENGTH_LONG).show();
-            Toast.makeText(getContext(), String.valueOf(CommonStatusCodes.SUCCESS), Toast.LENGTH_LONG).show();
+            //Toast.makeText(getContext(), String.valueOf(CommonStatusCodes.SUCCESS), Toast.LENGTH_LONG).show();
             imgGoods.setImageURI(data.getData());
             imageURI = data.getData();
 
@@ -670,7 +676,7 @@ public class AddGoodsFragment extends Fragment {
                 .child(goodsCategory).child(barcode).child(goodsId);
         Goods good = new Goods(barcode, goodsId, goodsName, imageURL, goodsCategory, expirationDate,
                 quantity, goodsLocation, alertData, consumedRateStatus, alertDaysStatus, insertDate
-                , "disabled", "0", "disabled", "0");
+                , "disabled", "1", "disabled", "1");
 
         good.addGoods(good);
         checkGoodsDataExist(barcode, goodsCategory, goodsLocation,
@@ -689,7 +695,7 @@ public class AddGoodsFragment extends Fragment {
         final FragmentHandler h = new FragmentHandler();
         final DatabaseReference goodsDataRef = FirebaseDatabase.getInstance().getReference().child("user").
                 child(userId).child("goodsData").child(barcode);
-        goodsDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        goodsDataRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() == null) {

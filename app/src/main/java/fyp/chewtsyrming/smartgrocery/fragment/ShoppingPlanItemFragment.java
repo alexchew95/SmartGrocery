@@ -8,8 +8,10 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +21,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,21 +34,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import fyp.chewtsyrming.smartgrocery.FirebaseHandler;
 import fyp.chewtsyrming.smartgrocery.FragmentHandler;
 import fyp.chewtsyrming.smartgrocery.R;
 import fyp.chewtsyrming.smartgrocery.adapter.ShoppingPlanItemListAdapter;
 import fyp.chewtsyrming.smartgrocery.object.ShoppingPlanItem;
 
 public class ShoppingPlanItemFragment extends Fragment implements View.OnClickListener {
-    TextView tv_fragment_title, tv_rv_empty;
+    FirebaseHandler fh = new FirebaseHandler();
+    TextView tv_fragment_title, tv_rv_empty, tv_clear_all, tv_clear_all2, tv_deleteAll;
     Button btn_add_shopping_plan_item, button_deleteItem;
     RelativeLayout rl_rv;
+    LinearLayout ll_delete;
     FragmentHandler h = new FragmentHandler();
-
-
     List<ShoppingPlanItem> shoppingPlanItemList, shoppingPlanItemListCrossed;
     ContentLoadingProgressBar pb;
     Boolean checkboxStatus;
+    ShoppingPlanItem shoppingPlanItem;
+    Boolean showCB = false;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private String userId = Objects.requireNonNull(user).getUid();
@@ -68,8 +74,12 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
         pb = fragmentView.findViewById(R.id.pb);
         btn_add_shopping_plan_item = fragmentView.findViewById(R.id.btn_add_shopping_plan_item);
         button_deleteItem = fragmentView.findViewById(R.id.button_deleteItem);
-
+        tv_clear_all = fragmentView.findViewById(R.id.tv_clear_all);
+        tv_clear_all2 = fragmentView.findViewById(R.id.tv_clear_all2);
+        tv_deleteAll = fragmentView.findViewById(R.id.tv_deleteAll);
+        ll_delete = fragmentView.findViewById(R.id.ll_delete);
         tv_fragment_title.setText(shoppingPlanName);
+
         //pending
         layoutManager = new LinearLayoutManager(fragmentView.getContext(), LinearLayoutManager.VERTICAL, false);
         shoppingPlanItemList = new ArrayList<>();
@@ -98,6 +108,10 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
         rvShoppingPlanItemCrossed.setLayoutAnimation(animation2);
         button_deleteItem.setOnClickListener(this);
         btn_add_shopping_plan_item.setOnClickListener(this);
+        tv_clear_all.setOnClickListener(this);
+        tv_clear_all2.setOnClickListener(this);
+        tv_deleteAll.setOnClickListener(this);
+
         getItemList(shoppingPlanID);
         return fragmentView;
     }
@@ -137,7 +151,16 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
                             shoppingPlanItemListCrossed.add(shoppingPlanItem);
                         }
                     }
-
+                    if (shoppingPlanItemList.size() == 0) {
+                        tv_clear_all.setVisibility(View.GONE);
+                    } else {
+                        tv_clear_all.setVisibility(View.VISIBLE);
+                    }
+                    if (shoppingPlanItemListCrossed.size() == 0) {
+                        tv_clear_all2.setVisibility(View.GONE);
+                    } else {
+                        tv_clear_all2.setVisibility(View.VISIBLE);
+                    }
 
                     adapterPending.notifyDataSetChanged();
                     adapterCrossed.notifyDataSetChanged();
@@ -164,9 +187,65 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
                 adapterCrossed.deleteCheckedBox();
                 break;
 
+            case R.id.tv_clear_all:
+                deleteList("Pending");
+
+                break;
+
+            case R.id.tv_clear_all2:
+                deleteList("Crossed");
+                break;
+            case R.id.tv_deleteAll:
+                deleteList("all");
+                break;
 
         }
 
+    }
+
+    public void deleteList(final String listType) {
+        final String shoppingPlanID = getArguments().getString("shoppingPlanID");
+        final DatabaseReference deleteRef = fh.getShoppingRef().child(shoppingPlanID).child("itemList");
+
+        if (listType.matches("all")) {
+            deleteRef.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Toast.makeText(getContext(), "All item list removed from shopping plan!", Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            deleteRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot itemIDSS : dataSnapshot.getChildren()) {
+                        final DatabaseReference deleteRef2 = fh.getShoppingRef()
+                                .child(shoppingPlanID).child("itemList").child(itemIDSS.getKey());
+                        deleteRef2.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                String buyStatus = dataSnapshot.child("buyStatus").getValue(String.class);
+                                if (buyStatus.matches(listType)) {
+                                    deleteRef2.removeValue();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                    Toast.makeText(getContext(), listType + " item list removed from shopping plan!", Toast.LENGTH_LONG).show();
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 
     public void show_add_item_dialog() {
@@ -223,16 +302,37 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
         assert cate != null;
         String shoppingPlanID = cate.getString("shoppingPlanID");
         String shoppingPlanName = cate.getString("shoppingPlanName");
-
         Bundle bundle = new Bundle();
         bundle.putString("shoppingPlanID", shoppingPlanID);
         bundle.putString("shoppingPlanName", shoppingPlanName);
-
         bundle.putString("goodsCategory", "All Goods");
         bundle.putString("processType", "shoppinglist");
         Fragment fragment = null;
         fragment = new GoodsFromSameCategoryFragment();
         fragment.setArguments(bundle);
         h.loadFragment(fragment, getContext());
+    }
+
+    public void showAllCheckBox() {
+        Integer itemCountPending = adapterPending.getItemCount();
+        Integer itemCountCrossed = adapterCrossed.getItemCount();
+        showCB = !showCB;
+        for (int i = 0; i <= itemCountPending; i++) {
+
+            adapterPending.setItemVisibilityByPosition(i, showCB);
+
+        }
+        for (int i = 0; i <= itemCountCrossed; i++) {
+
+            adapterCrossed.setItemVisibilityByPosition(i, showCB);
+
+
+        }
+        if (showCB) {
+            ll_delete.setVisibility(View.VISIBLE);
+        } else {
+            ll_delete.setVisibility(View.GONE);
+
+        }
     }
 }

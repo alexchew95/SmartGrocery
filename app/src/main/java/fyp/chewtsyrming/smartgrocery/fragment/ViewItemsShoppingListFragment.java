@@ -16,6 +16,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -27,7 +28,6 @@ import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -58,9 +58,9 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
     FragmentHandler h = new FragmentHandler();
     UserModel um = new UserModel();
     FirebaseHandler fb = new FirebaseHandler();
-    String name, quantity;
-    Button button_add_to_shop_list;
     String imageFilePath;
+    private String name, quantity;
+    private Button button_add_to_shop_list, button_reset, button_one, button_two, button_five, button_ten;
     private ImageView imgGoods;
     private ArrayAdapter<String> adapter;
     private EditText editTextGoodsName, editTextQuantity;
@@ -68,6 +68,7 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
     private Boolean barcodeExist = false;
     private ContentLoadingProgressBar pb_item_status;
     private RelativeLayout rl_goods_info;
+    private LinearLayout ll_button;
     private Uri imageURI;
     private StorageReference storageRef, imagesRef;
     private TextView tv_item_inventory_status, tv_imageURL;
@@ -108,6 +109,19 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
         button_add_to_shop_list = fragmentView.findViewById(R.id.button_add_to_shop_list);
         cb_quantity = fragmentView.findViewById(R.id.cb_quantity);
         tv_imageURL = fragmentView.findViewById(R.id.tv_imageURL);
+        ll_button = fragmentView.findViewById(R.id.ll_button);
+        button_reset = fragmentView.findViewById(R.id.button_reset);
+        button_one = fragmentView.findViewById(R.id.button_one);
+        button_two = fragmentView.findViewById(R.id.button_two);
+        button_five = fragmentView.findViewById(R.id.button_five);
+        button_ten = fragmentView.findViewById(R.id.button_ten);
+        button_reset.setOnClickListener(this);
+        button_one.setOnClickListener(this);
+        button_two.setOnClickListener(this);
+        button_five.setOnClickListener(this);
+        button_ten.setOnClickListener(this);
+
+
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, goodsCategory);
         spinnerCategory.setAdapter(adapter);
         loadGoodsData();
@@ -122,12 +136,13 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
                     editTextQuantity.setFocusable(false);
                     editTextQuantity.setClickable(false);
                     editTextQuantity.setFocusableInTouchMode(false);
-
+                    ll_button.setVisibility(View.GONE);
                 } else {
-                    editTextQuantity.setText("0");
+                    editTextQuantity.setText("1");
                     editTextQuantity.setFocusableInTouchMode(true);
                     editTextQuantity.setFocusable(true);
                     editTextQuantity.setClickable(true);
+                    ll_button.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -141,7 +156,7 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
 //           Bundle extras = data.getExtras();
             //          Bitmap imageBitmap = (Bitmap) extras.get("data");
             //imgGoods.setImageBitmap(imageBitmap);
-            Glide.with(getActivity()).load(imageFilePath).into(imgGoods);
+            Glide.with(getContext()).load(imageFilePath).into(imgGoods);
             //imageURI = data.getData();
             //imgGoods.setImageURI(Uri.fromFile(new File(imageFilePath)));
             //  imageURI = Uri.fromFile(new File(imageFilePath));
@@ -152,7 +167,7 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
 
         if (requestCode == 10 && resultCode == Activity.RESULT_OK) {
             // Toast.makeText(getContext(), String.valueOf(resultCode), Toast.LENGTH_LONG).show();
-            Toast.makeText(getContext(), String.valueOf(CommonStatusCodes.SUCCESS), Toast.LENGTH_LONG).show();
+            // Toast.makeText(getContext(), String.valueOf(CommonStatusCodes.SUCCESS), Toast.LENGTH_LONG).show();
             imgGoods.setImageURI(data.getData());
             imageURI = data.getData();
 
@@ -375,15 +390,9 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
             case R.id.button_add_to_shop_list:
                 if (barcodeExist) {
                     saveIntoList();
-
-
                 } else {
                     saveBarcode();
-
-
                 }
-
-
                 break;
             case R.id.ibGallery:
                 upload();
@@ -391,6 +400,32 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
             case R.id.ibCamera:
                 takePicture();
                 break;
+            case R.id.button_reset:
+                editTextQuantity.setText("1");
+                break;
+            case R.id.button_one:
+                returnQuantity(1);
+                break;
+            case R.id.button_two:
+                returnQuantity(2);
+                break;
+            case R.id.button_five:
+                returnQuantity(5);
+                break;
+            case R.id.button_ten:
+                returnQuantity(10);
+                break;
         }
+    }
+
+    public void returnQuantity(int toAddQuantity) {
+        int currentQuantity = 0;
+        if (!editTextQuantity.getText().toString().isEmpty()) {
+            currentQuantity = Integer.parseInt(editTextQuantity.getText().toString());
+
+        }
+        editTextQuantity.setText(String.valueOf(toAddQuantity + currentQuantity));
+
+
     }
 }

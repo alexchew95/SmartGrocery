@@ -10,7 +10,6 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -151,7 +150,7 @@ public class ShoppingPlanFragment extends Fragment implements View.OnClickListen
                 String shoppingPlanId=addShoppingRef.push().getKey();
                 DatabaseReference addShoppingRefwithKey=addShoppingRef.child(shoppingPlanId);
                 ShoppingPlan shoppingPlan=new ShoppingPlan(shoppingPlanName,"2020/02/20");
-                Toast.makeText(getContext(), shoppingPlanName, Toast.LENGTH_LONG).show();
+                //Toast.makeText(getContext(), shoppingPlanName, Toast.LENGTH_LONG).show();
 
                 addShoppingRefwithKey.setValue(shoppingPlan).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

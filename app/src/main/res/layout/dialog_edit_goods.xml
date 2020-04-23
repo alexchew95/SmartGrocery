@@ -85,7 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="15dp"
-                android:text="Consumed Details"
+                android:text="Add Consumed Details"
                 android:textColor="@color/black"
                 android:visibility="visible"
                 app:icon="@drawable/ic_restaurant_blue_24dp"
@@ -102,7 +102,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:background="@drawable/et_bg_2"
             android:gravity="center_horizontal"
             android:orientation="vertical"
             android:visibility="gone">
@@ -119,7 +118,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="10dp">
+                android:padding="5dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -136,7 +135,68 @@
                     android:ems="5"
                     android:inputType="number"
                     android:padding="5dp"
+                    android:text="1"
                     android:textAlignment="center" />
+
+                <Button
+                    android:id="@+id/button_resetQ"
+                    style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    app:icon="@drawable/ic_reset_black_24dp"
+                    app:iconGravity="textStart"
+                    app:rippleColor="@color/colorAccent"
+                    app:strokeColor="@color/black" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+                <Button
+                    android:id="@+id/button_oneQ"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="+1"
+
+                    app:rippleColor="@color/colorAccent"
+                    app:strokeColor="@color/black" />
+
+                <Button
+                    android:id="@+id/button_twoQ"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="+2"
+                    app:rippleColor="@color/colorAccent"
+                    app:strokeColor="@color/black" />
+
+                <Button
+                    android:id="@+id/button_fiveQ"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="+5"
+                    app:rippleColor="@color/colorAccent"
+                    app:strokeColor="@color/black" />
+
+
+                <Button
+                    android:id="@+id/button_tenQ"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="+10"
+                    app:rippleColor="@color/colorAccent"
+                    app:strokeColor="@color/black" />
             </LinearLayout>
 
             <LinearLayout
@@ -144,7 +204,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
 
-                android:padding="10dp">
+                android:padding="5dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -157,8 +217,8 @@
                     android:id="@+id/et_expDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:inputType="date"
-                    android:ems="5" />
+                    android:ems="5"
+                    android:inputType="date" />
 
                 <ImageButton
                     android:id="@+id/ib_calenderPicker"
@@ -168,6 +228,7 @@
                     android:src="@drawable/ic_date_range_black_24dp" />
 
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/ll_alert_cr"
                 android:layout_width="wrap_content"
@@ -222,6 +283,68 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ll_but"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/button_resetDR"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    app:icon="@drawable/ic_reset_black_24dp"
+                    app:iconGravity="textStart"
+                    app:rippleColor="@color/colorAccent"
+                    app:strokeColor="@color/black" />
+
+                <Button
+                    android:id="@+id/button_oneDR"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="+1"
+                    android:textSize="10sp"
+
+                    app:rippleColor="@color/colorAccent"
+                    app:strokeColor="@color/black" />
+
+                <Button
+                    android:id="@+id/button_twoDR"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="+2"
+                    android:textSize="10sp"
+                    app:rippleColor="@color/colorAccent"
+                    app:strokeColor="@color/black" />
+
+                <Button
+                    android:id="@+id/button_fiveDR"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="+5"
+                    android:textSize="10sp"
+                    app:rippleColor="@color/colorAccent"
+                    app:strokeColor="@color/black" />
+
+
+                <Button
+                    android:id="@+id/button_tenDR"
+                    style="?attr/materialButtonOutlinedStyle"
+
+                    android:layout_width="55dp"
+                    android:layout_height="wrap_content"
+                    android:text="+10"
+                    android:textSize="10sp"
+                    app:rippleColor="@color/colorAccent"
+                    app:strokeColor="@color/black" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -242,6 +365,13 @@
                     android:padding="5dp"
 
                     />
+
+                <ImageButton
+                    android:id="@+id/ib_add_storage_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/ic_add_circle_24dp" />
             </LinearLayout>
 
             <Button
@@ -321,7 +451,7 @@
                     android:ems="4"
                     android:inputType="number"
                     android:padding="5dp"
-                    android:text="0"
+                    android:text="1"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="15sp" />
@@ -407,6 +537,7 @@
                     android:padding="10dp"
                     android:textAlignment="center"
                     android:textColor="@color/black" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -449,24 +580,40 @@
 
             <LinearLayout
                 android:id="@+id/ll_addShoppingPlan"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="10dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
                 android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:text="Shopping list :"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Shopping Plan"
                     android:textColor="@color/black"
                     android:textSize="15sp" />
 
-                <Spinner
-                    android:id="@+id/spinner_shoppingList"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:id="@+id/spinner_shoppingList"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <ImageButton
+                        android:id="@+id/ib_add_shopping_plan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@drawable/ic_add_circle_24dp" />
+                </LinearLayout>
+
             </LinearLayout>
 
             <RelativeLayout

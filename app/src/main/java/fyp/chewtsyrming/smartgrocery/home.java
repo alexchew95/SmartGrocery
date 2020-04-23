@@ -1,7 +1,6 @@
 package fyp.chewtsyrming.smartgrocery;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -15,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 
 import fyp.chewtsyrming.smartgrocery.fragment.MyProfileFragment;
+import fyp.chewtsyrming.smartgrocery.fragment.NotificationFragment;
 import fyp.chewtsyrming.smartgrocery.fragment.ShoppingPlanFragment;
 import fyp.chewtsyrming.smartgrocery.fragment.ViewAlertedItemFragment;
 import fyp.chewtsyrming.smartgrocery.nestedRv.fragment_home;
@@ -45,6 +45,9 @@ public class home extends AppCompatActivity implements BottomNavigationView.OnNa
             case R.id.navigation_profile:
                 fragment = new MyProfileFragment();
                 break;
+            case R.id.navigation_notification:
+                fragment = new NotificationFragment();
+                break;
 
 
         }
@@ -62,19 +65,18 @@ public class home extends AppCompatActivity implements BottomNavigationView.OnNa
             h.loadFragment(new fragment_home(), this);
 
         } else {
-            String actionType = extras.getString("actionType");
-            String itemId = extras.getString("itemId");
-            Log.i("notif data action:", actionType);
-            Log.i("notif data itemId:", itemId);
-            if (actionType.matches("all")) {
+            String alertType = extras.getString("alertType");
 
-
+            if (alertType.matches("notif")) {
+                NotificationFragment fragment = new NotificationFragment();
+                h.loadFragment(fragment, this);
             } else {
                 ViewAlertedItemFragment fragment = new ViewAlertedItemFragment();
                 fragment.setArguments(extras);
                 h.loadFragment(fragment, this);
-
             }
+
+
         }
 
         //getting bottom navigation view and attaching the listener

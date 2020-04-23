@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,49 +32,28 @@ import fyp.chewtsyrming.smartgrocery.object.PasswordHash;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class login_user extends AppCompatActivity implements View.OnClickListener {
-    private DatabaseReference mDatabase;
-
-    ProgressBar progressBar;
     public static final String PREFS_NAME = "MyPrefsFile";
     private static final String PREF_EMAIL = "username";
     private static final String PREF_PASSWORD = "password";
     private static final String PREF_REMEMBER = "remember_me";
+    ProgressBar progressBar;
     RelativeLayout rellay, rellay2;
     ImageView imgView_logo;
     Handler handler = new Handler();
+    String SaltPassword = null;
+    EditText l_email, l_password;
+    Button loginBtn, registerBtn, goto_registerBtn, goto_loginBtn;
+    FirebaseAuth fAuth;
+    PasswordHash passwordHash;
+    private DatabaseReference mDatabase;
+    private TextView tv_resetPassword;
+    private FirebaseAuth.AuthStateListener fAuthListen;
+    private CheckBox rememberMeCB1;
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
             check_rememberMePref();
 
-
-        }
-    };
-    Runnable loginToRegister = new Runnable() {
-        @Override
-        public void run() {
-            progressBar.setVisibility(View.GONE);
-
-            rellay2.setVisibility(View.VISIBLE);
-
-
-        }
-    };
-    Runnable registerToLogin = new Runnable() {
-        @Override
-        public void run() {
-            progressBar.setVisibility(View.GONE);
-
-            rellay.setVisibility(View.VISIBLE);
-
-        }
-    };
-    Runnable registerProcess = new Runnable() {
-        @Override
-        public void run() {
-            progressBar.setVisibility(View.GONE);
-
-            rellay2.setVisibility(View.GONE);
 
         }
     };
@@ -88,13 +68,6 @@ public class login_user extends AppCompatActivity implements View.OnClickListene
 
         }
     };
-    String SaltPassword = null;
-    EditText l_email, l_password;
-    Button loginBtn, registerBtn, goto_registerBtn, goto_loginBtn;
-    FirebaseAuth fAuth;
-    private FirebaseAuth.AuthStateListener fAuthListen;
-    PasswordHash passwordHash;
-    private CheckBox rememberMeCB1;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -113,14 +86,15 @@ public class login_user extends AppCompatActivity implements View.OnClickListene
         goto_registerBtn = findViewById(R.id.goto_registerBtn);
         goto_loginBtn = findViewById(R.id.goto_loginBtn);
         progressBar = findViewById(R.id.progressBar);
+        tv_resetPassword = findViewById(R.id.tv_resetPassword);
+
         //switch1.findViewById(R.id.switch1);
         rememberMeCB1 = findViewById(R.id.rememberMeCheckBox);
         //Shared Preference (Remember Me)
-        SharedPreferences pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        l_email.setText(pref.getString(PREF_EMAIL, null));
-        l_password.setText(pref.getString(PREF_PASSWORD, null));
+
         loginBtn.setOnClickListener(this);
         goto_registerBtn.setOnClickListener(this);
+        tv_resetPassword.setOnClickListener(this);
     }
 
 
@@ -145,7 +119,7 @@ public class login_user extends AppCompatActivity implements View.OnClickListene
 
                         try {
                             //hash password
-                            SaltPassword = passwordHash.encrypt(password);
+                            SaltPassword = PasswordHash.encrypt(password);
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -190,8 +164,7 @@ public class login_user extends AppCompatActivity implements View.OnClickListene
 
     private void check_rememberMePref() {
         String deHashPassword = null;
-        SharedPreferences rememberMePref =
-                getPreferences(MODE_PRIVATE);
+        SharedPreferences rememberMePref = getPreferences(MODE_PRIVATE);
         if (rememberMePref.contains(PREF_EMAIL)) {
             l_email.setText(rememberMePref.getString(PREF_EMAIL, null));
             String tempPass = rememberMePref.getString(PREF_PASSWORD, null);
@@ -213,10 +186,11 @@ public class login_user extends AppCompatActivity implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
+        Intent i;
         switch (v.getId()) {
 
             case R.id.goto_registerBtn:
-                Intent i = new Intent(login_user.this, register_user.class);
+                i = new Intent(login_user.this, register_user.class);
                 startActivity(i);
                 finish();
                /* progressBar.setVisibility(View.VISIBLE);
@@ -229,11 +203,17 @@ public class login_user extends AppCompatActivity implements View.OnClickListene
                     Toast.makeText(getApplicationContext(), "Please enter your email & password", Toast.LENGTH_LONG).show();
                 } else {
 
-                    handler.postDelayed(loginProcess, 2000);
+                    handler.postDelayed(loginProcess, 1000);
 
                 }
+                break;
+            case R.id.tv_resetPassword:
+                i = new Intent(login_user.this, ResetPasswordActivity.class);
+                startActivity(i);
+                finish();
                 break;
 
         }
     }
+
 }

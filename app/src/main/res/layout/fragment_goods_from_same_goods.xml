@@ -24,7 +24,7 @@
                 android:id="@+id/ivGoods"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
-                android:background="@drawable/ic_banjo"
+                android:background="@color/white"
                 android:scaleType="fitXY" />
 
             <ImageButton

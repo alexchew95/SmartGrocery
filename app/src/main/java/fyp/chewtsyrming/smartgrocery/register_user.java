@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,11 +18,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import fyp.chewtsyrming.smartgrocery.object.UserModel;
 
@@ -30,24 +29,25 @@ public class register_user extends AppCompatActivity {
     Uri imageuri;
     String url = "https://firebasestorage.googleapis.com/v0/b/gogreen-3de65.appspot.com/o/users%2FARAL0T5yu2evBzMzj9yReB4bkfJ3?alt=media&token=02ef3058-11f1-4e25-bf33-bb4e90df51dc";
     DatabaseReference reff;
-    private Button goto_loginBtn,registerBtn;
+    private Button goto_loginBtn, registerBtn;
     private EditText reg_name;
     private EditText reg_email;
     private EditText reg_pass;
 
     // Uri defaultURL =Uri.parse("https://firebasestorage.googleapis.com/v0/b/new-loginregister.appspot.com/o/users%2Fprofile.jpg?alt=media&token=6923468f-092d-4536-a7fc-fbccb8b66bda");
     private ProgressDialog dialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_user);
-        reg_email = (EditText) findViewById(R.id.r_uemail);
-        reg_pass = (EditText) findViewById(R.id.r_upassword);
-        goto_loginBtn = (Button) findViewById(R.id.goto_loginBtn);
-        registerBtn = (Button) findViewById(R.id.registerBtn);
+        reg_email = findViewById(R.id.r_uemail);
+        reg_pass = findViewById(R.id.r_upassword);
+        goto_loginBtn = findViewById(R.id.goto_loginBtn);
+        registerBtn = findViewById(R.id.registerBtn);
         dialog = new ProgressDialog(this);
         reff = FirebaseDatabase.getInstance().getReference().child("users");
-        reg_name = (EditText) findViewById(R.id.r_uname);
+        reg_name = findViewById(R.id.r_uname);
         registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,12 +57,13 @@ public class register_user extends AppCompatActivity {
                 Runnable r = new Runnable() {
                     @Override
                     public void run() {
-                        dialog.cancel();
+                        signup();
+
+
                     }
                 };
                 Handler h = new Handler();
-                h.postDelayed(r, 6000);
-                signup();
+                h.postDelayed(r, 1000);
             }
         });
 
@@ -76,94 +77,70 @@ public class register_user extends AppCompatActivity {
             }
         });
     }
-    private void upload() {
-        Intent i = new Intent(Intent.ACTION_PICK);
-        i.setType(MediaStore.Images.Media.CONTENT_TYPE);
-        startActivityForResult(i, 10);
 
-    }
+
     private void signup() {
 
-        FirebaseAuth.getInstance().createUserWithEmailAndPassword(reg_email.getText().toString(), reg_pass.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(
+                reg_email.getText().toString(), reg_pass.getText().toString()).
+                addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
 
 
-                if (task.isSuccessful()) {
+                        if (task.isSuccessful()) {
 
-                    final String c_uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                            final String c_uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-                    final StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("users").child(c_uid);
-                    imageuri=null;
+                            String defaultImageUrl = "https://firebasestorage.googleapis.com/v0/b/gogreen-3de65.appspot.com/o/profile.jpeg?alt=media&token=04b39c44-d9db-4e2b-900a-33f339e1f5b7";
+                            UserModel userModel = new UserModel();
+                            userModel.name = reg_name.getText().toString();
+                            userModel.email = reg_email.getText().toString();
+                            userModel.uid = c_uid;
+                            userModel.imageurl = defaultImageUrl;
 
-                    if (imageuri == null) {
-                        String defaultImageUrl = "https://firebasestorage.googleapis.com/v0/b/gogreen-3de65.appspot.com/o/profile.jpeg?alt=media&token=04b39c44-d9db-4e2b-900a-33f339e1f5b7";
-                        UserModel userModel = new UserModel();
-                        userModel.name = reg_name.getText().toString();
-                        userModel.email = reg_email.getText().toString();
-                        userModel.uid = c_uid;
-                        userModel.imageurl = defaultImageUrl;
+                            FirebaseDatabase.getInstance().getReference().child("user").
+                                    child(c_uid).child("profile").setValue(userModel);
 
-                        FirebaseDatabase.getInstance().getReference().child("user").child(c_uid).child("profile").setValue(userModel);
+                            Toast.makeText(getApplicationContext(), "Register Success", Toast.LENGTH_LONG).show();
 
-                        Toast.makeText(getApplicationContext(), "Register Success", Toast.LENGTH_LONG).show();
-
-                        Intent i = new Intent(getApplicationContext(), login_user.class);
-
-                        startActivity(i);
-
-                    } else {
-                        storageReference.putFile(imageuri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-
-                                if (task.isSuccessful()) {
-
-                                    storageReference.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Uri> task) {
-
-                                            final String downloadUrl = task.getResult().toString();
-
-//                                        String imageurl = task.toString();
-
-                                            UserModel userModel = new UserModel();
-                                            userModel.name = reg_name.getText().toString();
-                                            userModel.email = reg_email.getText().toString();
-                                            userModel.uid = c_uid;
-                                            userModel.imageurl = downloadUrl;
+                            Intent i = new Intent(getApplicationContext(), login_user.class);
+                            dialog.cancel();
+                            startActivity(i);
 
 
-                                            FirebaseDatabase.getInstance().getReference().child("user").child(c_uid).child("profile").setValue(userModel);
-                                            Toast.makeText(getApplicationContext(), "Register Success", Toast.LENGTH_LONG).show();
-
-                                            Intent i = new Intent(getApplicationContext(), login_user.class);
-
-                                            startActivity(i);
-
-                                        }
-                                    });
-
-                                } else {
-                                    Toast.makeText(register_user.this, "Error", Toast.LENGTH_SHORT).show();
-                                }
+                        } else {
+                            String TAG = "register";
+                            String message = "Error! Please try again";
+                            try {
+                                throw task.getException();
                             }
-                        });
+                            // if user enters wrong email.
+                            catch (FirebaseAuthInvalidUserException invalidEmail) {
+                                Log.d(TAG, "onComplete: invalid_email");
+                                message = "Erreo! Invalid email.";
+                                // TODO: take your actions!
+                            }
+                            // if user enters wrong password.
+                            catch (FirebaseAuthInvalidCredentialsException wrongPassword) {
+                                Log.d(TAG, "onComplete: user exist");
+                                message = "User already exist!";
+                                // TODO: Take your action
+                            } catch (Exception e) {
+                                message = e.getMessage();
+                                Log.d(TAG, "onComplete: " + e.getMessage());
+                            }
+                            dialog.cancel();
+                            Toast.makeText(register_user.this, message, Toast.LENGTH_LONG).show();
+                        }
+
                     }
 
 
-                } else {
-
-                    Toast.makeText(register_user.this, "Error", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-
-        });
+                });
 
 
     }
-
 
 
 }

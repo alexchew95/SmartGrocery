@@ -195,6 +195,14 @@
                     android:layout_gravity="center"
                     android:padding="10dp"
                     android:textSize="20sp" />
+
+                <ImageButton
+                    android:id="@+id/ib_add_storage_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/ic_add_circle_24dp" />
+
             </LinearLayout>
 
             <LinearLayout
