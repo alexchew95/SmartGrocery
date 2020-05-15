@@ -69,7 +69,7 @@ public class MyProfileFragment extends Fragment implements View.OnClickListener 
     private static final String PREF_PASSWORD = "password";
     private static final String PREF_REMEMBER = "remember_me";
     Boolean pictureChanged = false;
-    FragmentHandler h = new FragmentHandler();
+
     UserModel um;
     Context context;
     ImageButton ibGallery, ibCamera;
@@ -158,34 +158,52 @@ public class MyProfileFragment extends Fragment implements View.OnClickListener 
                 break;
             case R.id.btn_SaveProfile:
                 if (resetLayoutStatus) {
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                            context);
-                    // set title
-                    alertDialogBuilder.setTitle("Reset Password");
-                    // set dialog message
-                    alertDialogBuilder
-                            .setMessage("Your password will be reset and you will be log out. Press yes to continue. ")
-                            .setCancelable(false)
-                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    // if this button is clicked, close
-                                    // current activity
-                                    resetPW();
-                                }
-                            })
-                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    // if this button is clicked, just close
-                                    // the dialog box and do nothing
-                                    dialog.cancel();
-                                }
-                            });
 
-                    // create alert dialog
-                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    String oldPW = etOldPassword.getText().toString();
+                    final String newPW = etNewPassword.getText().toString();
+                    String errorMessage = "";
+                    if (oldPW.isEmpty()) {
+                        errorMessage = "Please enter your old password";
+                        if (newPW.isEmpty()) {
+                            errorMessage = "Please enter your old and new password";
+                        }
+                        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
 
-                    // show it
-                    alertDialog.show();
+                    } else if (newPW.isEmpty()) {
+                        errorMessage = "Please enter your new password";
+                        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
+
+                    } else {
+
+                        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                                context);
+                        // set title
+                        alertDialogBuilder.setTitle("Reset Password");
+                        // set dialog message
+                        alertDialogBuilder
+                                .setMessage("Your password will be reset and you will be log out. Press yes to continue. ")
+                                .setCancelable(false)
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        // if this button is clicked, close
+                                        // current activity
+                                        resetPW();
+                                    }
+                                })
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        // if this button is clicked, just close
+                                        // the dialog box and do nothing
+                                        dialog.cancel();
+                                    }
+                                });
+
+                        // create alert dialog
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+
+                        // show it
+                        alertDialog.show();
+                    }
                 } else if (editStatus) {
                     saveProfile();
 
@@ -233,7 +251,7 @@ public class MyProfileFragment extends Fragment implements View.OnClickListener 
                 Fragment fragment = null;
                 fragment = new BarcodeReaderFragment();
                 fragment.setArguments(bundle);
-                h.loadFragment(fragment, getContext());
+                FragmentHandler.loadFragment(fragment, getContext());
 
                 break;
 
@@ -318,10 +336,19 @@ public class MyProfileFragment extends Fragment implements View.OnClickListener 
                                                                                                 addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                                                     @Override
                                                                                                     public void onComplete(@NonNull Task<Void> task) {
-                                                                                                        Toast.makeText(context, "Success.User profile updated!", Toast.LENGTH_LONG).show();
-                                                                                                        editStatus = !editStatus;
-                                                                                                        setET(editStatus);
-                                                                                                        dialog.dismiss();
+
+                                                                                                        if(task.isSuccessful()){
+                                                                                                            Toast.makeText(context, "Success.User profile updated!", Toast.LENGTH_LONG).show();
+                                                                                                            editStatus = !editStatus;
+                                                                                                            setET(editStatus);
+                                                                                                            dialog.dismiss();
+                                                                                                        }
+                                                                                                        else {
+                                                                                                            Toast.makeText(context, "Failed.User profile not updated!", Toast.LENGTH_LONG).show();
+                                                                                                            editStatus = !editStatus;
+                                                                                                            setET(editStatus);
+                                                                                                            dialog.dismiss();
+                                                                                                        }
                                                                                                     }
                                                                                                 });
 
@@ -341,10 +368,18 @@ public class MyProfileFragment extends Fragment implements View.OnClickListener 
                                                             addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                 @Override
                                                                 public void onComplete(@NonNull Task<Void> task) {
-                                                                    Toast.makeText(context, "Success.User profile updated!", Toast.LENGTH_LONG).show();
-                                                                    editStatus = !editStatus;
-                                                                    setET(editStatus);
-                                                                    dialog.dismiss();
+                                                                    if(task.isSuccessful()){
+                                                                        Toast.makeText(context, "Success.User profile updated!", Toast.LENGTH_LONG).show();
+                                                                        editStatus = !editStatus;
+                                                                        setET(editStatus);
+                                                                        dialog.dismiss();
+                                                                    }
+                                                                    else {
+                                                                        Toast.makeText(context, "Failed.User profile not updated!", Toast.LENGTH_LONG).show();
+                                                                        editStatus = !editStatus;
+                                                                        setET(editStatus);
+                                                                        dialog.dismiss();
+                                                                    }
                                                                 }
                                                             });
                                                 }
@@ -528,52 +563,44 @@ public class MyProfileFragment extends Fragment implements View.OnClickListener 
 
         String oldPW = etOldPassword.getText().toString();
         final String newPW = etNewPassword.getText().toString();
-        String errorMessage = "";
-        if (oldPW.isEmpty()) {
-            errorMessage = "Please enter your old password";
-            if (newPW.isEmpty()) {
-                errorMessage = "Please enter your old and new password";
-            }
-            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
 
-        } else if (newPW.isEmpty()) {
-            errorMessage = "Please enter your new password";
-            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
+        pb_resetPass.setVisibility(View.VISIBLE);
+        ll_button.setVisibility(View.GONE);
+        AuthCredential credential = EmailAuthProvider.getCredential(um.getEmail(), oldPW);
+        final FirebaseUser user;
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
 
-        } else {
-            pb_resetPass.setVisibility(View.VISIBLE);
-            ll_button.setVisibility(View.GONE);
-            AuthCredential credential = EmailAuthProvider.getCredential(um.getEmail(), oldPW);
-            final FirebaseUser user;
-            user = FirebaseAuth.getInstance().getCurrentUser();
-            user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
+                    user.updatePassword(newPW).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            pb_resetPass.setVisibility(View.GONE);
+                            etNewPassword.setText("");
+                            etOldPassword.setText("");
 
-                        user.updatePassword(newPW).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(context, "Password update succesful!", Toast.LENGTH_LONG).show();
-
-                                } else {
-                                    Toast.makeText(context, "Password update fail!", Toast.LENGTH_LONG).show();
-
-                                }
+                            if (task.isSuccessful()) {
+                                Toast.makeText(context, "Password update succesful!", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(context, "Password update fail!", Toast.LENGTH_LONG).show();
 
                             }
-                        });
-                    } else {
-                        Toast.makeText(context, "Incorrect old password. Please try again", Toast.LENGTH_LONG).show();
-
-                    }
-                    resetLayoutStatus = !resetLayoutStatus;
-                    loadResetLayout(resetLayoutStatus);
-
+                            resetLayoutStatus = !resetLayoutStatus;
+                            loadResetLayout(resetLayoutStatus);
+                        }
+                    });
+                } else {
+                    Toast.makeText(context, "Incorrect old password. Please try again", Toast.LENGTH_LONG).show();
+                    pb_resetPass.setVisibility(View.GONE);
+                    etNewPassword.setText("");
+                    etOldPassword.setText("");
                 }
-            });
-        }
+
+
+            }
+        });
 
 
     }

@@ -150,7 +150,7 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
             viewHolder.tv_remainingDaysStatus.setText(message);
         } else {
             // set background red
-            message = "Expired " + remainingDays + "days ago";
+            message = "Expired " + Math.abs(remainingDays) + " days ago";
             //viewHolder.ll_remainingDays.setBackgroundColor(Color.RED);
             viewHolder.tv_remainingDaysStatus.setTextColor(Color.RED);
             viewHolder.tv_remainingDaysStatus.setText(message);
@@ -603,7 +603,7 @@ public class GoodsListAdapter extends ArrayAdapter<Goods> implements View.OnClic
         button_resetQuantity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                et_consumedQuantity.setText("0");
+                et_consumedQuantity.setText("1");
             }
         });
 

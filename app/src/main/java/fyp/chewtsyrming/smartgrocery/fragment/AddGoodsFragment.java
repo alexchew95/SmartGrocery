@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -37,12 +38,9 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -67,18 +65,20 @@ import fyp.chewtsyrming.smartgrocery.nestedRv.fragment_home;
 public class AddGoodsFragment extends Fragment {
     private static final int RC_OCR_CAPTURE = 9003;
     private static final int REQUEST_CODE = 11;
+    FirebaseHandler fh = new FirebaseHandler();
+    Goods g = new Goods();
     private Switch switch_reminderStatus, switch_daysToRemindStatus;
-    private LinearLayout ll_alert_day, ll_numberPicker;
+    private LinearLayout ll_alert_day, ll_numberPicker, ll_imageView;
     private String currentDate, imageFilePath;
     private Button button_one, button_two, button_five, button_reset,
-            button_ten, button_oneD, button_twoD, button_fiveD, button_tenD;
+            button_ten, button_resetD, button_oneD, button_twoD, button_fiveD, button_tenD;
     /* public Uri getImageUri(Context inContext, Bitmap inImage) {
          ByteArrayOutputStream bytes = new ByteArrayOutputStream();
          inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
          String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
          return Uri.parse(path);
      }*/
-    private EditText tv_goodsName, editTextExpiryDate, editTextQuantity, et_daysToRemind, goodsLocation;
+    private EditText editTextGoodsName, editTextExpiryDate, editTextQuantity, et_daysToRemind, goodsLocation;
     private Spinner spinnerCategory, spinnerGoodsLocation;
     private TextView tv_imageURL;
     private ImageView imgGoods;
@@ -88,14 +88,49 @@ public class AddGoodsFragment extends Fragment {
     private StorageReference storageRef, imagesRef;
     private Boolean barcodeExist = false;
     private int REQUEST_IMAGE_CAPTURE = 1;
-    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    private String userId = user.getUid();
     private String alertType;
     private Bundle barcodeBundle;
     private ArrayAdapter<String> adapter, adapter2;
     private View fragmentView;
     private List<String> arrStorageLocation;
     private ContentLoadingProgressBar progress_bar_add_goods;
+    private ScrollView sv_itemDetail;
+
+    public static void btn_add_storage_location(final Context context) {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(context);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View mView = inflater.inflate(R.layout.dialog_box_add_goods_location, null);
+        final FirebaseHandler firebaseHandler = new FirebaseHandler();
+        final EditText txt_input_new_storage_location = mView.findViewById(R.id.txt_input_new_storage_location);
+        Button btn_cancel = mView.findViewById(R.id.btn_cancel);
+        Button btn_okay = mView.findViewById(R.id.btn_okay);
+        alert.setView(mView);
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+        btn_okay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String newLocation = txt_input_new_storage_location.getText().toString();
+                DatabaseReference addStorageReff = firebaseHandler.getUserRef().child("inventoryLocation");
+                addStorageReff.child(newLocation).setValue("true").addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(context, "New location added!", Toast.LENGTH_SHORT).show();
+                        alertDialog.dismiss();
+
+                    }
+
+                });
+            }
+        });
+        alertDialog.show();
+    }
 
     @SuppressLint("CutPasteId")
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -115,10 +150,9 @@ public class AddGoodsFragment extends Fragment {
         /*TODO add goods with image capture by user*/
         FirebaseStorage storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        userId = user.getUid();
+
         fragmentView = inflater.inflate(R.layout.fragment_add_goods, null);
-        tv_goodsName = fragmentView.findViewById(R.id.editTextGoodsName);
+        editTextGoodsName = fragmentView.findViewById(R.id.editTextGoodsName);
         tv_imageURL = fragmentView.findViewById(R.id.tv_imageURL);
         editTextExpiryDate = fragmentView.findViewById(R.id.editTextExpiryDate);
         editTextQuantity = fragmentView.findViewById(R.id.editTextQuantity);
@@ -127,6 +161,7 @@ public class AddGoodsFragment extends Fragment {
         imgGoods = fragmentView.findViewById(R.id.imgGoods);
         switch_reminderStatus = fragmentView.findViewById(R.id.switch_reminderStatus);
         switch_daysToRemindStatus = fragmentView.findViewById(R.id.switch_daysToRemindStatus);
+        sv_itemDetail = fragmentView.findViewById(R.id.sv_itemDetail);
         ImageButton ibGallery = fragmentView.findViewById(R.id.ibGallery);
         ImageButton ibCamera = fragmentView.findViewById(R.id.ibCamera);
         ImageButton ib_add_storage_location = fragmentView.findViewById(R.id.ib_add_storage_location);
@@ -135,15 +170,17 @@ public class AddGoodsFragment extends Fragment {
         button_two = fragmentView.findViewById(R.id.button_two);
         button_five = fragmentView.findViewById(R.id.button_five);
         button_ten = fragmentView.findViewById(R.id.button_ten);
+        button_resetD = fragmentView.findViewById(R.id.button_resetD);
         button_oneD = fragmentView.findViewById(R.id.button_oneD);
         button_twoD = fragmentView.findViewById(R.id.button_twoD);
         button_fiveD = fragmentView.findViewById(R.id.button_fiveD);
         button_tenD = fragmentView.findViewById(R.id.button_tenD);
         ll_numberPicker = fragmentView.findViewById(R.id.ll_numberPicker);
         button_reset = fragmentView.findViewById(R.id.button_reset);
+        ll_imageView = fragmentView.findViewById(R.id.ll_imageView);
 
         progress_bar_add_goods = fragmentView.findViewById(R.id.progress_bar_add_goods);
-        mainReff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods");
+        mainReff = fh.getUserRef().child("goods");
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, goodsCategory);
         spinnerCategory.setAdapter(adapter);
         getGoodsLocation();
@@ -208,6 +245,15 @@ public class AddGoodsFragment extends Fragment {
                 }
                 int newQuantity = returnQuantity(10, currentQuantity);
                 editTextQuantity.setText(String.valueOf(newQuantity));
+            }
+        });
+        button_resetD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                et_daysToRemind.setText("1");
+
+
             }
         });
         button_oneD.setOnClickListener(new View.OnClickListener() {
@@ -317,7 +363,7 @@ public class AddGoodsFragment extends Fragment {
     }
 
     private void getGoodsLocation() {
-        DatabaseReference storageLocationRef = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("inventoryLocation");
+        DatabaseReference storageLocationRef = fh.getUserRef().child("inventoryLocation");
 
         storageLocationRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -376,6 +422,7 @@ public class AddGoodsFragment extends Fragment {
     }
 
     private void getBarcodeData() {
+        progress_bar_add_goods.hide();
 
         final String scanned_barcode;
         scanned_barcode = barcodeBundle.getString("barcode");
@@ -387,10 +434,19 @@ public class AddGoodsFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.getValue() != null) {
-                    String goodsName = snapshot.child("goodsName").getValue(String.class);
-                    String goodsCat = snapshot.child("goodsCategory").getValue(String.class);
-                    String barcode = snapshot.child("barcode").getValue(String.class);
-                    String imageURL = snapshot.child("imageURL").getValue(String.class);
+                    editTextGoodsName.setClickable(false);
+                    editTextGoodsName.setFocusableInTouchMode(false);
+                    editTextGoodsName.setFocusable(false);
+                    spinnerCategory.setEnabled(false);
+                    spinnerCategory.setClickable(false);
+                    spinnerCategory.setFocusableInTouchMode(false);
+                    spinnerCategory.setFocusable(false);
+                    ll_imageView.setVisibility(View.GONE);
+                    g = snapshot.getValue(Goods.class);
+                    String goodsName = g.getGoodsName();
+                    String barcode = g.getBarcode();
+                    String imageURL = g.getImageURL();
+                    String goodsCat = g.getGoodsCategory();
                     tv_imageURL.setText(imageURL);
                     // Picasso.get().load(imageURL).fit().into(imgGoods);
                     Glide.with(getContext())
@@ -399,7 +455,7 @@ public class AddGoodsFragment extends Fragment {
                             .placeholder(R.drawable.ic_loading_static)
                             .dontAnimate()
                             .into(imgGoods);
-                    tv_goodsName.setText(goodsName);
+                    editTextGoodsName.setText(goodsName);
                     int spinnerPosition = adapter.getPosition(goodsCat);
                     spinnerCategory.setSelection(spinnerPosition);
                     barcodeExist = true;
@@ -451,40 +507,6 @@ public class AddGoodsFragment extends Fragment {
             }
         });
         //  Toast.makeText(getContext(), test, Toast.LENGTH_LONG).show();
-    }
-
-    public void btn_add_storage_location(Context context) {
-        final AlertDialog.Builder alert = new AlertDialog.Builder(context);
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View mView = inflater.inflate(R.layout.dialog_box_add_goods_location, null);
-
-        final EditText txt_input_new_storage_location = mView.findViewById(R.id.txt_input_new_storage_location);
-        Button btn_cancel = mView.findViewById(R.id.btn_cancel);
-        Button btn_okay = mView.findViewById(R.id.btn_okay);
-        alert.setView(mView);
-        final AlertDialog alertDialog = alert.create();
-        alertDialog.setCanceledOnTouchOutside(false);
-        btn_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alertDialog.dismiss();
-            }
-        });
-        btn_okay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String newLocation = txt_input_new_storage_location.getText().toString();
-                DatabaseReference addStorageReff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("inventoryLocation");
-                addStorageReff.child(newLocation).setValue("true").addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        alertDialog.dismiss();
-
-                    }
-                });
-            }
-        });
-        alertDialog.show();
     }
 
     private void datePicker() {
@@ -595,92 +617,183 @@ public class AddGoodsFragment extends Fragment {
             String imgUrl = null;
             add_existingGoods(imgUrl);
         }
+        /*progress_bar_add_goods.hide();
+        sv_itemDetail.setVisibility(View.VISIBLE);*/
 
     }
 
     private void add_newGoods() {
+        boolean validationCheck = true;
+        String messageError = "";
 
 
         final String scanned_barcode = barcodeBundle.getString("barcode");
         final String category = spinnerCategory.getSelectedItem().toString();
-        final String goodsName = tv_goodsName.getText().toString();
+        final String goodsName = editTextGoodsName.getText().toString();
         //reff = FirebaseDatabase.getInstance().getReference().child("barcode").child(scanned_barcode);
         // reff.setValue(bg);
-
         //Toast.makeText(getContext(), imageURI.toString(), Toast.LENGTH_LONG).show();
 
         imagesRef = storageRef.child("goods").child(scanned_barcode);
+        if (goodsName.isEmpty()) {
+            validationCheck = false;
+            messageError = " Please enter goods name.";
+            if (imageURI == null) {
+                messageError = "Please enter goods name and select goods image.";
+            }
+        }
+        if (imageURI == null) {
+            validationCheck = false;
 
-        imagesRef.putFile(imageURI).
-                addOnCompleteListener(
-                        new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                                if (task.isSuccessful()) {
+            if (messageError.isEmpty()) {
+                messageError = "Please select goods image.";
+            }
+        }
+        if (validationCheck) {
+            progress_bar_add_goods.show();
+            sv_itemDetail.setVisibility(View.GONE);
 
-                                    imagesRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Uri> task) {
-                                            final String downloadUrl = task.getResult().toString();
+            imagesRef.putFile(imageURI).
+                    addOnCompleteListener(
+                            new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                    if (task.isSuccessful()) {
 
-                                            goods = new Goods(scanned_barcode, goodsName, downloadUrl, category);
-                                            Toast.makeText(getContext(), downloadUrl
-                                                    , Toast.LENGTH_LONG).show();
-                                            goods.addNewBarcode();
-                                            add_existingGoods(downloadUrl);
+                                        imagesRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Uri> task) {
+                                                final String downloadUrl = task.getResult().toString();
 
-                                        }
-                                    });
+                                                goods = new Goods(scanned_barcode, goodsName, downloadUrl, category);
+                                                // Toast.makeText(getContext(), downloadUrl
+                                                //     , Toast.LENGTH_LONG).show();
+                                                goods.addNewBarcode();
+                                                barcodeExist = true;
+                                                Toast.makeText(getContext(), "New barcode registered!", Toast.LENGTH_SHORT).show();
+                                                add_existingGoods(downloadUrl);
+
+                                            }
+                                        });
+                                    } else {
+                                        Toast.makeText(getContext(), "Barcode register failed! Please try again.", Toast.LENGTH_SHORT).show();
+                                        progress_bar_add_goods.hide();
+                                        sv_itemDetail.setVisibility(View.VISIBLE);
+                                    }
                                 }
-                            }
-                        });
+                            });
+        } else {
+            Toast.makeText(getContext(), messageError, Toast.LENGTH_LONG).show();
+        }
+
+
     }
 
     private void add_existingGoods(String downloadURL) {
-        final String barcode, goodsId, goodsName, imageURL, goodsCategory, expirationDate,
-                quantity, goodsLocation, alertData, alertDaysStatus, consumedRateStatus, insertDate;
-
-
-        barcode = barcodeBundle.getString("barcode");
-        goodsName = tv_goodsName.getText().toString();
-        if (downloadURL == null) {
-            imageURL = tv_imageURL.getText().toString();
-        } else {
-            imageURL = downloadURL;
-        }
-        goodsCategory = spinnerCategory.getSelectedItem().toString();
+        boolean validateStatus = true;
+        String errorMessage = "";
+        final String barcode;
+        final String goodsId;
+        final String goodsName;
+        final String imageURL;
+        final String goodsCategory;
+        final String expirationDate;
+        final String quantity;
+        final String goodsLocation;
+        String alertData;
+        final String alertDaysStatus;
+        final String consumedRateStatus;
+        final String insertDate;
         expirationDate = editTextExpiryDate.getText().toString();
         quantity = editTextQuantity.getText().toString();
-        insertDate = currentDate;
-        goodsLocation = spinnerGoodsLocation.getSelectedItem().toString();
-        if (switch_reminderStatus.isChecked()) {
-            consumedRateStatus = switch_reminderStatus.getTextOn().toString();
+        alertData = et_daysToRemind.getText().toString();
+        if (!switch_daysToRemindStatus.isChecked()) {
+            alertData="1";
+        }
 
-        } else {
-            consumedRateStatus = switch_reminderStatus.getTextOff().toString();
+        if (expirationDate.isEmpty()) {
+            validateStatus = false;
+            errorMessage = "Please enter expiration dates.";
+            if (quantity.isEmpty()) {
+                errorMessage = "Please enter expiration dates and quantity.";
+                if (switch_daysToRemindStatus.isChecked()) {
+                    if (alertData.isEmpty()) {
+                        errorMessage = "Please enter expiration dates ,quantity and days to remind..";
+
+                    }
+                }
+            }
+        }
+        if (quantity.isEmpty()) {
+            validateStatus = false;
+            if (errorMessage.isEmpty()) {
+                errorMessage = "Please enter quantity.";
+                if (switch_daysToRemindStatus.isChecked()) {
+
+                    if (alertData.isEmpty()) {
+                        errorMessage = "Please enter quantity and days to remind..";
+
+                    }
+                }
+            }
         }
         if (switch_daysToRemindStatus.isChecked()) {
-            alertDaysStatus = switch_reminderStatus.getTextOn().toString();
+            if (alertData.isEmpty()) {
+                validateStatus = false;
+
+                if (errorMessage.isEmpty()) {
+                    errorMessage = "Please enter days to remind..";
+                }
+            }
+        }
+        if (validateStatus) {
+            progress_bar_add_goods.show();
+            sv_itemDetail.setVisibility(View.GONE);
+
+            barcode = barcodeBundle.getString("barcode");
+            goodsName = editTextGoodsName.getText().toString();
+            if (downloadURL == null) {
+                imageURL = tv_imageURL.getText().toString();
+            } else {
+                imageURL = downloadURL;
+            }
+            goodsCategory = spinnerCategory.getSelectedItem().toString();
+
+            insertDate = currentDate;
+            goodsLocation = spinnerGoodsLocation.getSelectedItem().toString();
+            if (switch_reminderStatus.isChecked()) {
+                consumedRateStatus = switch_reminderStatus.getTextOn().toString();
+
+            } else {
+                consumedRateStatus = switch_reminderStatus.getTextOff().toString();
+            }
+            if (switch_daysToRemindStatus.isChecked()) {
+                alertDaysStatus = switch_reminderStatus.getTextOn().toString();
+
+            } else {
+                alertDaysStatus = switch_reminderStatus.getTextOff().toString();
+            }
+
+
+            reff = fh.getUserRef().child("goods")
+                    .child(goodsCategory).child(barcode);
+            goodsId = reff.push().getKey();
+
+            reff = fh.getUserRef().child("goods")
+                    .child(goodsCategory).child(barcode).child(goodsId);
+            Goods good = new Goods(barcode, goodsId, goodsName, imageURL, goodsCategory, expirationDate,
+                    quantity, goodsLocation, alertData, consumedRateStatus, alertDaysStatus, insertDate
+                    , "disabled", "1", "disabled", "1");
+
+            good.addGoods(good, getContext());
+            checkGoodsDataExist(barcode, goodsCategory, goodsLocation,
+                    alertData, consumedRateStatus, alertDaysStatus, getContext(), "addGoods");
 
         } else {
-            alertDaysStatus = switch_reminderStatus.getTextOff().toString();
+            progress_bar_add_goods.hide();
+            sv_itemDetail.setVisibility(View.VISIBLE);
+            Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
         }
-        alertData = et_daysToRemind.getText().toString();
-
-
-        reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
-                .child(goodsCategory).child(barcode);
-        goodsId = reff.push().getKey();
-
-        reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
-                .child(goodsCategory).child(barcode).child(goodsId);
-        Goods good = new Goods(barcode, goodsId, goodsName, imageURL, goodsCategory, expirationDate,
-                quantity, goodsLocation, alertData, consumedRateStatus, alertDaysStatus, insertDate
-                , "disabled", "1", "disabled", "1");
-
-        good.addGoods(good);
-        checkGoodsDataExist(barcode, goodsCategory, goodsLocation,
-                alertData, consumedRateStatus, alertDaysStatus, getContext(), "addGoods");
 
         progress_bar_add_goods.hide();
 
@@ -692,13 +805,18 @@ public class AddGoodsFragment extends Fragment {
                                     final String goodsLocation, final String alertData, final String consumedRateStatus,
                                     final String alertDaysStatus, final Context context,
                                     final String sourceFragment) {
-        final FragmentHandler h = new FragmentHandler();
-        final DatabaseReference goodsDataRef = FirebaseDatabase.getInstance().getReference().child("user").
-                child(userId).child("goodsData").child(barcode);
+
+        final DatabaseReference goodsDataRef = fh.getUserRef().child("goodsData").child(barcode);
         goodsDataRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
                 if (dataSnapshot.getValue() == null) {
+                    if (sourceFragment.contains("addGoods")) {
+                        progress_bar_add_goods.show();
+                        sv_itemDetail.setVisibility(View.GONE);
+                    }
                     String activeDays = "1";
 
                     String rate = "0.00";
@@ -707,11 +825,24 @@ public class AddGoodsFragment extends Fragment {
                     Goods goods = new Goods(goodsCategory, goodsLocation, alertData, consumedRateStatus, alertDaysStatus,
                             activeDays, status, totalUsed, rate);
 
-                    goodsDataRef.setValue(goods);
+                    goodsDataRef.setValue(goods).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (sourceFragment.contains("addGoods")) {
+                                progress_bar_add_goods.hide();
+                                sv_itemDetail.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    });
+                } else {
+                    if (sourceFragment.contains("addGoods")) {
+                        progress_bar_add_goods.hide();
+                        sv_itemDetail.setVisibility(View.VISIBLE);
+                    }
                 }
                 if (sourceFragment.contains("addGoods")) {
                     fragment_home frag = new fragment_home();
-                    h.loadFragment(frag, context);
+                    FragmentHandler.loadFragment(frag, context);
                 }
             }
 

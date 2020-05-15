@@ -1,5 +1,6 @@
 package fyp.chewtsyrming.smartgrocery.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +19,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,7 +42,7 @@ import fyp.chewtsyrming.smartgrocery.object.UserModel;
 
 
 public class ItemSettingFragment extends Fragment implements View.OnClickListener {
-    private String barcode;
+    Context context; private String barcode;
     private TextView tv_itemName, tv_itemCategory;
     private Spinner spinner_goodsLocation;
     private Switch switch_reminderStatus, switch_daysToRemindStatus;
@@ -53,13 +58,15 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        context = getContext();
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_item_setting, container, false);
-        fragmentHandler = new FragmentHandler();
+
         if (getArguments() != null) {
             barcode = getArguments().getString("barcode");
         } else {
-            fragmentHandler.prevFragment(getContext());
+            FragmentHandler.prevFragment(context);
         }
         firebaseHandler = new FirebaseHandler();
         tv_itemName = view.findViewById(R.id.tv_itemName);
@@ -167,7 +174,7 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
                         // Assign each value to String array
                         arrayStorageLocation[j] = arrStorageLocation.get(j);
                     }
-                    adapter2 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, arrStorageLocation);
+                    adapter2 = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, arrStorageLocation);
                     spinner_goodsLocation.setAdapter(adapter2);
                 }
             }
@@ -179,7 +186,7 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
         });
     }
 
-    private void saveSetting() {
+    public void saveSetting() {
         pb_itemSettings.show();
         ll_main.setVisibility(View.GONE);
         final DatabaseReference saveSettingRef = firebaseHandler.getUserRef().child("goodsData").child(barcode);
@@ -208,15 +215,19 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
                 goods.setConsumedRateStatus(consumedRateStatus);
                 goods.setAlertDaysStatus(alertDaysStatus);
                 goods.setGoodsLocation(goodsLocation);
-                //Toast.makeText(getContext(), goods.getAlertData(), Toast.LENGTH_SHORT).show();
-                saveSettingRef.setValue(goods).addOnSuccessListener(new OnSuccessListener<Void>() {
+                //Toast.makeText(context, goods.getAlertData(), Toast.LENGTH_SHORT).show();
+                saveSettingRef.setValue(goods).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        pb_itemSettings.hide();
-                        Toast.makeText(getContext(), "Setting saved!", Toast.LENGTH_LONG).show();
-                        fragmentHandler.prevFragment(getContext());
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if ((task.isSuccessful()))
+                        {
+                            pb_itemSettings.hide();
+                            Toast.makeText(context, "Setting saved!", Toast.LENGTH_LONG).show();
+                            FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
+                            fm.popBackStack();
+                        }
                     }
-                });
+                } );
             }
 
             @Override
@@ -232,17 +243,17 @@ public class ItemSettingFragment extends Fragment implements View.OnClickListene
         switch (view.getId()) {
             case R.id.ib_back:
 
-                fragmentHandler.prevFragment(getContext());
+                FragmentHandler.prevFragment(context);
                 break;
             case R.id.button_saveSetting:
                 saveSetting();
                 break;
 
             case R.id.buttonHelp:
-                addGoodsFragment.shoeHelpMessageDialog(getContext());
+                addGoodsFragment.shoeHelpMessageDialog(context);
                 break;
             case R.id.ib_add_storage_location:
-                addGoodsFragment.btn_add_storage_location(getContext());
+                AddGoodsFragment.btn_add_storage_location(context);
                 break;
 
         }

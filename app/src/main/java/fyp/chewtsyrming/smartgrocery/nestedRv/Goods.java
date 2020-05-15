@@ -1,8 +1,13 @@
 package fyp.chewtsyrming.smartgrocery.nestedRv;
 
+import android.content.Context;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -409,7 +414,7 @@ public class Goods {
         this.consumeRateSnoozeDay = consumeRateSnoozeDay;
     }
 
-    public void addGoods(Goods good) {
+    public void addGoods(Goods good, final Context c) {
         UserModel um = new UserModel();
         String userId = um.getUserIDFromDataBase();
         DatabaseReference reff = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("goods")
@@ -431,7 +436,19 @@ public class Goods {
                         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
                         Goods recentGoods = new Goods(barcode, goodsName, imageURL, goodsCategory, sdf.format(timestamp));
-                        recentReff2.setValue(recentGoods);
+                        recentReff2.setValue(recentGoods).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()){
+                                    Toast.makeText(c,"New item added!",Toast.LENGTH_SHORT).show();
+
+                                }
+                                else {
+                                    Toast.makeText(c,"Fail to add new item@",Toast.LENGTH_SHORT).show();
+
+                                }
+                            }
+                        });
 
                     }
 

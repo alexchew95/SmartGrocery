@@ -85,7 +85,7 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         firebaseHandler = new FirebaseHandler();
-        fragmentHandler = new FragmentHandler();
+
         showCB = false;
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);

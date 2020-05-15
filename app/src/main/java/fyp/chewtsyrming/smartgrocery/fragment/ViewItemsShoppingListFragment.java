@@ -55,7 +55,7 @@ import fyp.chewtsyrming.smartgrocery.object.UserModel;
 public class ViewItemsShoppingListFragment extends Fragment implements View.OnClickListener {
     private static final int RC_OCR_CAPTURE = 9003;
     private static final int REQUEST_CODE = 11;
-    FragmentHandler h = new FragmentHandler();
+
     UserModel um = new UserModel();
     FirebaseHandler fb = new FirebaseHandler();
     String imageFilePath;
@@ -93,7 +93,7 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
         };
         View fragmentView = inflater.inflate(R.layout.fragment_view_items_shopping_list, null);
         if (getArguments() == null) {
-            h.prevFragment(getContext());
+            FragmentHandler.prevFragment(getContext());
         }
 
         // Toast.makeText(getContext(), getArguments().getString("shoppingPlanName"), Toast.LENGTH_LONG).show();
@@ -242,9 +242,14 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
                     Toast.makeText(getContext(), "Please register this barcode.", Toast.LENGTH_LONG).show();
                     final String itemCheckResult = "You don't have this item in your inventory.";
                     tv_item_inventory_status.setText(itemCheckResult);
+                    pb_item_status.hide();
 
                 } else {
+                    editTextGoodsName.setEnabled(false);
+                    spinnerCategory.setEnabled(false);
                     barcodeExist = true;
+                    ibCamera.setVisibility(View.GONE);
+                    ibGallery.setVisibility(View.GONE);
                     Goods bg = dataSnapshot.getValue(Goods.class);
                     editTextGoodsName.setText(bg.getGoodsName());
                     tv_imageURL.setText(bg.getImageURL());
@@ -272,79 +277,108 @@ public class ViewItemsShoppingListFragment extends Fragment implements View.OnCl
     private void saveIntoList() {
         final String category = spinnerCategory.getSelectedItem().toString();
         String imageURL = tv_imageURL.getText().toString();
-        name = editTextGoodsName.getText().toString();
         quantity = editTextQuantity.getText().toString();
-        String shoppingPlanID = getArguments().getString("shoppingPlanID");
-        String barcode = getArguments().getString("barcode");
-        DatabaseReference reference = fb.getUserRef().
-                child("shoppingPlan").child(shoppingPlanID).
-                child("itemList");
-        String itemId = reference.push().getKey();
-        reference = fb.getUserRef().child("shoppingPlan").child(shoppingPlanID).
-                child("itemList").child(itemId);
-        ShoppingPlanItem shoppingPlanItem = new
-                ShoppingPlanItem(shoppingPlanID, itemId, "Pending", barcode, category,
-                name, quantity, imageURL);
-        //   Toast.makeText(getContext(), shoppingPlanID, Toast.LENGTH_LONG).show();
-        reference.setValue(shoppingPlanItem).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
+        if (quantity.isEmpty()) {
+            Toast.makeText(getContext(), "Plaese enter quantity or tick uncertain quantity", Toast.LENGTH_SHORT).show();
+        } else {
+
+            name = editTextGoodsName.getText().toString();
+            String shoppingPlanID = getArguments().getString("shoppingPlanID");
+            String barcode = getArguments().getString("barcode");
+            DatabaseReference reference = fb.getUserRef().
+                    child("shoppingPlan").child(shoppingPlanID).
+                    child("itemList");
+            String itemId = reference.push().getKey();
+            reference = fb.getUserRef().child("shoppingPlan").child(shoppingPlanID).
+                    child("itemList").child(itemId);
+            ShoppingPlanItem shoppingPlanItem = new
+                    ShoppingPlanItem(shoppingPlanID, itemId, "Pending", barcode, category,
+                    name, quantity, imageURL);
+            //   Toast.makeText(getContext(), shoppingPlanID, Toast.LENGTH_LONG).show();
+            reference.setValue(shoppingPlanItem).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
 
 
-                Bundle cate = new Bundle();
-                String shoppingPlanID = getArguments().getString("shoppingPlanID");
-                String shoppingPlanName = getArguments().getString("shoppingPlanName");
+                    Bundle cate = new Bundle();
+                    String shoppingPlanID = getArguments().getString("shoppingPlanID");
+                    String shoppingPlanName = getArguments().getString("shoppingPlanName");
 
-                cate.putString("shoppingPlanID", shoppingPlanID);
-                cate.putString("shoppingPlanName", shoppingPlanName);
-                ShoppingPlanItemFragment frag = new ShoppingPlanItemFragment();
-                frag.setArguments(cate);
-                FragmentHandler f = new FragmentHandler();
-                f.loadFragment(frag, getContext());
+                    cate.putString("shoppingPlanID", shoppingPlanID);
+                    cate.putString("shoppingPlanName", shoppingPlanName);
+                    ShoppingPlanItemFragment frag = new ShoppingPlanItemFragment();
+                    frag.setArguments(cate);
 
-            }
-        });
+                    FragmentHandler.loadFragment(frag, getContext());
+
+                }
+            });
+        }
     }
 
     private void saveBarcode() {
+        boolean validateStat = true;
+        String errorMessage = "";
         FirebaseStorage storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
         String barcode = getArguments().getString("barcode");
+        final String goodsCategory, goodsName;
+        goodsCategory = spinnerCategory.getSelectedItem().toString();
+        goodsName = editTextGoodsName.getText().toString();
 
         imagesRef = storageRef.child("goods").child(barcode);
+        if (goodsName.isEmpty()) {
+            validateStat = false;
+            errorMessage = "Please enter goods name.";
+            if (imageURI == null) {
+                errorMessage = "Please enter goods name and select goods image.";
 
-        imagesRef.putFile(imageURI).
-                addOnCompleteListener(
-                        new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                                if (task.isSuccessful()) {
 
-                                    imagesRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Uri> task) {
-                                            final String imageURL = task.getResult().toString();
-                                            tv_imageURL.setText(imageURL);
-                                            FirebaseHandler fb = new FirebaseHandler();
-                                            String barcode = getArguments().getString("barcode");
+            }
+        }
 
-                                            DatabaseReference addBarcodeRef = fb.getRef().child("barcode").child(barcode);
-                                            String goodsCategory, goodsName;
-                                            goodsCategory = spinnerCategory.getSelectedItem().toString();
-                                            goodsName = editTextGoodsName.getText().toString();
-                                            Goods barcodeGoods = new Goods(barcode, goodsName, imageURL, goodsCategory);
-                                            addBarcodeRef.setValue(barcodeGoods).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    saveIntoList();
+        if (imageURI == null) {
+            validateStat = false;
+            if (errorMessage.isEmpty()) {
+                errorMessage = "Please select goods image.";
 
-                                                }
-                                            });
-                                        }
-                                    });
+            }
+        }
+        if (validateStat) {
+            imagesRef.putFile(imageURI).
+                    addOnCompleteListener(
+                            new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                    if (task.isSuccessful()) {
+
+                                        imagesRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Uri> task) {
+                                                final String imageURL = task.getResult().toString();
+                                                tv_imageURL.setText(imageURL);
+                                                FirebaseHandler fb = new FirebaseHandler();
+                                                String barcode = getArguments().getString("barcode");
+
+                                                DatabaseReference addBarcodeRef = fb.getRef().child("barcode").child(barcode);
+                                                Goods barcodeGoods = new Goods(barcode, goodsName, imageURL, goodsCategory);
+                                                addBarcodeRef.setValue(barcodeGoods).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        barcodeExist = true;
+                                                        saveIntoList();
+
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
                                 }
-                            }
-                        });
+                            });
+        } else {
+            Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+        }
+
 
     }
 

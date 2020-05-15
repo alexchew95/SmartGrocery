@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 public class FragmentHandler {
-    public boolean loadFragment(Fragment fragment, Context context) {
+    public static boolean loadFragment(Fragment fragment, Context context) {
         //switching fragment
         if (fragment != null) {
             ((FragmentActivity) context).getSupportFragmentManager()
@@ -20,7 +20,7 @@ public class FragmentHandler {
         return false;
     }
 
-    public void prevFragment(Context context) {
+    public static void prevFragment(Context context) {
         FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
         fm.popBackStack();
     }

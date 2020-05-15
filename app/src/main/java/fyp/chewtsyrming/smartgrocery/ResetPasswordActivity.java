@@ -17,6 +17,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
+import fyp.chewtsyrming.smartgrocery.object.UserModel;
+
 public class ResetPasswordActivity extends AppCompatActivity implements View.OnClickListener {
     Handler handler = new Handler();
     ProgressBar clpb;
@@ -76,7 +78,21 @@ public class ResetPasswordActivity extends AppCompatActivity implements View.OnC
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.buttonSendEmail:
-                handler.postDelayed(loginProcess, 1000);
+                String email = et_email.getText().toString();
+                if(email.isEmpty()){
+                    Toast.makeText(getApplicationContext(), "Please enter your email!",Toast.LENGTH_LONG).show();
+
+                }else{
+                    if(UserModel.isValidEmail(email)) {
+
+                        handler.postDelayed(loginProcess, 1000);
+                    }
+                    else{
+                        Toast.makeText(getApplicationContext(), "Invalid email!",Toast.LENGTH_LONG).show();
+
+                    }
+                }
+
 
 
                 break;

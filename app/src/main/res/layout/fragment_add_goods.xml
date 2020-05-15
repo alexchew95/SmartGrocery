@@ -9,6 +9,7 @@
         android:id="@+id/progress_bar_add_goods"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        style="?android:attr/progressBarStyleLarge"
         android:layout_centerInParent="true" />
 
     <RelativeLayout
@@ -37,6 +38,7 @@
                 android:visibility="invisible" />
 
             <LinearLayout
+                android:id="@+id/ll_imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -65,9 +67,11 @@
         </RelativeLayout>
 
         <ScrollView
+            android:id="@+id/sv_itemDetail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/rlImage"
+            android:padding="10dp"
             android:layout_centerHorizontal="true">
 
             <LinearLayout
@@ -104,6 +108,7 @@
                         android:inputType="textPersonName" />
 
                     <ImageButton
+                        android:visibility="gone"
                         android:id="@+id/imageButtonScanGoodsName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -162,6 +167,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
                         android:ems="5"
+
                         android:focusable="false"
                         android:hint="Select date"
                         android:text="" />
@@ -206,7 +212,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="300dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:orientation="horizontal"
@@ -221,6 +227,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="+1"
+                        android:textColor="@color/black"
 
                         app:rippleColor="@color/colorAccent"
                         app:strokeColor="@color/black" />
@@ -233,6 +240,7 @@
                         android:layout_weight="1"
                         android:text="+2"
                         app:rippleColor="@color/colorAccent"
+                        android:textColor="@color/black"
                         app:strokeColor="@color/black" />
 
                     <Button
@@ -243,6 +251,7 @@
                         android:layout_weight="1"
                         android:text="+5"
                         app:rippleColor="@color/colorAccent"
+                        android:textColor="@color/black"
                         app:strokeColor="@color/black" />
 
 
@@ -254,6 +263,7 @@
                         android:layout_weight="1"
                         android:text="+10"
                         app:rippleColor="@color/colorAccent"
+                        android:textColor="@color/black"
                         app:strokeColor="@color/black" />
                 </LinearLayout>
 
@@ -312,14 +322,26 @@
 
                 <LinearLayout
                     android:id="@+id/ll_numberPicker"
-                    android:layout_width="300dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:orientation="horizontal"
                     android:paddingLeft="5dp"
                     android:paddingEnd="5dp"
                     android:visibility="gone"
-                    android:weightSum="4">
+                    android:weightSum="5">
+
+                    <Button
+                        android:id="@+id/button_resetD"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:icon="@drawable/ic_reset_black_24dp"
+                        app:iconTint="@null"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+
+                        app:rippleColor="@color/colorAccent"
+                        app:strokeColor="@color/black" />
 
                     <Button
                         android:id="@+id/button_oneD"
@@ -328,7 +350,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="+1"
-
+android:textColor="@color/black"
                         app:rippleColor="@color/colorAccent"
                         app:strokeColor="@color/black" />
 
@@ -338,6 +360,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="@color/black"
                         android:text="+2"
                         app:rippleColor="@color/colorAccent"
                         app:strokeColor="@color/black" />
@@ -349,6 +372,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="+5"
+                        android:textColor="@color/black"
                         app:rippleColor="@color/colorAccent"
                         app:strokeColor="@color/black" />
 
@@ -360,6 +384,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="+10"
+                        android:textColor="@color/black"
                         app:rippleColor="@color/colorAccent"
                         app:strokeColor="@color/black" />
                 </LinearLayout>

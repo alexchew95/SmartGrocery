@@ -135,7 +135,7 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
         tv_itemStatus = fragmentView.findViewById(R.id.tv_itemStatus);
 
         database = FirebaseDatabase.getInstance();
-        fragmentHandler = new FragmentHandler();
+
         Bundle cate = this.getArguments();
         barcode = cate.getString("barcode");
         goodsCategory = cate.getString("goodsCategory");
@@ -202,8 +202,7 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
         cate.putString("goodsName", goodsName);
 
         itemSettingFragment.setArguments(cate);
-        FragmentHandler fh = new FragmentHandler();
-        fh.loadFragment(itemSettingFragment, getContext());
+        FragmentHandler.loadFragment(itemSettingFragment, getContext());
     }
 
 
@@ -242,7 +241,7 @@ public class GoodsFromSameGoodsFragment extends Fragment implements View.OnClick
         if (requestCode == TARGET_FRAGMENT_REQUEST_CODE) {
             String dataType = data.getStringExtra(DATA_TYPE);
             String orderType = data.getStringExtra(ORDER_TYPE);
-            Toast.makeText(getContext(), dataType, Toast.LENGTH_SHORT).show();
+           // Toast.makeText(getContext(), dataType, Toast.LENGTH_SHORT).show();
 
             if (dataType.contains("expirationDate")) {
 

@@ -46,7 +46,7 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
     Button btn_add_shopping_plan_item, button_deleteItem;
     RelativeLayout rl_rv;
     LinearLayout ll_delete;
-    FragmentHandler h = new FragmentHandler();
+
     List<ShoppingPlanItem> shoppingPlanItemList, shoppingPlanItemListCrossed;
     ContentLoadingProgressBar pb;
     Boolean checkboxStatus;
@@ -294,7 +294,7 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
         Fragment fragment = null;
         fragment = new BarcodeReaderFragment();
         fragment.setArguments(bundle);
-        h.loadFragment(fragment, getContext());
+        FragmentHandler.loadFragment(fragment, getContext());
     }
 
     private void viewMyInventory() {
@@ -310,7 +310,7 @@ public class ShoppingPlanItemFragment extends Fragment implements View.OnClickLi
         Fragment fragment = null;
         fragment = new GoodsFromSameCategoryFragment();
         fragment.setArguments(bundle);
-        h.loadFragment(fragment, getContext());
+        FragmentHandler.loadFragment(fragment, getContext());
     }
 
     public void showAllCheckBox() {

@@ -10,6 +10,7 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,16 +40,14 @@ public class ShoppingPlanFragment extends Fragment implements View.OnClickListen
     Button btn_add_shopping_plan;
     ContentLoadingProgressBar pb;
     TextView tv_rv_empty;
-
+    List<ShoppingPlan> shoppingPlanArrayList;
+    DatabaseReference reference;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private String userId = user.getUid();
-
     private RecyclerView rvShoppingPlan;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
-    List<ShoppingPlan> shoppingPlanArrayList;
-    DatabaseReference reference;
 
     @Nullable
     @Override
@@ -92,15 +91,15 @@ public class ShoppingPlanFragment extends Fragment implements View.OnClickListen
                     tv_rv_empty.setVisibility(View.GONE);
                     rvShoppingPlan.setVisibility(View.VISIBLE);
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        String shoppingId= snapshot.getKey();
-                        String shoppingPlanName= (String)snapshot.child("shoppingPlanName").getValue();
-                        String dateCreated=(String) snapshot.child("dateCreated").getValue();
-                        String noOfItem="0";
+                        String shoppingId = snapshot.getKey();
+                        String shoppingPlanName = (String) snapshot.child("shoppingPlanName").getValue();
+                        String dateCreated = (String) snapshot.child("dateCreated").getValue();
+                        String noOfItem = "0";
 
-                        if (snapshot.hasChild("itemList")){
-                            noOfItem=Long.toString(snapshot.child("itemList").getChildrenCount());
+                        if (snapshot.hasChild("itemList")) {
+                            noOfItem = Long.toString(snapshot.child("itemList").getChildrenCount());
                         }
-                        ShoppingPlan shoppingPlan = new ShoppingPlan(shoppingId,shoppingPlanName,dateCreated,noOfItem);
+                        ShoppingPlan shoppingPlan = new ShoppingPlan(shoppingId, shoppingPlanName, dateCreated, noOfItem);
                         shoppingPlanArrayList.add(shoppingPlan);
 
                     }
@@ -127,7 +126,7 @@ public class ShoppingPlanFragment extends Fragment implements View.OnClickListen
         }
     }
 
-    private void addShoppingPlan(){
+    private void addShoppingPlan() {
 
 
         final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
@@ -143,24 +142,30 @@ public class ShoppingPlanFragment extends Fragment implements View.OnClickListen
             @Override
             public void onClick(View v) {
                 final FirebaseDatabase database = FirebaseDatabase.getInstance();
-                String shoppingPlanName=et_shopping_plan_name.getText().toString();
+                String shoppingPlanName = et_shopping_plan_name.getText().toString();
+                if (shoppingPlanName.isEmpty()) {
+                    Toast.makeText(getContext(),"Please enter your shopping plan name.", Toast.LENGTH_LONG).show();
+                } else {
 
-                DatabaseReference addShoppingRef = database.getReference().child("user").child(userId).
-                        child("shoppingPlan");
-                String shoppingPlanId=addShoppingRef.push().getKey();
-                DatabaseReference addShoppingRefwithKey=addShoppingRef.child(shoppingPlanId);
-                ShoppingPlan shoppingPlan=new ShoppingPlan(shoppingPlanName,"2020/02/20");
-                //Toast.makeText(getContext(), shoppingPlanName, Toast.LENGTH_LONG).show();
+                    DatabaseReference addShoppingRef = database.getReference().child("user").child(userId).
+                            child("shoppingPlan");
+                    String shoppingPlanId = addShoppingRef.push().getKey();
+                    DatabaseReference addShoppingRefwithKey = addShoppingRef.child(shoppingPlanId);
+                    ShoppingPlan shoppingPlan = new ShoppingPlan(shoppingPlanName, "2020/02/20");
+                    //Toast.makeText(getContext(), shoppingPlanName, Toast.LENGTH_LONG).show();
 
-                addShoppingRefwithKey.setValue(shoppingPlan).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        alertDialog.dismiss();
+                    addShoppingRefwithKey.setValue(shoppingPlan).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            alertDialog.dismiss();
 
-                    }
-                });
+                        }
+                    });
+                }
+
             }
-        });btn_cancel_shopping.setOnClickListener(new View.OnClickListener() {
+        });
+        btn_cancel_shopping.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 alertDialog.dismiss();

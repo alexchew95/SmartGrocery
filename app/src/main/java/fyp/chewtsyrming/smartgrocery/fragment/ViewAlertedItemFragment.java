@@ -42,7 +42,7 @@ import fyp.chewtsyrming.smartgrocery.nestedRv.fragment_home;
 
 public class ViewAlertedItemFragment extends Fragment implements View.OnClickListener {
 
-    FragmentHandler h = new FragmentHandler();
+
     FirebaseHandler firebaseHandler = new FirebaseHandler();
     ImageView iv_showInfo, iv_item, iv_consumeRate;
     Boolean showInfo = false, snoozeChange = false;
@@ -56,7 +56,7 @@ public class ViewAlertedItemFragment extends Fragment implements View.OnClickLis
     MaterialButtonToggleGroup toggleButton;
     Goods goods;
     ContentLoadingProgressBar clpb_alert;
-    FragmentHandler fh = new FragmentHandler();
+
     // TODO: Rename and change types of parameters
     private String actionType, itemId, reminderType;
 
@@ -76,7 +76,7 @@ public class ViewAlertedItemFragment extends Fragment implements View.OnClickLis
             Toast.makeText(getContext(), itemId, Toast.LENGTH_SHORT).show();*/
         } else {
             assert getContext() != null;
-            h.loadFragment(new fragment_home(), getContext());
+            FragmentHandler.loadFragment(new fragment_home(), getContext());
 
         }
     }
@@ -273,7 +273,7 @@ public class ViewAlertedItemFragment extends Fragment implements View.OnClickLis
                                     ll_main.setVisibility(View.VISIBLE);
                                     break;
                                 } else {
-                                    fh.loadFragment(new NotificationFragment(), context);
+                                    FragmentHandler.loadFragment(new NotificationFragment(), context);
                                 }
                             }
                         }
@@ -414,7 +414,7 @@ public class ViewAlertedItemFragment extends Fragment implements View.OnClickLis
                 alertDialog.show();
                 break;
             case R.id.button_back:
-                h.loadFragment(new fragment_home(), context);
+                FragmentHandler.loadFragment(new fragment_home(), context);
                 break;
 
         }

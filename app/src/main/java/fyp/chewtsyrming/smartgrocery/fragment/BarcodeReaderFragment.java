@@ -37,7 +37,7 @@ public class BarcodeReaderFragment extends Fragment {
 
     private static int RC_BARCODE_CAPTURE;
     Button read_barcode, no_barcode;
-    FragmentHandler h = new FragmentHandler();
+
     //private static final String TAG = "BarcodeMain";
     String barcode_value;
     private CompoundButton autoFocus;
@@ -97,7 +97,7 @@ public class BarcodeReaderFragment extends Fragment {
         no_barcode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                h.prevFragment(getContext());
+                FragmentHandler.prevFragment(getContext());
             }
         });
         //getActivity().findViewById(R.id.read_barcode).setOnClickListener(this);
@@ -143,7 +143,7 @@ public class BarcodeReaderFragment extends Fragment {
                                             Toast.makeText(getContext(), "You don't have this item in your inventory!", Toast.LENGTH_LONG).show();
 
                                         } else {
-                                            h.loadFragment(goodsFromSameGoodsFragment, getContext());
+                                            FragmentHandler.loadFragment(goodsFromSameGoodsFragment, getContext());
 
                                         }
                                     }
@@ -184,7 +184,7 @@ public class BarcodeReaderFragment extends Fragment {
                     barcodeBundle.putString("barcode", barcodeString);
                     AddGoodsFragment addGoodsFragStart = new AddGoodsFragment();
                     addGoodsFragStart.setArguments(barcodeBundle);
-                    h.loadFragment(addGoodsFragStart, getContext());
+                    FragmentHandler.loadFragment(addGoodsFragStart, getContext());
                 } else {
 
                     Toast.makeText(getContext(), "Barcode scan cancelled!", Toast.LENGTH_SHORT).show();
@@ -202,7 +202,7 @@ public class BarcodeReaderFragment extends Fragment {
             barcodeBundle.putString("target_uid", qrCodeValue);
             FollowerFragment followerFragment = new FollowerFragment();
             followerFragment.setArguments(barcodeBundle);
-            h.loadFragment(followerFragment, getContext());
+            FragmentHandler.loadFragment(followerFragment, getContext());
         } else if (requestCode == 9004) {//add item to shopping list
 
             if (resultCode == CommonStatusCodes.SUCCESS) {
@@ -218,7 +218,7 @@ public class BarcodeReaderFragment extends Fragment {
                     shoppingListItemBundle.putString("shoppingPlanName", shoppingPlanName);
                     ViewItemsShoppingListFragment viewItemsShoppingListFragment = new ViewItemsShoppingListFragment();
                     viewItemsShoppingListFragment.setArguments(shoppingListItemBundle);
-                    h.loadFragment(viewItemsShoppingListFragment, getContext());
+                    FragmentHandler.loadFragment(viewItemsShoppingListFragment, getContext());
                     /*FragmentManager fm = getActivity().getSupportFragmentManager();
                     fm.popBackStack();*/
                 } else {

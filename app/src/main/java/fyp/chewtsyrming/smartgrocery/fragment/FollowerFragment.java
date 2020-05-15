@@ -43,8 +43,6 @@ public class FollowerFragment extends Fragment implements View.OnClickListener {
     RelativeLayout mainRellay;
     Bundle bundle;
     LinearLayout ll_add_reject, ll_follower_request;
-    FragmentHandler h = new FragmentHandler();
-
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
@@ -85,7 +83,7 @@ public class FollowerFragment extends Fragment implements View.OnClickListener {
             case R.id.btn_cancel_followR:
                 Fragment fragment = null;
                 fragment = new MyProfileFragment();
-                h.loadFragment(fragment,getContext());
+                FragmentHandler.loadFragment(fragment,getContext());
                 break;
 
             //follower request

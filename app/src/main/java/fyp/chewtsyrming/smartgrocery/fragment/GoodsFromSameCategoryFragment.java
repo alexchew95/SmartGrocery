@@ -41,8 +41,6 @@ public class GoodsFromSameCategoryFragment extends Fragment {
     private SearchView searchView1;
     private TextView tvCategoryTitle, tv_empty;
     private ImageButton ib_back;
-    private FragmentHandler fragmentHandler;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -50,7 +48,7 @@ public class GoodsFromSameCategoryFragment extends Fragment {
         gridView = fragmentView.findViewById(R.id.gridviewGoodsList);
         user = FirebaseAuth.getInstance().getCurrentUser();
         userId = user.getUid();
-        fragmentHandler = new FragmentHandler();
+
         tvCategoryTitle = fragmentView.findViewById(R.id.tvCategoryTitle);
         tv_empty = fragmentView.findViewById(R.id.tv_empty);
         searchView1 = fragmentView.findViewById(R.id.searchView1);
@@ -96,7 +94,7 @@ public class GoodsFromSameCategoryFragment extends Fragment {
         ib_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fragmentHandler.prevFragment(getContext());
+                FragmentHandler.prevFragment(getContext());
             }
         });
 
@@ -140,9 +138,9 @@ public class GoodsFromSameCategoryFragment extends Fragment {
                                     cate.putString("goodsName", goodsGrid1.getName());
                                     GoodsFromSameGoodsFragment frag = new GoodsFromSameGoodsFragment();
                                     frag.setArguments(cate);
-                                    FragmentHandler h = new FragmentHandler();
 
-                                    h.loadFragment(frag, getContext());
+
+                                    FragmentHandler.loadFragment(frag, getContext());
 
                                 }
                             });
@@ -287,8 +285,8 @@ public class GoodsFromSameCategoryFragment extends Fragment {
 
                             ViewItemsShoppingListFragment frag = new ViewItemsShoppingListFragment();
                             frag.setArguments(cate);
-                            FragmentHandler h = new FragmentHandler();
-                            h.loadFragment(frag, getContext());
+
+                            FragmentHandler.loadFragment(frag, getContext());
 
                         }
                     });

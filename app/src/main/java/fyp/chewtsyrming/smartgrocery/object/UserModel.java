@@ -4,6 +4,8 @@ package fyp.chewtsyrming.smartgrocery.object;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.regex.Pattern;
+
 public class UserModel {
 
     public String uid;
@@ -61,5 +63,17 @@ public class UserModel {
         user = FirebaseAuth.getInstance().getCurrentUser();
         uid = user.getUid();
         return uid;
+    }
+    public static boolean isValidEmail(String email)
+    {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
+                "[a-zA-Z0-9_+&*-]+)*@" +
+                "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+                "A-Z]{2,7}$";
+
+        Pattern pat = Pattern.compile(emailRegex);
+        if (email == null)
+            return false;
+        return pat.matcher(email).matches();
     }
 }

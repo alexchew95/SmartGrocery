@@ -24,7 +24,7 @@ public class home extends AppCompatActivity implements BottomNavigationView.OnNa
     DatabaseReference reff;
     FloatingActionButton fab, fab1, fab2, fab3;
     Boolean isFABOpen = false;
-    FragmentHandler h = new FragmentHandler();
+
     private TextView mTextMessage;
 
     @Override
@@ -52,7 +52,7 @@ public class home extends AppCompatActivity implements BottomNavigationView.OnNa
 
         }
 
-        return h.loadFragment(fragment, this);
+        return FragmentHandler.loadFragment(fragment, this);
     }
 
     @Override
@@ -62,18 +62,18 @@ public class home extends AppCompatActivity implements BottomNavigationView.OnNa
         Bundle extras = getIntent().getExtras();
         //loading the default fragment
         if (extras == null) {
-            h.loadFragment(new fragment_home(), this);
+            FragmentHandler.loadFragment(new fragment_home(), this);
 
         } else {
             String alertType = extras.getString("alertType");
 
             if (alertType.matches("notif")) {
                 NotificationFragment fragment = new NotificationFragment();
-                h.loadFragment(fragment, this);
+                FragmentHandler.loadFragment(fragment, this);
             } else {
                 ViewAlertedItemFragment fragment = new ViewAlertedItemFragment();
                 fragment.setArguments(extras);
-                h.loadFragment(fragment, this);
+                FragmentHandler.loadFragment(fragment, this);
             }
 
 

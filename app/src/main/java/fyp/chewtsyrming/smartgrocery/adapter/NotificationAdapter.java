@@ -111,7 +111,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                     DatabaseReference notifRef = firebaseHandler.getUserRef().child("notification").child(notification.getNotifID());
                     notifRef.setValue(notification);
                 }
-                FragmentHandler fragmentHandler = new FragmentHandler();
+
                 String notifCode = notification.getNotifCode();
                 String[] splitIdArr = notifCode.split("/", -2);
                 String reminderType = splitIdArr[0];
@@ -123,7 +123,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                 bundle.putString("alertType", reminderType);
                 bundle.putString("itemId", itemId);
                 fragment.setArguments(bundle);
-                fragmentHandler.loadFragment(fragment, context);
+                FragmentHandler.loadFragment(fragment, context);
             }
         });
 

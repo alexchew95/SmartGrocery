@@ -154,12 +154,19 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
 
                 final EditText editTextQuantity = mView.findViewById(R.id.editTextQuantity);
                 final EditText editAlertTextQuantity = mView.findViewById(R.id.editAlertTextQuantity);
-                final ImageButton ib_selectExpDate = mView.findViewById(R.id.ib_selectExpDate);
+                final ImageButton ib_selectExpDate = mView.findViewById(R.id.ib_selectExpDate),
+                        ib_add_storage_location = mView.findViewById(R.id.ib_add_storage_location);
                 ImageView imgGoods = mView.findViewById(R.id.imgGoods);
                 spinnerGoodsLocation = mView.findViewById(R.id.spinnerGoodsLocation);
                 getGoodsLocation();
 
+                ib_add_storage_location.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        AddGoodsFragment.btn_add_storage_location(context);
 
+                    }
+                });
                 button_one.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -462,6 +469,8 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
                 button_add_to_inventory_list.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        boolean validateStatus = true;
+                        String errorMessage = "";
                         String barcode, goodsId, goodsName, imageURL, goodsCategory, expirationDate,
                                 quantity, goodsLocation, alertData, alertDaysStatus, consumedRateStatus, insertDate;
                         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -498,12 +507,88 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
                         Goods good = new Goods(barcode, goodsId, goodsName, imageURL, goodsCategory, expirationDate,
                                 quantity, goodsLocation, alertData, alertDaysStatus, consumedRateStatus, insertDate
                                 , "disabled", "1", "disabled", "1");
-                        good.addGoods(good);
-                        AddGoodsFragment addGoodsFragment = new AddGoodsFragment();
-                        addGoodsFragment.checkGoodsDataExist(barcode, goodsCategory, goodsLocation,
-                                alertData, alertDaysStatus, consumedRateStatus, context, "shoppingPlan");
-                        Toast.makeText(context, "Items added to your inventory", Toast.LENGTH_SHORT).show();
-                        mainDialog.dismiss();
+                        if (quantity.isEmpty()) {
+                            validateStatus = false;
+                            errorMessage = "Please enter quantity.";
+                            if (expirationDate.isEmpty()) {
+                                errorMessage = "Please enter quantity and expiration dates.";
+                                if (goodsLocation.isEmpty()) {
+                                    errorMessage = "Please enter quantity, expiration dates and select goods location.";
+
+                                }
+                                if (switch_daysToRemindStatus.isChecked()) {
+                                    if (alertData.isEmpty()) {
+                                        errorMessage = "Please enter quantity, expiration dates and days to remind.";
+                                        if (goodsLocation.isEmpty()) {
+                                            errorMessage = "Please enter quantity, expiration dates, days to remind and select goods location.";
+
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+
+                        if (expirationDate.isEmpty()) {
+                            validateStatus = false;
+
+                            if (errorMessage.isEmpty()) {
+                                errorMessage = "Please enter expiration dates.";
+                                if (goodsLocation.isEmpty()) {
+                                    errorMessage = "Please enter expiration dates and select goods location.";
+
+                                }
+                                if (switch_daysToRemindStatus.isChecked()) {
+                                    if (alertData.isEmpty()) {
+                                        errorMessage = "Please enter expiration dates and days to remind.";
+                                        if (goodsLocation.isEmpty()) {
+                                            errorMessage = "Please enter expiration dates, days to remind and select goods location.";
+
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                        if (switch_daysToRemindStatus.isChecked()) {
+                            if (errorMessage.isEmpty()) {
+
+                                if (alertData.isEmpty()) {
+                                    validateStatus = false;
+
+                                    errorMessage = "Please enter  days to remind.";
+                                    if (goodsLocation.isEmpty()) {
+                                        errorMessage = "Please enter  days to remind and select goods location.";
+
+                                    }
+                                }
+                            }
+
+                        }
+                        if (goodsLocation.isEmpty()) {
+                            validateStatus = false;
+                            if (errorMessage.isEmpty()) {
+
+                                errorMessage = "Please enter expiration dates and select goods location.";
+                            }
+                        }
+                        if(quantity.equals("?")){
+                            validateStatus = false;
+                            if (errorMessage.isEmpty()) {
+
+                                errorMessage = "Please enter goods quantity.";
+                            }
+                        }
+                        if (validateStatus) {
+                            good.addGoods(good, context);
+                            AddGoodsFragment addGoodsFragment = new AddGoodsFragment();
+                            addGoodsFragment.checkGoodsDataExist(barcode, goodsCategory, goodsLocation,
+                                    alertData, alertDaysStatus, consumedRateStatus, context, "shoppingPlan");
+                            Toast.makeText(context, "Items added to your inventory", Toast.LENGTH_SHORT).show();
+                            mainDialog.dismiss();
+                        } else {
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
 
@@ -575,7 +660,7 @@ public class ShoppingPlanItemListAdapter extends RecyclerView.Adapter<ShoppingPl
 
         DatabaseReference storageLocationRef = FirebaseDatabase.getInstance().getReference().child("user").child(userId).child("inventoryLocation");
 
-        storageLocationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        storageLocationRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<String> arrStorageLocation;

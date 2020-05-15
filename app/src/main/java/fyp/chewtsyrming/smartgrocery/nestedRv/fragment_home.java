@@ -42,7 +42,7 @@ public class fragment_home extends Fragment implements View.OnClickListener {
     private String name;
     private Goods goods;
     private FirebaseDatabase database;
-    private FragmentHandler h = new FragmentHandler();
+
     private TextView tv_emptyInventory;
     private ContentLoadingProgressBar clpb_home;
     private List<Category> dataList;
@@ -302,7 +302,7 @@ public class fragment_home extends Fragment implements View.OnClickListener {
                 Fragment fragment = null;
                 fragment = new GoodsFromSameCategoryFragment();
                 fragment.setArguments(bundle);
-                h.loadFragment(fragment, getContext());
+                FragmentHandler.loadFragment(fragment, getContext());
                 break;
             case R.id.ib_scan_barcode:
                 scanBarcode();
@@ -324,7 +324,7 @@ public class fragment_home extends Fragment implements View.OnClickListener {
             case R.id.ib_notification:
                 NotificationFragment nf = new NotificationFragment();
 
-                h.loadFragment(nf, getContext());
+                FragmentHandler.loadFragment(nf, getContext());
                 break;
 
         }
@@ -341,7 +341,7 @@ public class fragment_home extends Fragment implements View.OnClickListener {
         Fragment fragment = null;
         fragment = new BarcodeReaderFragment();
         fragment.setArguments(bundle);
-        h.loadFragment(fragment, getContext());
+        FragmentHandler.loadFragment(fragment, getContext());
     }
 
     public void scanBarcode() {
@@ -351,7 +351,7 @@ public class fragment_home extends Fragment implements View.OnClickListener {
         bundle.putString("code", "9001");//9001 indicate search goods
         Fragment fragment = new BarcodeReaderFragment();
         fragment.setArguments(bundle);
-        h.loadFragment(fragment, getContext());
+        FragmentHandler.loadFragment(fragment, getContext());
     }
 
 }
